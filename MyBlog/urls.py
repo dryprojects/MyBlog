@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.conf.urls.static import static
 from django.conf import settings
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    from django.conf.urls.static import static
 
 
 urlpatterns = [
