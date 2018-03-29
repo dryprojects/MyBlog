@@ -7,6 +7,9 @@ from comment.models import Comment
 from django.contrib.contenttypes.admin import GenericStackedInline, GenericTabularInline
 from django.utils.html import format_html
 
+from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
+
+
 USE_ADMIN_SITE = True
 ADD_PASSWORD_FORGET = False
 if not USE_ADMIN_SITE:
@@ -75,9 +78,24 @@ class PostModalAdmin(admin.ModelAdmin):
 
 
 
-class CategoryModelAdmin(admin.ModelAdmin):
-    fields = ['name']
+class CategoryModelAdmin(DraggableMPTTAdmin):
+    list_display = ['tree_actions', 'get_categories']
+    fields = ['name', 'parent']
     search_fields = ['name']
+    autocomplete_fields = ['parent']
+    list_display_links = ['get_categories']
+    list_filter = (
+        ('parent', TreeRelatedFieldListFilter),
+    )
+
+    def get_categories(self, instance):
+        return format_html(
+            '<div style="text-indent:{}px">{}</div>',
+            instance._mpttfield('level') * self.mptt_level_indent,
+            instance.name,  # Or whatever you want to put here
+        )
+
+    get_categories.short_description = '分类'
 
 
 class TagModelAdmin(admin.ModelAdmin):
