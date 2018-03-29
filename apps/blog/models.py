@@ -3,6 +3,8 @@ import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from mptt.models import MPTTModel, TreeForeignKey
+
 # Create your models here.
 User = get_user_model()
 class Tag(models.Model):
@@ -16,12 +18,16 @@ class Tag(models.Model):
         return self.name
 
 
-class Category(models.Model):
+class Category(MPTTModel):
     name = models.CharField(verbose_name='类目名称', max_length=20)
+    parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "博文类目"
         verbose_name_plural = verbose_name
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
 
     def __str__(self):
         return self.name

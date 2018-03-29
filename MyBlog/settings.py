@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ueditor',
+    'mptt',
     'blog',
-    'comment'
+    'comment',
 ]
 
 MIDDLEWARE = [
