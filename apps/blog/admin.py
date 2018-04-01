@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from blog.models import Post, Category, Tag, Resources
-
-from comment.models import Comment
-
 from django.contrib.contenttypes.admin import GenericStackedInline, GenericTabularInline
 from django.utils.html import format_html
+from django.db import models
+
+from blog.models import Post, Category, Tag, Resources
+from comment.models import Comment
+from kindeditor.widgets import KindTextareaWidget
 
 from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
 
@@ -71,6 +72,17 @@ class PostModalAdmin(admin.ModelAdmin):
     autocomplete_fields = ['author', 'category'] #django 2.0新增
     search_fields = ['title']
     date_hierarchy = 'published_time'
+
+    formfield_overrides = {
+        models.TextField:{
+            'widget':KindTextareaWidget(config={
+                'width':"800px",
+                'height':"300px",
+                "filterMode":False,
+                "cssPath": 'plugins/code/prettify.css',
+            })
+        }
+    }
 
     def get_cover(self, object):
         return format_html("<a href=#><img src='{}' alt='' width='150'/></a>", object.cover.url)
