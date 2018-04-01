@@ -1,0 +1,9 @@
+{% load kindeditor %}
+<textarea name="{{ widget.name }}"{% include 'kindeditor/attrs.html' %}>
+{% if widget.value %}{{ widget.value }}{% endif %}</textarea>
+<script type="text/javascript">
+    KindEditor.ready(function (K) {
+        var target = '#'+'{{ widget.attrs.id }}';
+        window.editor = K.create(target, {{ widget.config|convert_to_json }});
+    });
+</script>

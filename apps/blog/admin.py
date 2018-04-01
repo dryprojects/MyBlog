@@ -1,11 +1,15 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from blog.models import Post, Category, Tag, Resources
-
-from comment.models import Comment
-
 from django.contrib.contenttypes.admin import GenericStackedInline, GenericTabularInline
 from django.utils.html import format_html
+from django.db import models
+
+from blog.models import Post, Category, Tag, Resources
+from comment.models import Comment
+from kindeditor.widgets import KindTextareaWidget
+
+from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
+
 
 USE_ADMIN_SITE = True
 ADD_PASSWORD_FORGET = False
@@ -69,15 +73,41 @@ class PostModalAdmin(admin.ModelAdmin):
     search_fields = ['title']
     date_hierarchy = 'published_time'
 
+    formfield_overrides = {
+        models.TextField:{
+            'widget':KindTextareaWidget(config={
+                'width':"800px",
+                'height':"300px",
+                "filterMode":False,
+                "cssPath": 'plugins/code/prettify.css',
+            })
+        }
+    }
+
     def get_cover(self, object):
         return format_html("<a href=#><img src='{}' alt='' width='150'/></a>", object.cover.url)
     get_cover.short_description = '封面'
 
 
 
-class CategoryModelAdmin(admin.ModelAdmin):
-    fields = ['name']
+class CategoryModelAdmin(DraggableMPTTAdmin):
+    list_display = ['tree_actions', 'get_categories']
+    fields = ['name', 'parent']
     search_fields = ['name']
+    autocomplete_fields = ['parent']
+    list_display_links = ['get_categories']
+    list_filter = (
+        ('parent', TreeRelatedFieldListFilter),
+    )
+
+    def get_categories(self, instance):
+        return format_html(
+            '<div style="text-indent:{}px">{}</div>',
+            instance._mpttfield('level') * self.mptt_level_indent,
+            instance.name,  # Or whatever you want to put here
+        )
+
+    get_categories.short_description = '分类'
 
 
 class TagModelAdmin(admin.ModelAdmin):

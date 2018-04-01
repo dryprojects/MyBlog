@@ -28,6 +28,7 @@ if not USE_ADMIN_SITE:
 
 urlpatterns = [
     path('blog/', include('blog.urls', namespace='blog')),
+    path('comments/', include('django_comments.urls'))
 ]
 
 if not USE_ADMIN_SITE:
