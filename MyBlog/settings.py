@@ -26,8 +26,10 @@ SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = []
+else:
+    ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',
     'django_comments',
     'django.contrib.sites',
     'kindeditor',
@@ -72,7 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media'
+                'django.template.context_processors.media',
+                'django.template.context_processors.csrf'
             ],
         },
     },
@@ -82,13 +86,13 @@ WSGI_APPLICATION = 'MyBlog.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -143,6 +147,16 @@ CACHES = {
         }
     }
 }
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'blog.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'apps/blog/whoosh_index'),
+        'INCLUDE_SPELLING': True,
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 PAGINATION_SETTINGS = {
     'PAGE_RANGE_DISPLAYED': 5,

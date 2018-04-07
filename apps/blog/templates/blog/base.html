@@ -85,7 +85,7 @@
             <div class="col-md-4 visible-lg visible-md">
                 <ul class="navbar row venus-menu hidden-xs">
                     <li class="col-md-4 col-xs-12">
-                        <a href="#">Blog</a>
+                        <a href="{% url 'blog:post-list' %}">Blog</a>
                     </li>
                     <li class="col-md-4">
                         <a href="#">Categroies</a>
@@ -118,16 +118,18 @@
                 </ul>
             </div>
             <div class="col-md-4 hidden-xs hidden-sm">
-                <form class="searchform row" method="get" action="#">
-                    <div class="col-md-10">
-                        <input id="search-input" type="text" name="q" placeholder="Search"
-                               style="letter-spacing: 1.25px;"/>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit"
-                                class="button button-normal button-plain button-borderless fa fa-search"></button>
-                    </div>
-                </form>
+                {% block search_form_pc %}
+                    <form class="searchform row" method="get" action="#">
+                        <div class="col-md-10">
+                            <input id="search-input" type="text" name="q" placeholder="Search"
+                                   style="letter-spacing: 1.25px;"/>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit"
+                                    class="button button-normal button-plain button-borderless fa fa-search"></button>
+                        </div>
+                    </form>
+                {% endblock %}
             </div>
             <div class="col-md-3">
                 <div class="social-wrapper row hidden-xs hidden-sm">
@@ -428,7 +430,19 @@
 <script type="text/javascript">
     $(function () {
         $.backstretch("{% static 'blog/images/bg/bg2.png' %}");
-    })
+        $('#search-input').autocompleter({
+            source: "{% url 'blog:post-autocomplete' %}",
+            limit: 5,
+            cache: true,
+            combine: function (args) {
+                return {
+                    'q': args.query,
+                    'count': args.limit,
+                    {#                'csrfmiddlewaretoken': '{{ csrf_token }}'#}
+                };
+            }
+        });
+    });
 </script>
 </body>
 </html>

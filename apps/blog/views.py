@@ -1,9 +1,13 @@
-from django.shortcuts import render
+import json
+
+from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, View, TemplateView
 
 from blog.models import Post
 
 from pure_pagination.mixins import PaginationMixin
+from haystack.generic_views import SearchView
+from haystack.query import SearchQuerySet
 # Create your views here.
 
 class PostListView(PaginationMixin, ListView):
@@ -17,7 +21,41 @@ class PostListView(PaginationMixin, ListView):
         return queryset.filter(status='published')
 
 
-
 class PostDetailView(DetailView):
     template_name = 'blog/post-detail.html'
     model = Post
+
+
+class PostSearchView(PaginationMixin, SearchView):
+    template_name = 'search/blog/search-post.html'
+    paginate_by = 3
+
+
+class PostAutoCompleteView(View):
+    def get(self, request, *args, **kwargs):
+        count = request.GET.get('count', 5)
+        q = request.GET.get('q', "")
+        if q == "":
+            return HttpResponse(json.dumps([]), content_type='application/json')
+        sqs = SearchQuerySet().autocomplete(title_auto=q)[:int(count)]
+        suggestions = [result.object.title for result in sqs]
+        return HttpResponse(self.get_sug_context(suggestions), content_type='application/json')
+
+    def get_sug_context(self, suggestions):
+        """
+        var data = [
+        { "value": "1", "label": "one" },
+        { "value": "2", "label": "two" },
+        { "value": "3", "label": "three" },
+        { "value": "4", "label": "four" },
+        { "value": "5", "label": "five" },
+        { "value": "6", "label": "six" }
+    ];
+        :param suggestions:
+        :return:
+        """
+
+        context = []
+        for suggest in suggestions:
+            context.append({"value":suggest, "label":suggest})
+        return json.dumps(context)
