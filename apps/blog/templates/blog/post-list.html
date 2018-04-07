@@ -1,6 +1,19 @@
 {% extends 'blog/base.html' %}
 {% load static %}
 
+{% block search_form_pc %}
+    <form class="searchform row" method="get" action="{% url 'blog:post-search' %}">
+        <div class="col-md-10">
+            <input id="search-input" type="text" name="q" placeholder="Search"
+                   style="letter-spacing: 1.25px;"/>
+        </div>
+        <div class="col-md-2">
+            <button type="submit"
+                    class="button button-normal button-plain button-borderless fa fa-search"></button>
+        </div>
+    </form>
+{% endblock %}
+
 {% block title %}MyBlog-PostList{% endblock %}
 {% block post-area %}
     {% for post in post_list %}

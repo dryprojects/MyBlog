@@ -634,3 +634,6 @@ body {
 .friendship-link-list li a:hover{
     color: #86aca3;
 }
+.highlighted{
+    color: coral;
+}
