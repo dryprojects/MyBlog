@@ -27,7 +27,7 @@ if not USE_ADMIN_SITE:
     from blog.admin import admin_site
 
 urlpatterns = [
-    path('blog/', include('blog.urls', namespace='blog')),
+    path('', include('blog.urls', namespace='blog')),
     path('comments/', include('django_comments.urls'))
 ]
 

@@ -1,0 +1,65 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load highlight %}
+
+{% block search_form_pc %}
+    <form class="searchform row" method="get" action="{% url 'blog:post-search' %}">
+        <div class="col-md-10">
+            <input id="search-input" type="text" name="q" placeholder="{% if not query %}请输入关键字{% endif %}" value="{% if query %}{{ query }}{% endif %}"
+                   style="letter-spacing: 1.25px;"/>
+        </div>
+        <div class="col-md-2">
+            <button type="submit"
+                    class="button button-normal button-plain button-borderless fa fa-search"></button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block title %}MyBlog-SearchPostList{% endblock %}
+{% block post-area %}
+    {% if query %}
+        {% for post in object_list %}
+            <div class="post">
+                <div class="post-meta row">
+                    <span class="far fa-image col-md-8 col-xs-5">&nbsp;{{ post.object.published_time }}</span>
+                    <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_comments }}</span>
+                    <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_praise }}</span>
+                    <span class="far fa-heart col-md-1 col-xs-2 hold-right">&nbsp;0</span>
+                    <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.object.n_browsers }}</span>
+                </div>
+                <div class="post-body row">
+                    <div class="post-title"><a href="#">{% highlight post.object.title with query %}</a></div>
+                    <div class="post-excerpt">
+                        <div class="row">
+                                <span class="post-excerpt-content col-md-8 col-xs-8">
+                                    {% highlight post.object.excerpt with query %}
+                                </span>
+                            <a href="#" class="col-md-4 col-xs-4">
+                                <span class="more hide"></span>
+                                <img src="{{ post.object.cover.url }}" alt="" class="post-thumbnail hidden-xs">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="post-tags">
+                        {% for tag in post.object.tags.all %}
+                            <span class="fas fa-tag"> <a href="#">{{ tag.name }}</a></span>
+                        {% empty %}
+                            <span>该文章没有标签</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="post-nav row"></div>
+            </div>
+        {% empty %}
+            <h1>没有找到结果？</h1>
+        {% endfor %}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block paginator-area %}
+    {% if query %}
+        {% include 'blog/pagination.html' %}
+    {% endif %}
+{% endblock %}
