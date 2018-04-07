@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'kindeditor',
     'mptt',
+    'pure_pagination',
     'blog',
     'comment',
 ]
@@ -143,6 +144,12 @@ CACHES = {
     }
 }
 
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 5,
+    'MARGIN_PAGES_DISPLAYED': 2,
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -188,7 +195,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
-        'myproject.custom': {
+        'blog': {
             'handlers': ['console', 'mail_admins', 'file'],
             'level': 'INFO',
         }
