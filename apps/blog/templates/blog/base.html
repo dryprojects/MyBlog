@@ -1,0 +1,448 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static 'blog/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/fancynav.min.css' %}">
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'blog/css/dropdown.css' %}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'blog/css/blog.css' %}"/>
+    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/buttons.css' %}"/>
+    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/fontawesome-all.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.autocompleter.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.windstagball.css' %}">
+    {% block extra-css %}{% endblock %}
+    <!--<link href="https://cdn.bootcss.com/jquery.nanoscroller/0.8.7/css/nanoscroller.min.css" rel="stylesheet">-->
+
+    <script src="{% static 'blog/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/jquery.backstretch.min.js' %}"></script>
+    <!--<script src="https://cdn.bootcss.com/jquery-backstretch/2.0.3/jquery.backstretch.min.js"></script>-->
+    <script type="text/javascript" src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/dropdown.js' %}"></script>
+    <!--<script src="https://cdn.bootcss.com/jquery.nanoscroller/0.8.7/javascripts/jquery.nanoscroller.min.js"></script>-->
+    <script type="text/javascript" src="{% static 'blog/js/jquery.fancynav.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/jquery.autocompleter.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/blog.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/jquery.windstagball.js' %}"></script>
+    {% block extra-js %}{% endblock %}
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="mobile-nav">
+    <ul class="fancynav-add">
+        <li>
+            <a href="#">Blog</a>
+        </li>
+        <li>
+            <a href="#">Categroies</a>
+            <ul>
+                <li><a href="#">Web Design</a></li>
+                <li><a href="#">Hosting</a></li>
+                <li>
+                    <a href="#">Design</a>
+                    <ul>
+                        <li><a href="#">Graphics</a></li>
+                        <li><a href="#">Vectors</a></li>
+                        <li>
+                            <a href="#">Photoshop</a>
+                            <ul>
+                                <li><a href="#">Photo editing</a></li>
+                                <li><a href="#">Business cards</a></li>
+                                <li><a href="#">Websites</a></li>
+                                <li><a href="#">Flyers</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Fonts</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Consulting</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Contact</a>
+        </li>
+        <li><a href="#">Login</a></li>
+        <li>
+            <form action="#" method="get" id="mobile-search" class="container">
+                <input type="text" name="q" placeholder="Search" id="mobile-search-input">
+                <button type="submit"
+                        class="button button-normal button-plain button-borderless fa fa-search"></button>
+            </form>
+        </li>
+    </ul>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- BEGIN HEADER-->
+        <div class="header box-bottom">
+            <div class="col-md-1">
+                <div class="logo" data-fancynav-class="fancynav-logo" aria-hidden="true">
+                    <a href="#"><img src="{% static 'blog/images/logo.png' %}" alt=""></a>
+                </div>
+            </div>
+            <div class="col-md-4 visible-lg visible-md">
+                <ul class="navbar row venus-menu hidden-xs">
+                    <li class="col-md-4 col-xs-12">
+                        <a href="{% url 'blog:post-list' %}">Blog</a>
+                    </li>
+                    <li class="col-md-4">
+                        <a href="#">Categroies</a>
+                        <ul>
+                            <li><a href="#">Web Design</a></li>
+                            <li><a href="#">Hosting</a></li>
+                            <li>
+                                <a href="#">Design</a>
+                                <ul>
+                                    <li><a href="#">Graphics</a></li>
+                                    <li><a href="#">Vectors</a></li>
+                                    <li>
+                                        <a href="#">Photoshop</a>
+                                        <ul>
+                                            <li><a href="#">Photo editing</a></li>
+                                            <li><a href="#">Business cards</a></li>
+                                            <li><a href="#">Websites</a></li>
+                                            <li><a href="#">Flyers</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Fonts</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Consulting</a></li>
+                        </ul>
+                    </li>
+                    <li class="col-md-4">
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 hidden-xs hidden-sm">
+                {% block search_form_pc %}
+                    <form class="searchform row" method="get" action="#">
+                        <div class="col-md-10">
+                            <input id="search-input" type="text" name="q" placeholder="Search"
+                                   style="letter-spacing: 1.25px;"/>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit"
+                                    class="button button-normal button-plain button-borderless fa fa-search"></button>
+                        </div>
+                    </form>
+                {% endblock %}
+            </div>
+            <div class="col-md-3">
+                <div class="social-wrapper row hidden-xs hidden-sm">
+                    <a href="#" class="fas fa-sign-in-alt col-md-offset-6"></a>
+                </div>
+            </div>
+        </div>
+        <!-- END HEADER -->
+        <div class="placebar"></div>
+        <!-- CONTENT BEGIN -->
+        <div class="content-panel row">
+            <div class="content-body col-md-8">
+                <!--POST BEGIN-->
+                {% block post-area %}{% endblock %}
+                <!--POST END-->
+                {% block paginator-area %}{% endblock %}
+            </div>
+            <div class="content-meta col-md-4">
+                <div class="blog-meta">
+                    {% block blog-meta-area %}
+                        <div class="msg-board">
+                            <div class="msg-title">
+                                博主
+                            </div>
+                            <div class="msg-content">
+                                <ul class="author-list">
+                                    <li>
+                                        <div class="author row">
+                                            <a href="" class="col-xs-4">
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="author-meta col-xs-8">
+                                                <p><span class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
+                                                </p>
+                                                <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
+                                                <p><span class="fab fa-github">&nbsp;&nbsp;<a
+                                                        href="https://gitee.com/RenKang303288346"
+                                                        target="_blank">https://github.com/Jennei</a></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="msg-board">
+                            <div class="msg-title">
+                                公告
+                            </div>
+                            <div class="msg-content">
+                                <ul class="notice-list row">
+                                    <li>
+                                        <a href="#" class="col-xs-9">由于个人离职，博客暂停答复。</a>
+                                        <span class="col-xs-3">2018年4月4日</span>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="col-xs-9">今天心情不好，不回复任何问题。</a>
+                                        <span class="col-xs-3">2018年4月4日</span>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="col-xs-9">博客暂定5月初上线。</a>
+                                        <span class="col-xs-3">2018年4月4日</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="msg-board">
+                            <div class="msg-title">
+                                热门博文
+                            </div>
+                            <div class="msg-content">
+                                <ul class="post-list">
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="msg-board">
+                            <div class="msg-title">
+                                博主推荐
+                            </div>
+                            <div class="msg-content">
+                                <ul class="post-list">
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="hot-post row">
+                                            <a href="" class="col-xs-4">
+                                                <span class="more hide"></span>
+                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                            </a>
+                                            <div class="hot-post-meta col-xs-8">
+                                                <a href="#">Charming Winter</a>
+                                                <p>28th Sep 2012</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        <!-- CONTENT END -->
+        <div class="placebar"></div>
+        <!-- BEGIN FOOTER -->
+        <div class="footer box-top row hidden-xs hidden-sm">
+            <div class="footer-content">
+                {% block footer-content-area %}
+                    <div class="footer-board col-xs-3">
+                        <div class="footer-board-title">
+                            评论最多
+                        </div>
+                        <div class="footer-board-content">
+                            <ul class="rec-blog-list">
+                                <li>
+                                    <div class="rec-blog col-xs-4">
+                                        <a href="#">
+                                            <span class="more hide"></span>
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="rec-blog-meta col-xs-8">
+                                        <a href="#">Django部署完全指南</a>
+                                        <p>2018年4月4日 20:35:12</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="rec-blog col-xs-4">
+                                        <a href="#">
+                                            <span class="more hide"></span>
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="rec-blog-meta col-xs-8">
+                                        <a href="#">Django部署完全指南</a>
+                                        <p>2018年4月4日 20:35:12</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="rec-blog col-xs-4">
+                                        <a href="#">
+                                            <span class="more hide"></span>
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="rec-blog-meta col-xs-8">
+                                        <a href="#">Django部署完全指南</a>
+                                        <p>2018年4月4日 20:35:12</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-board col-xs-3">
+                        <div class="footer-board-title">
+                            归档
+                        </div>
+                        <div class="footer-board-content">
+                            <ul class="post-archive-list">
+                                <li>
+                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
+                                            class="col-xs-4">2篇</span></a>
+                                </li>
+                                <li>
+                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
+                                            class="col-xs-4">2篇</span></a>
+                                </li>
+                                <li>
+                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
+                                            class="col-xs-4">2篇</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-board col-xs-3">
+                        <div class="footer-board-title">
+                            标签云
+                        </div>
+                        <div class="footer-board-content">
+                            <div id="tagcloud">
+                                <a href="#">标签云</a>
+                                <a href="#">PHP</a>
+                                <a href="#">瀑布流</a>
+                                <a href="#">Tab</a>
+                                <a href="#">流体布局</a>
+                                <a href="#">SEO</a>
+                                <a href="#">彩蛋</a>
+                                <a href="#">JavaScript</a>
+                                <a href="#">miaov</a>
+                                <a href="#">CSS</a>
+                                <a href="#">asp.net</a>
+                                <a href="#">蓝色经典</a>
+                                <a href="#">OOP</a>
+                                <a href="#">Android</a>
+                                <a href="#">妙味茶馆</a>
+                                <a href="#">dialog</a>
+                                <a href="#">淘客</a>
+                                <a href="#">Pin</a>
+                                <a href="#">微博</a>
+                                <a href="#">IPhone</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-board col-xs-3">
+                        <div class="footer-board-title">
+                            友情链接
+                        </div>
+                        <div class="footer-board-content">
+                            <ul class="friendship-link-list">
+                                <li>
+                                    <a href="#">somebody's blog</a>
+                                </li>
+                                <li>
+                                    <a href="#">somebody's blog</a>
+                                </li>
+                                <li>
+                                    <a href="#">somebody's blog</a>
+                                </li>
+                                <li>
+                                    <a href="#">somebody's blog</a>
+                                </li>
+                                <li>
+                                    <a href="#">somebody's blog</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+        <div class="site-claim">
+            <p>Copyright <span class="far fa-copyright"></span> myblog 2017~2018 All Rights Reserved</p>
+        </div>
+        <!-- END FOOTER -->
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $.backstretch("{% static 'blog/images/bg/bg2.png' %}");
+        $('#search-input').autocompleter({
+            source: "{% url 'blog:post-autocomplete' %}",
+            limit: 5,
+            cache: true,
+            combine: function (args) {
+                return {
+                    'q': args.query,
+                    'count': args.limit,
+                    {#                'csrfmiddlewaretoken': '{{ csrf_token }}'#}
+                };
+            }
+        });
+    });
+</script>
+</body>
+</html>

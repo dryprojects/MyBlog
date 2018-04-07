@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -34,13 +35,18 @@ class Category(MPTTModel):
 
 
 class Post(models.Model):
+    STATUS = (
+        ('draft', "草稿"),
+        ('published', "已发表")
+    )
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
-    cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, blank=True, null=True)
+    cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
     author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE) # n ~ 1
     excerpt = models.CharField(verbose_name="博文摘要", max_length=300)
     content = models.TextField(verbose_name='博文内容')
+    status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default='draft')
     n_praise = models.PositiveIntegerField(verbose_name="点赞数量", default=0)
     n_comments = models.PositiveIntegerField(verbose_name='评论数量', default=0)
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
@@ -58,7 +64,10 @@ class Post(models.Model):
         return now - datetime.timedelta(days=1) <= self.published_time <= now
     was_published_recently.admin_order_field = 'published_time'
     was_published_recently.boolean = True
-    was_published_recently.short_description = 'Published recently?'
+    was_published_recently.short_description = '是否是最近发表?'
+
+    def get_absolute_url(self):
+        return reverse('blog:post-detail', kwargs={'pk':self.pk})
 
 
 class Resources(models.Model):

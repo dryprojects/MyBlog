@@ -58,14 +58,14 @@ class PostModalAdmin(admin.ModelAdmin):
         https://docs.djangoproject.com/en/2.0/intro/tutorial07/
     """
     fieldsets = [
-        ('博文基本信息',  {"fields":[('title', 'category', 'author'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
-        ('博文附加信息',  {"fields":['cover', ('n_praise', 'n_comments', 'n_browsers')], "classes":['collapse']}),
-        ('发表时间',      {'fields':['published_time']})
+        ('博文基本信息',  {"fields":[('title', 'category', 'author'), ('excerpt', 'status'), 'content'], 'classes': ('wide', 'extrapretty')}),
+        ('博文附加信息',  {"fields":[('cover', 'published_time'), ('n_praise', 'n_comments', 'n_browsers')], "classes":('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline, CommentInline]
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers']
-    list_display = ['title', 'category', 'author', 'get_cover', 'published_time', 'was_published_recently']
+    list_display = ['title', 'category', 'author', 'get_cover', 'published_time', 'status','was_published_recently']
+    list_editable = ['status']
     list_filter = ['published_time']
     list_per_page = 10
     list_select_related = ('author', 'category') #缓存post相关外键对象，减少数据库查询
