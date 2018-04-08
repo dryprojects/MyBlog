@@ -8,6 +8,8 @@ from blog.models import Post
 from pure_pagination.mixins import PaginationMixin
 from haystack.generic_views import SearchView
 from haystack.query import SearchQuerySet
+
+
 # Create your views here.
 
 class PostListView(PaginationMixin, ListView):
@@ -35,6 +37,10 @@ class PostAutoCompleteView(View):
     def get(self, request, *args, **kwargs):
         count = request.GET.get('count', 5)
         q = request.GET.get('q', "")
+        try:
+            count = int(count)
+        except Exception as e:
+            return HttpResponse(json.dumps([]), content_type='application/json')
         if q == "":
             return HttpResponse(json.dumps([]), content_type='application/json')
         sqs = SearchQuerySet().autocomplete(title_auto=q)[:int(count)]
@@ -57,5 +63,5 @@ class PostAutoCompleteView(View):
 
         context = []
         for suggest in suggestions:
-            context.append({"value":suggest, "label":suggest})
+            context.append({"value": suggest, "label": suggest})
         return json.dumps(context)
