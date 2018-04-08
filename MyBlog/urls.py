@@ -26,9 +26,12 @@ from blog.admin import USE_ADMIN_SITE, ADD_PASSWORD_FORGET
 if not USE_ADMIN_SITE:
     from blog.admin import admin_site
 
+import social_django.urls
+
 urlpatterns = [
     path('', include('blog.urls', namespace='blog')),
-    path('comments/', include('django_comments.urls'))
+    path('comments/', include('django_comments.urls')),
+    path('social/', include('social_django.urls', namespace='social'))
 ]
 
 if not USE_ADMIN_SITE:
