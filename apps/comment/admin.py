@@ -1,15 +1,38 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
+from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
+
 from comment.models import Comment
+
 
 # Register your models here.
 @admin.register(Comment)
-class CommentModelAdmin(admin.ModelAdmin):
-    autocomplete_fields = ['author']
+class CommentModelAdmin(DraggableMPTTAdmin):
+    list_display = ['tree_actions', 'get_comment', 'id', 'parent', 'author', 'content_type', 'object_id', 'published_time', 'was_published_recently']
+    list_display_links = ['get_comment']
+    list_filter = (
+        ('parent', TreeRelatedFieldListFilter),
+    )
+    autocomplete_fields = ['author', 'parent']
+    search_fields = ['id']
     fieldsets = [
-        ('评论信息',{
-            "fields":[('content', 'content_type', 'content_object_name'), ('author', 'published_time')],
+        ('评论信息', {
+            "fields": [('content', 'content_type', 'object_id'), ('author', 'published_time')],
             'classes': ('extrapretty')
         }),
+        ('评论元数据', {
+            "fields": ['parent', ('n_like', 'n_dislike', 'is_spam')],
+            'classes': ('extrapretty')
+        })
     ]
-    readonly_fields = ['object_id', 'content_object_name', 'content_type']
-    list_display = ['title', 'author', 'content_type', 'content_object_name', 'published_time']
+    readonly_fields = ['n_like', 'n_dislike']
+
+    def get_comment(self, instance):
+        return format_html(
+            '<div style="text-indent:{}px">{}</div>',
+            instance._mpttfield('level') * self.mptt_level_indent,
+            instance,  # Or whatever you want to put here
+        )
+
+    get_comment.short_description = "评论"
