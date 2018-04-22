@@ -34,10 +34,10 @@ if not USE_ADMIN_SITE:
         site_title = "我的博客"
 
 
-class CommentInline(GenericTabularInline):
-    model = Comment
-    extra = 1
-    autocomplete_fields = ['author']
+# class CommentInline(GenericTabularInline):
+#     model = Comment
+#     extra = 1
+#     autocomplete_fields = ['author']
 
 
 
@@ -61,10 +61,10 @@ class PostModalAdmin(admin.ModelAdmin):
         ('博文基本信息',  {"fields":[('title', 'category', 'author'), ('excerpt', 'status'), 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息',  {"fields":[('cover', 'published_time'), ('n_praise', 'n_comments', 'n_browsers')], "classes":('wide', 'extrapretty')}),
     ]
-    inlines = [PostTagRelationShipInline, ResourcesInline, CommentInline]
+    inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers']
-    list_display = ['title', 'category', 'author', 'get_cover', 'published_time', 'status','was_published_recently']
+    list_display = ['id', 'title', 'category', 'author', 'get_cover', 'published_time', 'status','was_published_recently']
     list_editable = ['status']
     list_filter = ['published_time']
     list_per_page = 10

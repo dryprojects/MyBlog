@@ -27,11 +27,14 @@ if not USE_ADMIN_SITE:
     from blog.admin import admin_site
 
 import social_django.urls
+from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('', include('blog.urls', namespace='blog')),
-    path('comments/', include('django_comments.urls')),
-    path('social/', include('social_django.urls', namespace='social'))
+    path('comment/', include('comment.urls', namespace='comment')),
+    path('social/', include('social_django.urls', namespace='social')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False))
 ]
 
 if not USE_ADMIN_SITE:
