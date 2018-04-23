@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'guardian',
     'rest_framework',
     'social_django',
@@ -54,7 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-#    'django.middleware.cache.UpdateCacheMiddleware',
+    #    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,7 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#    'django.middleware.cache.FetchFromCacheMiddleware',
+    #    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'MyBlog.urls'
@@ -119,8 +122,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS':{
-            'min_length':6 #密码长度最少要是6位
+        'OPTIONS': {
+            'min_length': 6  # 密码长度最少要是6位
         }
     },
     {
@@ -164,7 +167,7 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
-        "KEY_PREFIX":"MYBLOG"
+        "KEY_PREFIX": "MYBLOG"
     }
 }
 
@@ -183,6 +186,20 @@ PAGINATION_SETTINGS = {
     'MARGIN_PAGES_DISPLAYED': 2,
     'SHOW_FIRST_PAGE_WHEN_INVALID': True,
 }
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ENABLE_UTC = USE_TZ
+CELERY_BEAT_SCHEDULE = {
+    "sync-redis-counter-to-db": {
+        'task': 'blog.tasks.sync_redis',
+        'schedule': crontab(minute='*/5')
+        # 'args':(),
+        # 'kwargs':{},
+    }
+}
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # LOGGING = {
 #     'version': 1,
