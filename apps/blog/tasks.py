@@ -17,19 +17,22 @@ logger = get_task_logger(__name__)
 LOCK_EXPIRE = 60 * 1 # Lock expires in 1 minutes
 
 @contextmanager
-def cache_lock(lock_id, oid):
+def task_lock(lock_id, oid):
     """
-    用缓存实现加锁:
-        防止定时任务，重复提交。
-        防止多个woker竞争cache。
-        防止对cache的竞争性访问。
+    用缓存实现对任务加锁:
+        One issue we have is that for several of our periodic tasks,
+        we need to ensure that only one task is running at a time,
+        and that later instances of the same periodic task are skipped
+        if a previous incarnation is still running.
+        防止同一个任务在同一时间被多个worker所操作。
+        用于保证同一个定时任务同一时间只被一个worker在执行。
     用法:
-        with cache_lock(lock_id:key, self.app.oid:value) as acquired:
+        with task_lock(lock_id:key, self.app.oid:value) as acquired:
         if acquired: 如果没有竞争者
             do_something()
     see more:
         http://docs.celeryproject.org/en/latest/tutorials/task-cookbook.html#cookbook-task-serial
-
+        http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
     :param lock_id:
     :param oid:
     :return:
