@@ -10,7 +10,7 @@ User = get_user_model()
 
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, verbose_name='消息人', on_delete=models.CASCADE, default=0)
+    user = models.ForeignKey(User, verbose_name='用户', on_delete=models.CASCADE, default=0)
     content = models.TextField(verbose_name='消息')
     has_read = models.BooleanField(verbose_name='是否已读', default=False)
     published_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)

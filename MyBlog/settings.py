@@ -191,14 +191,15 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
-CELERY_BEAT_SCHEDULE = {
-    "sync-redis-counter-to-db": {
-        'task': 'blog.tasks.sync_redis',
-        'schedule': crontab(minute='*/5')
-        # 'args':(),
-        # 'kwargs':{},
-    }
-}
+CELERYD_MAX_TASKS_PER_CHILD = 3
+# CELERY_BEAT_SCHEDULE = {
+#     "sync-redis-unread-to-db": {
+#         'task': 'oper.tasks.sync_n_unread',
+#         'schedule': crontab(minute='*/1')
+#         # 'args':(),
+#         # 'kwargs':{},
+#     }
+# }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # LOGGING = {
@@ -246,7 +247,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 #             'level': 'ERROR',
 #             'propagate': False,
 #         },
-#         'blog': {
+#         'oper.tasks': {
 #             'handlers': ['console', 'mail_admins', 'file'],
 #             'level': 'INFO',
 #         }

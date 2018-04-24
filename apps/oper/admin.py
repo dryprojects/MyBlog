@@ -9,12 +9,12 @@ class NotificationModelAdmin(admin.ModelAdmin):
     list_display_links = ['expert']
     fieldsets = (
         ('用户消息',{
-            'fields':[('content', 'user')],
+            'fields':['content'],
             'classes':('extrapretty',)
             }
         ),
         ('消息元数据',{
-           'fields':[('has_read', 'published_time')],
+           'fields':[('user', 'has_read', 'published_time')],
             'classes': ('extrapretty',)
         }),
     )
