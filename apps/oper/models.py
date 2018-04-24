@@ -24,7 +24,7 @@ class Notification(models.Model):
 
 
 class NotificationUnReadCounter(models.Model):
-    user = models.ForeignKey(User, verbose_name='消息人', on_delete=models.CASCADE, default=0)
+    user = models.ForeignKey(User, verbose_name='用户', on_delete=models.CASCADE, default=0)
     n_unread = models.PositiveIntegerField(verbose_name='未读数量', default=0)
 
     class Meta:
