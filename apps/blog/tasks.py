@@ -53,6 +53,7 @@ def task_lock(lock_id, oid):
             cache.delete(lock_id)
 
 
+
 @shared_task(bind=True)
 def sync_redis(self, *args, **kwargs):
     pass

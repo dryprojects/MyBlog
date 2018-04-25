@@ -17,7 +17,7 @@ from oper.models import NotificationUnReadCounter
 
 logger = get_task_logger(__name__)
 User = get_user_model()
-key_tmpplate = "oper:notification:%s"
+key_template = "oper:notification:%s"
 
 
 @shared_task(bind=True)
@@ -26,22 +26,15 @@ def update_n_unread(self, user_id, value):
     更新用户未读数量
         1. 若缓存中存在用户的未读数，更新缓存。
         2. 若缓存中不存在， 则在缓存中新建用户的未读计数器。
-    :param self:
     :param user_id:
     :param value:
     :return:
     """
-    key = key_tmpplate%user_id
-
-    if not cache.has_key(key):
-        user = User.objects.get(pk=user_id)
-        nc_obj = NotificationUnReadCounter(user=user)
-
-        cache.set(key, nc_obj.n_unread, None)
-        logger.debug("set in cache %s, %s"%(key, nc_obj.n_unread))
-
-    ret = cache.incr(key, value)
-    logger.debug("incr in cache %s, %s" % (key, ret))
+    key = key_template%user_id
+    if cache.has_key(key):
+        return cache.incr(key, value)
+    else:
+        return cache.set(key, value, None)
 
 
 @shared_task(bind=True)
@@ -49,23 +42,19 @@ def get_n_unread(self, user_id):
     """
     获取用户未读消息数量
         1. 若缓存中存在，直接返回。
-        2. 若缓存中不存在，首先从数据库中读取到缓存。
-    :param self:
+        2. 若缓存中不存在，从数据库读取到缓存。
     :param user_id:
     :return:
     """
-    key = key_tmpplate % user_id
+    key = key_template % user_id
 
-    if not cache.has_key(key):
-        # try:
-        #     nc_obj = NotificationUnReadCounter.objects.get(pk=user_id)
-        # except ObjectDoesNotExist:
-        #     user = User.objects.get(pk=user_id)
-        #     nc_obj = NotificationUnReadCounter.objects.create(user=user)
-        #
-        # cache.set(key, nc_obj.n_unread, None)
-        return None
-    return cache.get(key)
+    if cache.has_key(key):
+        return cache.get(key)
+    else:
+        user = User.objects.get(pk=user_id)
+        nt_c = NotificationUnReadCounter.objects.get(user=user)
+        cache.set(key, nt_c.n_unread, None)
+        return cache.get(key)
 
 
 @shared_task(bind=True)
@@ -73,30 +62,25 @@ def sync_n_unread(self):
     """
     定时任务
     1. 将缓存中的未读数同步到数据库
-    2. 将缓存中对应的键删除
+    2. 如果缓存中没有计数器，直接返回
+    3. 如果缓存中存在计数器，则更新数据库的计数器
     :param self:
     :return:
     """
-    lock_key = key_tmpplate%("mutex_lock")
+    lock_key = __name__ + ".mutex_lock"
 
     with task_lock(lock_key, self.app.oid) as aquired:
         if aquired:
-            for noti_keys in filter(lambda x: x.startswith('oper:notification:'), cache.keys('*')):
-                if noti_keys is not None:
-                    try:
-                        user_id = noti_keys.split(':').pop()
-                        user = User.objects.get(pk=user_id)
-                        user_n_unread = get_n_unread.delay(user_id)
+            if any(filter(lambda x: x.startswith('oper:notification:'), cache.keys('*'))):
+                for c in filter(lambda x: x.startswith('oper:notification:'), cache.keys('*')):
+                    user_id = c.split(':').pop()
+                    user = User.objects.get(pk=user_id)
+                    cache_n_unread = cache.get(c)
 
-                        noti_counter = NotificationUnReadCounter.objects.get(user=user)
-                        noti_counter.n_unread = user_n_unread.get()
-                        noti_counter.save()
-                    except Exception as e:
-                        logger.debug(repr(e))
-                        return
-                    else:
-                        cache.delete(noti_keys)
-                        return
-                else:
-                    return
-    logger.debug('sync_n_unread is already being worked by another worker')
+                    NotificationUnReadCounter.objects.filter(user=user).update(n_unread=cache_n_unread)
+                return True
+            else:
+               return False
+        else:
+            logger.debug('sync_n_unread is already being worked by another worker')
+            return False
