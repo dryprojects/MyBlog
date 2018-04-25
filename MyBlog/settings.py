@@ -193,14 +193,13 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
 CELERYD_MAX_TASKS_PER_CHILD = 3
 CELERY_BEAT_SCHEDULE = {
-    "sync-redis-unread-to-db": {
+    "sync-cache-unread-to-db": {
         'task': 'oper.tasks.sync_n_unread',
-        'schedule': 60.0  # crontab(minute='*/1')
-        # 'args':(),
-        # 'kwargs':{},
+        'schedule': 60.0
     }
 }
 CELERY_BEAT_MAX_LOOP_INTERVAL = 1
+# CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 # there was a bug in django-celery-beat may be caused periodic tasks be run in microseconds.
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
@@ -214,6 +213,9 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'standard': {
+            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
+        }
     },
     'filters': {
         'require_debug_true': {
@@ -235,6 +237,14 @@ LOGGING = {
             'backupCount': 2,
             'formatter': 'verbose'
         },
+        'tasks_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/tasks.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 2,
+            'formatter': 'standard'
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -252,8 +262,9 @@ LOGGING = {
             'propagate': False,
         },
         'oper.tasks': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        }
+            'handlers': ['console', 'tasks_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }

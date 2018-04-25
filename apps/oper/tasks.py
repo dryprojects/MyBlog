@@ -31,6 +31,8 @@ def update_n_unread(self, user_id, value):
     :return:
     """
     key = key_template%user_id
+    logger.debug('update_n_unread key[%s] value[%s]' % (key, value))
+
     if cache.has_key(key):
         return cache.incr(key, value)
     else:
@@ -64,6 +66,7 @@ def sync_n_unread(self):
     1. 将缓存中的未读数同步到数据库
     2. 如果缓存中没有计数器，直接返回
     3. 如果缓存中存在计数器，则更新数据库的计数器
+    4. 如果缓存中的计数和数据库相同，则不做更新
     :param self:
     :return:
     """
@@ -77,7 +80,18 @@ def sync_n_unread(self):
                     user = User.objects.get(pk=user_id)
                     cache_n_unread = cache.get(c)
 
-                    NotificationUnReadCounter.objects.filter(user=user).update(n_unread=cache_n_unread)
+                    try:
+                        nt_c = NotificationUnReadCounter.objects.get(user=user)
+                    except ObjectDoesNotExist as e:
+                        affect_rows = NotificationUnReadCounter.objects.create(user=user, n_unread=cache_n_unread)
+                        logger.debug('sync_n_unread user[%s] user_id[%s] n_unread[%s] affect_rows[%s]' % (user, user_id, cache_n_unread, affect_rows))
+                        continue
+
+                    if cache_n_unread != nt_c.n_unread:
+                        affect_rows = NotificationUnReadCounter.objects.filter(user=user).update(n_unread=cache_n_unread)
+                        logger.debug('sync_n_unread user[%s] user_id[%s] n_unread[%s] affect_rows[%s]' % (user, user_id, cache_n_unread, affect_rows))
+                    else:
+                        logger.debug('sync_n_unread idle user[%s] user_id[%s] n_unread[%s] affect_rows[%s]' % (user, user_id, cache_n_unread, 0))
                 return True
             else:
                return False
