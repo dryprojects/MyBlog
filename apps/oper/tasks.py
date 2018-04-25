@@ -15,7 +15,7 @@ from celery.utils.log import get_task_logger
 from oper.models import NotificationUnReadCounter
 
 
-logger = get_task_logger('oper.tasks')
+logger = get_task_logger(__name__)
 User = get_user_model()
 key_tmpplate = "oper:notification:%s"
 
@@ -57,13 +57,14 @@ def get_n_unread(self, user_id):
     key = key_tmpplate % user_id
 
     if not cache.has_key(key):
-        try:
-            nc_obj = NotificationUnReadCounter.objects.get(pk=user_id)
-        except ObjectDoesNotExist:
-            user = User.objects.get(pk=user_id)
-            nc_obj = NotificationUnReadCounter.objects.create(user=user)
-
-        cache.set(key, nc_obj.n_unread, None)
+        # try:
+        #     nc_obj = NotificationUnReadCounter.objects.get(pk=user_id)
+        # except ObjectDoesNotExist:
+        #     user = User.objects.get(pk=user_id)
+        #     nc_obj = NotificationUnReadCounter.objects.create(user=user)
+        #
+        # cache.set(key, nc_obj.n_unread, None)
+        return None
     return cache.get(key)
 
 
@@ -96,4 +97,6 @@ def sync_n_unread(self):
                     else:
                         cache.delete(noti_keys)
                         return
+                else:
+                    return
     logger.debug('sync_n_unread is already being worked by another worker')
