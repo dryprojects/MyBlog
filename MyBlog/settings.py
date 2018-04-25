@@ -195,7 +195,7 @@ CELERYD_MAX_TASKS_PER_CHILD = 3
 CELERY_BEAT_SCHEDULE = {
     "sync-redis-unread-to-db": {
         'task': 'oper.tasks.sync_n_unread',
-        'schedule': 10.0 #crontab(minute='*/1')
+        'schedule': 10.0  # crontab(minute='*/1')
         # 'args':(),
         # 'kwargs':{},
     }
@@ -229,9 +229,11 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'formatter':'verbose'
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 2,
+            'formatter': 'verbose'
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -249,7 +251,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
-        'blog': {
+        'oper.tasks': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         }
