@@ -195,7 +195,7 @@ CELERYD_MAX_TASKS_PER_CHILD = 3
 CELERY_BEAT_SCHEDULE = {
     "sync-redis-unread-to-db": {
         'task': 'oper.tasks.sync_n_unread',
-        'schedule': 10.0  # crontab(minute='*/1')
+        'schedule': 60.0  # crontab(minute='*/1')
         # 'args':(),
         # 'kwargs':{},
     }
