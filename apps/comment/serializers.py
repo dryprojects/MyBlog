@@ -3,6 +3,8 @@ __author__ = 'Ren Kang'
 __date__ = '2018/4/22 11:12'
 
 
+from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 
 from drf_writable_nested import WritableNestedModelSerializer
@@ -10,8 +12,18 @@ from drf_writable_nested import WritableNestedModelSerializer
 from comment.models import Comment
 
 
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']
+
+
 class CommentTreeSerializer(WritableNestedModelSerializer):
     children = serializers.SerializerMethodField()
+    author = UserSerializer()
 
     class Meta:
         model = Comment

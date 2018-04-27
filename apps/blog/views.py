@@ -2,6 +2,8 @@ import json
 
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, View, TemplateView
+from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 
 from blog.models import Post
 
@@ -26,6 +28,16 @@ class PostListView(PaginationMixin, ListView):
 class PostDetailView(DetailView):
     template_name = 'blog/post-detail.html'
     model = Post
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        ct = ContentType.objects.get_for_model(Post)
+
+        context['ct'] = ct.id
+        context['comment_url'] = reverse('comment:comment-list')
+        context['comment_like_url'] = reverse('comment:comment-like')
+
+        return super().get_context_data(**context)
 
 
 class PostSearchView(PaginationMixin, SearchView):

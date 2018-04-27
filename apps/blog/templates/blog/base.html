@@ -26,7 +26,6 @@
     <script type="text/javascript" src="{% static 'blog/js/jquery.autocompleter.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/blog.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/jquery.windstagball.js' %}"></script>
-    {% block extra-js %}{% endblock %}
 </head>
 <body>
 <div class="scanlines"></div>
@@ -429,7 +428,7 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $.backstretch("{% static 'blog/images/bg/bg2.png' %}");
+        $.backstretch("{% static 'blog/images/bg/bg3.jpg' %}");
         $('#search-input').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,
@@ -438,11 +437,12 @@
                 return {
                     'q': args.query,
                     'count': args.limit,
-                    {#                'csrfmiddlewaretoken': '{{ csrf_token }}'#}
+                                    {#'csrfmiddlewaretoken': '{{ csrf_token }}'#}
                 };
             }
         });
     });
 </script>
+{% block extra-js %}{% endblock %}
 </body>
 </html>
