@@ -1,10 +1,138 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'blog/base.html' %}
 
-</body>
-</html>
+
+{% block post-area %}
+    <div class="post-detail">
+        <div class="post-detail-title row">
+            <a href="#" class="prev-post col-xs-2"><span class="fas fa-angle-double-left"></span>Prev</a>
+            <span class="col-xs-8">{{ post.title }}</span>
+            <a href="#" class="next-post col-xs-2">Next<span class="fas fa-angle-double-right"></span></a>
+        </div>
+        <div class="post-detail-meta row">
+            <p class="author">{{ post.author }}&nbsp;<span>{{ post.published_time }}</span></p>
+            <span class="far fa-comments">&nbsp;200</span>
+            <span class="far fa-heart">&nbsp;223</span>
+            <span class="fas fa-eye">&nbsp;666</span>
+        </div>
+        <div class="post-detail-content">
+            {{ post.content }}
+        </div>
+        <div class="post-detail-footer row">
+            <a href="#" class="prev-post col-xs-6"><span class="fas fa-angle-double-left"></span>Prev</a>
+            <a href="#" class="next-post col-xs-6">Next<span class="fas fa-angle-double-right"></span></a>
+        </div>
+    </div>
+    <!--POST END-->
+    <!--COMMENT-->
+    <div class="comment-panel">
+        <div class="comment-panel-header">
+            <div class="comment-panel-header-meta">
+                <span class="comment-caution">文明留言， 说说你的看法。</span>
+                <span class="comment-caution-meta pull-right">3 条评论, 4 人参与</span>
+            </div>
+            <div class="comment-panel-header-body">
+                <textarea id="comment-widget"></textarea>
+                <input type="hidden" id="content_type" value="{{ ct }}">
+                <input type="hidden" id="object_id" value="{{ post.id }}">
+                <input type="hidden" id="comment_content_type" value="{{ cmt_ct }}">
+                <input type="hidden" id="username" value="{{ request.user.username }}">
+                <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
+                <div class="line"></div>
+            </div>
+        </div>
+        <div class="comment-panel-body"></div>
+    </div>
+{% endblock %}
+
+
+{% block blog-meta-area %}
+    <div class="msg-board">
+        <div class="msg-title">
+            目录
+        </div>
+        <div class="msg-content">
+            <ul class="table-of-contents">
+                <li>Python的诞生</li>
+                <li>asdsadasdas</li>
+                <li>
+                    <ul>
+                        <li>asdasdsad</li>
+                        <li>asdasdas</li>
+                    </ul>
+                </li>
+                <li>asdasdasdas</li>
+            </ul>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="msg-board">
+        <div class="msg-title">
+            博文资源
+        </div>
+        <div class="msg-content">
+            <ul class="notice-list row">
+                <li>
+                    <a href="#" class="col-xs-9">xxx文档.doc</a>
+                    <span class="col-xs-3">2018年4月4日</span>
+                </li>
+                <li>
+                    <a href="#" class="col-xs-9">xxxx.zip</a>
+                    <span class="col-xs-3">2018年4月4日</span>
+                </li>
+                <li>
+                    <a href="#" class="col-xs-9">xxx.tar.gz</a>
+                    <span class="col-xs-3">2018年4月4日</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="msg-board">
+        <div class="msg-title">
+            相似博文
+        </div>
+        <div class="msg-content">
+            <ul class="post-list">
+                <li>
+                    <div class="hot-post row">
+                        <a href="" class="col-xs-4">
+                            <span class="more hide"></span>
+                            <img src="images/thumb.jpg" alt="">
+                        </a>
+                        <div class="hot-post-meta col-xs-8">
+                            <a href="#">Charming Winter</a>
+                            <p>28th Sep 2012</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="msg-board">
+        <div class="msg-title">
+            推广/订阅
+        </div>
+        <div class="msg-content">
+            <ul class="syndication-list">
+                <li><a href="#" class="fas fa-rss-square">RSS</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extra-js %}
+    <script>
+        $(function () {
+            var comment = new MyBlogComment({
+                textarea: "#comment-widget",
+                comment_reply_url: '/comment/',
+            });
+
+            $('.comment-panel-header-body').on('click', '.comment-btn', function () {
+                comment.create_comment();
+            });
+        });
+    </script>
+{% endblock %}

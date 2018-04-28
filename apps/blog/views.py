@@ -2,8 +2,11 @@ import json
 
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, View, TemplateView
+from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 
 from blog.models import Post
+from comment.models import Comment
 
 from pure_pagination.mixins import PaginationMixin
 from haystack.generic_views import SearchView
@@ -26,6 +29,16 @@ class PostListView(PaginationMixin, ListView):
 class PostDetailView(DetailView):
     template_name = 'blog/post-detail.html'
     model = Post
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        ct = ContentType.objects.get_for_model(Post)
+        cmt_ct = ContentType.objects.get_for_model(Comment)
+
+        context['ct'] = ct.id
+        context['cmt_ct'] = cmt_ct.id
+
+        return super().get_context_data(**context)
 
 
 class PostSearchView(PaginationMixin, SearchView):
