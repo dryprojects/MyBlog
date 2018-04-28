@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 from blog.models import Post
+from comment.models import Comment
 
 from pure_pagination.mixins import PaginationMixin
 from haystack.generic_views import SearchView
@@ -32,10 +33,10 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = {}
         ct = ContentType.objects.get_for_model(Post)
+        cmt_ct = ContentType.objects.get_for_model(Comment)
 
         context['ct'] = ct.id
-        context['comment_url'] = reverse('comment:comment-list')
-        context['comment_like_url'] = reverse('comment:comment-like')
+        context['cmt_ct'] = cmt_ct.id
 
         return super().get_context_data(**context)
 

@@ -34,6 +34,8 @@
                 <textarea id="comment-widget"></textarea>
                 <input type="hidden" id="content_type" value="{{ ct }}">
                 <input type="hidden" id="object_id" value="{{ post.id }}">
+                <input type="hidden" id="comment_content_type" value="{{ cmt_ct }}">
+                <input type="hidden" id="username" value="{{ request.user.username }}">
                 <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
                 <div class="line"></div>
             </div>
@@ -125,12 +127,11 @@
         $(function () {
             var comment = new MyBlogComment({
                 textarea: "#comment-widget",
-                comment_reply_url: '{{ comment_url }}',
-                like_dislike_url: '{{ comment_like_url }}',
+                comment_reply_url: '/comment/',
             });
 
             $('.comment-panel-header-body').on('click', '.comment-btn', function () {
-                comment.create_post_comment();
+                comment.create_comment();
             });
         });
     </script>
