@@ -8,6 +8,7 @@ coreschema==0.0.4
 defusedxml==0.5.0
 Django==2.0.3
 django-celery-beat==1.1.1
+django-filter==1.1.0
 django-guardian==1.4.9
 django-haystack==2.8.0
 django-js-asset==1.0.0
