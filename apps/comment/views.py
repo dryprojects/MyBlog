@@ -31,7 +31,11 @@ class CommentViewset(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def dislike(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
-        pass
+        comment_obj.n_like -= 1
+        comment_obj.save()
+
+        serializer = self.get_serializer(comment_obj)
+        return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
         """
