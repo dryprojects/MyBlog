@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework import permissions
 
+from django_filters import rest_framework as filters
+
 from comment.serializers import CommentTreeSerializer
 from comment.models import Comment
 from comment.permissions import IsOwnerOrReadOnly
@@ -18,6 +20,8 @@ class CommentViewset(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentTreeSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_fields = ('parent', 'content_type', 'object_id')
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk, *args, **kwargs):
@@ -37,20 +41,20 @@ class CommentViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
-    def list(self, request, *args, **kwargs):
-        """
-        返回各个根评论
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        queryset = self.filter_queryset(self.get_queryset().filter(parent=None))
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     """
+    #     返回各个根评论
+    #     :param request:
+    #     :param args:
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     queryset = self.filter_queryset(self.get_queryset().filter(parent=None))
+    #
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)

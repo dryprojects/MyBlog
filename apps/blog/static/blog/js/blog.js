@@ -173,7 +173,14 @@ jQuery(document).ready(function ($) {
         load_comment_reply: function () {
             //页面加载创建博文评论以及各个评论的评论
             var self = this;
-            $.getJSON(this.comment_reply_url, function (data) {
+            var query_param = {
+                parent: null,
+                content_type: self.ct,
+                object_id: self.object_id
+            };
+            var post_comment_url = self.comment_reply_url + '?' + $.param(query_param);
+
+            $.getJSON(post_comment_url, function (data) {
                 if (data.length <= 0) {
                     return;
                 }
