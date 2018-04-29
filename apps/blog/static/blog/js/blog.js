@@ -119,6 +119,7 @@ jQuery(document).ready(function ($) {
             this.cmt_ct = $('#comment_content_type').val();
             this.object_id = $('#object_id').val();
             this.is_replying = false;
+            this.is_like = false;
             this.replying_list = [];
 
             this.load_comment_reply();
@@ -354,6 +355,36 @@ jQuery(document).ready(function ($) {
                 });
             });
             //点赞
+            $('#comment' + cmt_id).on('click', '.comment-like' + cmt_id, function () {
+                var like_url = self.comment_reply_url + cmt_id + '/' + 'like' + '/';
+                var dislike_url = self.comment_reply_url + cmt_id + '/' + 'dislike' + '/';
+
+                if (!self.is_like) {
+                    $.ajax({
+                        url: like_url,
+                        type: 'POST',
+                        success: function (data) {
+                            $('.comment-like' + cmt_id).text('赞(' + data.n_like + ')');
+                        }
+                    });
+
+                    self.is_like = true;
+                    $('.comment-like' + cmt_id).removeClass('far');
+                    $('.comment-like' + cmt_id).addClass('fas');
+                }
+                else {
+                    $.ajax({
+                        url: dislike_url,
+                        type: 'POST',
+                        success: function (data) {
+                            $('.comment-like' + cmt_id).text('赞(' + data.n_like + ')');
+                        }
+                    });
+                    self.is_like = false;
+                    $('.comment-like' + cmt_id).removeClass('fas');
+                    $('.comment-like' + cmt_id).addClass('far');
+                }
+            });
         },
         bind_reply_events: function (reply_id) {
             var self = this;
@@ -396,6 +427,37 @@ jQuery(document).ready(function ($) {
                 });
             });
             //点赞
+            $('#reply' + reply_id).on('click', '.reply-like' + reply_id, function () {
+                var like_url = self.comment_reply_url + reply_id + '/' + 'like' + '/';
+                var dislike_url = self.comment_reply_url + reply_id + '/' + 'dislike' + '/';
+
+                if (!self.is_like) {
+                    $.ajax({
+                        url: like_url,
+                        type: 'POST',
+                        success: function (data) {
+                            $('.reply-like' + reply_id).text('赞(' + data.n_like + ')');
+                        }
+                    });
+
+                    self.is_like = true;
+                    $('.reply-like' + reply_id).removeClass('far');
+                    $('.reply-like' + reply_id).addClass('fas');
+                }
+                else {
+                    $.ajax({
+                        url: dislike_url,
+                        type: 'POST',
+                        success: function (data) {
+                            $('.reply-like' + reply_id).text('赞(' + data.n_like + ')');
+                        }
+                    });
+
+                    self.is_like = false;
+                    $('.reply-like' + reply_id).removeClass('fas');
+                    $('.reply-like' + reply_id).addClass('far');
+                }
+            });
         },
         reset_comment_btn_click: function (f, pid, type, reply_name) {
             var self = this;
