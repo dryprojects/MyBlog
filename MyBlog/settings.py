@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'django_celery_beat',
     'guardian',
+    'django_filters',
     'rest_framework',
     'social_django',
     'haystack',
