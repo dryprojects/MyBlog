@@ -142,6 +142,11 @@ jQuery(document).ready(function ($) {
 
                 //绑定点击事件
                 self.bind_cmt_events(data.id);
+
+                //如果是第一条对博文的评论，则需要给评论面板创建一个美观的虚线
+                if ($('.comment-panel-body:has(.line)').length <= 0) {
+                    $('.comment-panel-body').append('<div class="line"></div>');
+                }
             });
         },
         create_reply: function (parent_id, self, type, reply_name) {
@@ -334,6 +339,20 @@ jQuery(document).ready(function ($) {
                 }
             });
             //删除
+            $('#comment' + cmt_id).on('click', '.comment-remove' + cmt_id, function () {
+                var del_url = self.comment_reply_url + cmt_id + '/';
+                $.ajax({
+                    url: del_url,
+                    type: 'DELETE',
+                    success: function () {
+                        $('#comment' + cmt_id).remove();
+                        //顺便把评论面板下的虚线也删除了
+                        if ($('.post-comment-list:has(.post-comment)').length <= 0) {
+                            $('.comment-panel-body .line').remove();
+                        }
+                    }
+                });
+            });
             //点赞
         },
         bind_reply_events: function (reply_id) {
@@ -362,6 +381,20 @@ jQuery(document).ready(function ($) {
                 }
             });
             //删除
+            $('#reply' + reply_id).on('click', '.reply-remove' + reply_id, function () {
+                var del_url = self.comment_reply_url + reply_id + '/';
+                $.ajax({
+                    url: del_url,
+                    type: 'DELETE',
+                    success: function () {
+                        $('#reply' + reply_id).remove();
+                        //顺便把评论面板下的虚线也删除了
+                        if ($('.post-comment-list:has(.post-comment)').length <= 0) {
+                            $('.comment-panel-body .line').remove();
+                        }
+                    }
+                });
+            });
             //点赞
         },
         reset_comment_btn_click: function (f, pid, type, reply_name) {
