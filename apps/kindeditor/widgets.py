@@ -3,7 +3,6 @@ __author__ = 'Ren Kang'
 __date__ = '2018/3/31 15:05'
 
 from django import forms
-from django.contrib.admin.widgets import AdminTextareaWidget
 
 # see detail
 # http://kindeditor.net/docs/usage.html
@@ -26,9 +25,8 @@ class KindTextareaWidget(forms.Textarea):
             'all': ('kindeditor/plugins/code/prettify.css',)
         }
         js = [
-            'kindeditor/kindeditor-all-min.js',
+            'kindeditor/kindeditor-all.js',
             'kindeditor/lang/zh-CN.js',
-            'kindeditor/plugins/code/prettify.js'
         ]
         return forms.Media(js=js, css=css)
 

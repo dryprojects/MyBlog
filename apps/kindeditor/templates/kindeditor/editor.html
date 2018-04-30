@@ -3,7 +3,18 @@
 {% if widget.value %}{{ widget.value }}{% endif %}</textarea>
 <script type="text/javascript">
     KindEditor.ready(function (K) {
-        var target = '#'+'{{ widget.attrs.id }}';
-        window.editor = K.create(target, {{ widget.config|convert_to_json }});
+        var target = '#' + '{{ widget.attrs.id }}';
+        var config = {{ widget.config|convert_to_json }};
+
+        config.afterCreate = function () {
+            this.sync()
+        };
+        config.afterChange = function () {
+            this.sync()
+        };
+        config.afterBlur = function () {
+            this.sync()
+        };
+        window.editor = K.create(target, config);
     });
 </script>

@@ -3,6 +3,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.contenttypes.admin import GenericStackedInline, GenericTabularInline
 from django.utils.html import format_html
 from django.db import models
+from django.urls import reverse
 
 from blog.models import Post, Category, Tag, Resources
 from comment.models import Comment
@@ -79,7 +80,7 @@ class PostModalAdmin(admin.ModelAdmin):
                 'width':"800px",
                 'height':"300px",
                 "filterMode":False,
-                "cssPath": 'plugins/code/prettify.css',
+                "uploadJson":'/kindeditor/upload/'
             })
         }
     }
