@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'haystack',
     'django.contrib.sites',
     'kindeditor',
+    'mdeditor',
     'mptt',
     'pure_pagination',
     'blog',
