@@ -15,7 +15,7 @@
             <span class="fas fa-eye">&nbsp;666</span>
         </div>
         <div class="post-detail-content">
-            {{ post.content }}
+            {{ post.content|safe}}
         </div>
         <div class="post-detail-footer row">
             <a href="#" class="prev-post col-xs-6"><span class="fas fa-angle-double-left"></span>Prev</a>
