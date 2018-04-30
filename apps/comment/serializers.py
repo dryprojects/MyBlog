@@ -11,6 +11,7 @@ from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 
 from comment.models import Comment
+from comment.signals import post_comment
 
 
 User = get_user_model()
@@ -45,4 +46,6 @@ class CommentTreeSerializer(WritableNestedModelSerializer):
         comment.parent = validated_data['parent']
         comment.save()
 
+        #发送信号
+        post_comment.send(sender=Comment, comment_obj = comment, content_type = validated_data['content_type'], object_id = validated_data['object_id'])
         return comment

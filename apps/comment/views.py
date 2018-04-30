@@ -9,6 +9,7 @@ from django_filters import rest_framework as filters
 from comment.serializers import CommentTreeSerializer
 from comment.models import Comment
 from comment.permissions import IsOwnerOrReadOnly
+from comment.signals import post_like
 
 
 class CommentViewset(viewsets.ModelViewSet):
@@ -29,6 +30,8 @@ class CommentViewset(viewsets.ModelViewSet):
         comment_obj.n_like += 1
         comment_obj.save()
 
+        #发送点赞信号
+        post_like.send(sender=Comment, comment_obj=comment_obj, content_type = comment_obj.content_type, object_id = comment_obj.object_id)
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
@@ -41,20 +44,3 @@ class CommentViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
-    # def list(self, request, *args, **kwargs):
-    #     """
-    #     返回各个根评论
-    #     :param request:
-    #     :param args:
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     queryset = self.filter_queryset(self.get_queryset().filter(parent=None))
-    #
-    #     page = self.paginate_queryset(queryset)
-    #     if page is not None:
-    #         serializer = self.get_serializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
-    #
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
