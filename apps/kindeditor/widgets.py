@@ -18,7 +18,7 @@ class KindTextareaWidget(forms.Textarea):
             "width":"690px"
         }
 
-        super().__init__(attrs)
+        super(KindTextareaWidget, self).__init__(attrs) #for python2.7
 
     @property
     def media(self):
@@ -33,7 +33,7 @@ class KindTextareaWidget(forms.Textarea):
         return forms.Media(js=js, css=css)
 
     def get_context(self, name, value, attrs):
-        context = super().get_context(name, value, attrs)
+        context = super(KindTextareaWidget, self).get_context(name, value, attrs)
         widget = context['widget']
         widget["config"] = self.config
         return context
