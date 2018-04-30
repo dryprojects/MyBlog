@@ -1,5 +1,5 @@
 {% extends 'blog/base.html' %}
-
+{% load static %}
 
 {% block post-area %}
     <div class="post-detail">
@@ -123,6 +123,10 @@
 
 
 {% block extra-js %}
+    <script src="{% static 'comment/kindeditor/kindeditor-all-min.js' %}"></script>
+    <script src="{% static 'comment/kindeditor/lang/zh-CN.js' %}"></script>
+    <script src="{% static 'comment/kindeditor/config.js' %}"></script>
+    <script src="{% static 'comment/js/comment.js' %}"></script>
     <script>
         $(function () {
             var comment = new MyBlogComment({
