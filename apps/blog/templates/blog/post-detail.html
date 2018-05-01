@@ -1,5 +1,6 @@
 {% extends 'blog/base.html' %}
 {% load static %}
+{% load more_like_this %}
 
 {% block post-area %}
     <div class="post-detail">
@@ -85,18 +86,23 @@
         </div>
         <div class="msg-content">
             <ul class="post-list">
-                <li>
-                    <div class="hot-post row">
-                        <a href="" class="col-xs-4">
-                            <span class="more hide"></span>
-                            <img src="images/thumb.jpg" alt="">
-                        </a>
-                        <div class="hot-post-meta col-xs-8">
-                            <a href="#">Charming Winter</a>
-                            <p>28th Sep 2012</p>
+                {% more_like_this post as related_post_list limit 3 %}
+                {% for r_post in related_post_list %}
+                    <li>
+                        <div class="hot-post row">
+                            <a href="{{ r_post.object.get_absolute_url }}" class="col-xs-4">
+                                <span class="more hide"></span>
+                                <img src="{{ r_post.object.cover.url }}" alt="">
+                            </a>
+                            <div class="hot-post-meta col-xs-8">
+                                <a href="#">{{ r_post.object.title }}</a>
+                                <p>{{ r_post.object.published_time }}</p>
+                            </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                {% empty %}
+                    暂时没有相似文章
+                {% endfor %}
             </ul>
         </div>
     </div>
