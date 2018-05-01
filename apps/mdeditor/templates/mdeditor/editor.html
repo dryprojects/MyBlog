@@ -1,0 +1,62 @@
+{% load static %}
+<style type="text/css">
+    .wmd-wrapper ul {
+        margin-left: 0px !important;
+    }
+
+    .wmd-wrapper ul li {
+        list-style: disc !important;
+    }
+
+    .wmd-wrapper ul ul li {
+        list-style: circle !important;
+    }
+</style>
+
+<div id="editormd" style="z-index:1001;" class="wmd-wrapper">
+    <textarea {{ final_attrs|safe }}>{{ value }}</textarea>
+</div>
+
+<script type="text/javascript">
+    var ee = {
+        'jQuery': (typeof window.django != 'undefined') ? django.jQuery : jQuery.noConflict(true)
+    };
+    (function ($) {
+        $(document).ready(function () {
+            editormd("editormd", {
+                width: "{{ config.width }}",
+                height: "{{ config.heigth }}",
+                syncScrolling: "single",
+                path: "{% static  'mdeditor/lib/' %}",
+                // theme
+                theme: "{{ config.theme|safe }}",
+                previewTheme: "{{ config.preview_theme|safe }}",
+                editorTheme: "{{ config.editor_theme }}",
+                toolbarAutoFixed: {{ config.toolbar_autofixed|lower }},
+                searchReplace: {{ config.search_replace|lower }},
+                emoji: {{ config.emoji|lower }},
+                tex: {{ config.tex|lower }},
+                flowChart: {{ config.flow_chart|lower }},
+                sequenceDiagram: {{ config.sequence|lower }},
+                tocm:{{ config.tocm|lower }},
+                saveHTMLToTextarea: false,
+
+                // image upload
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL: "/mdeditor/upload/",
+                toolbarIcons: function () {
+                    return {{ config.toolbar|safe }};
+                },
+                onfullscreen: function () {
+                    $('.wmd-wrapper').hide();
+                    $('#' + this.id).show();
+                },
+                onfullscreenExit: function () {
+                    $('#' + this.id).hide();
+                    $('.wmd-wrapper').show();
+                },
+            });
+        });
+    })(ee.jQuery);
+</script>

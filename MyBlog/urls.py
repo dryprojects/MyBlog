@@ -34,6 +34,7 @@ urlpatterns = [
     path('', include('blog.urls', namespace='blog')),
     path('comment/', include('comment.urls', namespace='comment')),
     path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
+    path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
     path('social/', include('social_django.urls', namespace='social')),
     path('api-auth/', include('rest_framework.urls')),
     path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False))
