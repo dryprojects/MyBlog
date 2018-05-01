@@ -70,6 +70,7 @@ class PostModalAdmin(admin.ModelAdmin):
     list_editable = ['status']
     list_filter = ['published_time']
     list_per_page = 10
+    list_display_links = ['title']
     list_select_related = ('author', 'category') #缓存post相关外键对象，减少数据库查询
     autocomplete_fields = ['author', 'category'] #django 2.0新增
     search_fields = ['title']
@@ -92,7 +93,7 @@ class PostModalAdmin(admin.ModelAdmin):
     }
 
     def get_cover(self, object):
-        return format_html("<a href=#><img src='{}' alt='' width='150'/></a>", object.cover.url)
+        return format_html("<a href='{}'><img src='{}' alt='' width='150'/></a>", object.get_absolute_url(), object.cover.url)
     get_cover.short_description = '封面'
 
 
