@@ -4,7 +4,7 @@ __date__ = '2018/3/26 22:28'
 
 from django.urls import path, re_path
 from blog.views import PostDetailView, PostListView, PostSearchView, PostAutoCompleteView
-from blog.feeds import LatesPostFeed
+from blog.feeds import LatestPostFeed
 
 
 app_name = 'blog'
@@ -14,5 +14,5 @@ urlpatterns = [
     path('', PostListView.as_view(), name='post-list'),
     path('search/', PostSearchView.as_view(), name='post-search'),
     path('auto/', PostAutoCompleteView.as_view(), name='post-autocomplete'),
-    path('latest/post/', LatesPostFeed(), name='post-latest')
+    path('latest/post/', LatestPostFeed(), name='post-latest')
 ]

@@ -13,7 +13,7 @@ from django.urls import reverse
 from blog.models import Post
 
 
-class LatesPostFeed(Feed):
+class LatestPostFeed(Feed):
     """
     see more:
         https://docs.djangoproject.com/en/2.0/ref/contrib/syndication/
