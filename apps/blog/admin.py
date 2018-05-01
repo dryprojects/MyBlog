@@ -8,6 +8,7 @@ from django.urls import reverse
 from blog.models import Post, Category, Tag, Resources
 from comment.models import Comment
 from kindeditor.widgets import KindTextareaWidget
+from mdeditor.widgets import MdTextWidget
 
 from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
 
@@ -74,14 +75,19 @@ class PostModalAdmin(admin.ModelAdmin):
     search_fields = ['title']
     date_hierarchy = 'published_time'
 
+    # formfield_overrides = {
+    #     models.TextField:{
+    #         'widget':KindTextareaWidget(config={
+    #             'width':"800px",
+    #             'height':"300px",
+    #             "filterMode":False,
+    #             "uploadJson":'/kindeditor/upload/'
+    #         })
+    #     }
+    # }
     formfield_overrides = {
         models.TextField:{
-            'widget':KindTextareaWidget(config={
-                'width':"800px",
-                'height':"300px",
-                "filterMode":False,
-                "uploadJson":'/kindeditor/upload/'
-            })
+            'widget': MdTextWidget
         }
     }
 

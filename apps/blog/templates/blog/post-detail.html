@@ -15,7 +15,9 @@
             <span class="fas fa-eye">&nbsp;666</span>
         </div>
         <div class="post-detail-content">
-            {{ post.content|safe}}
+            <div id="editormd-view">
+                <textarea style="display:none;" id="markdown-doc">{{ post.content|safe }}</textarea>
+            </div>
         </div>
         <div class="post-detail-footer row">
             <a href="#" class="prev-post col-xs-6"><span class="fas fa-angle-double-left"></span>Prev</a>
@@ -51,17 +53,7 @@
             目录
         </div>
         <div class="msg-content">
-            <ul class="table-of-contents">
-                <li>Python的诞生</li>
-                <li>asdsadasdas</li>
-                <li>
-                    <ul>
-                        <li>asdasdsad</li>
-                        <li>asdasdas</li>
-                    </ul>
-                </li>
-                <li>asdasdasdas</li>
-            </ul>
+            <div id="toc-container"></div>
         </div>
     </div>
     <div class="line"></div>
@@ -122,11 +114,36 @@
 {% endblock %}
 
 
+{% block extra-css %}
+    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.preview.css' %}">
+{% endblock %}
+
 {% block extra-js %}
     <script src="{% static 'comment/kindeditor/kindeditor-all-min.js' %}"></script>
     <script src="{% static 'comment/kindeditor/lang/zh-CN.js' %}"></script>
     <script src="{% static 'comment/kindeditor/config.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/marked.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/jquery.flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/editormd.min.js' %}"></script>
     <script src="{% static 'comment/js/comment.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            editormd.markdownToHTML("editormd-view", {
+                emoji: true,
+                taskList: true,
+                tex: true,  // 默认不解析
+                flowChart: true,  // 默认不解析
+                sequenceDiagram: true,  // 默认不解析
+                tocm: true,
+                tocContainer: "#toc-container", // 自定义 ToC 容器层
+            });
+        });
+    </script>
     <script>
         $(function () {
             var comment = new MyBlogComment({
