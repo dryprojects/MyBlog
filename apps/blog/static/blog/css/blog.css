@@ -865,3 +865,20 @@ input, textarea {
 .comment-comment-list {
     list-style-type: none;
 }
+
+#toc-container ul{
+    list-style: none;
+    margin-left: 20px;
+}
+
+#toc-container ul li a{
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #b9b9b9;
+}
+
+#toc-container ul li a:hover{
+    color: #86aca3;
+}
