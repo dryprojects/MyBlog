@@ -61,11 +61,11 @@ class PostModalAdmin(admin.ModelAdmin):
     """
     fieldsets = [
         ('博文基本信息',  {"fields":[('title', 'category', 'author'), ('excerpt', 'status'), 'content'], 'classes': ('wide', 'extrapretty')}),
-        ('博文附加信息',  {"fields":[('cover', 'published_time'), ('n_praise', 'n_comments', 'n_browsers')], "classes":('wide', 'extrapretty')}),
+        ('博文附加信息',  {"fields":[('cover', 'published_time'), ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')], "classes":('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
-    readonly_fields = ['n_praise', 'n_comments', 'n_browsers']
+    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users']
     list_display = ['id', 'title', 'category', 'author', 'get_cover', 'published_time', 'status','was_published_recently']
     list_editable = ['status']
     list_filter = ['published_time']
