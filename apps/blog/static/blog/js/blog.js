@@ -5,6 +5,15 @@
 jQuery(document).ready(function ($) {
     $('.logo').fancynav();
 
+    $('.social-wrapper').mouseenter(function (e) {
+        $(this).children('.userdetail').removeClass('hide');
+        $(this).children('.userdetail').fadeIn(300);
+    }).mouseleave(function (e) {
+
+        $(this).children('.userdetail').fadeOut(300);
+    });
+
+
     $('.post-excerpt a').mouseenter(function (e) {
         $(this).children('span').removeClass('hide');
         $(this).children('span').fadeIn(300);

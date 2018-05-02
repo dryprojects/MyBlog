@@ -157,7 +157,16 @@
             </div>
             <div class="col-md-3">
                 <div class="social-wrapper row hidden-xs hidden-sm">
-                    <a id="signin" href="#" class="fas fa-sign-in-alt"></a>
+                    {% if request.user.is_authenticated %}
+                        <img id="user-image" src="{% static 'blog/images/avatar.png' %}"/>
+                        <ul class="userdetail hide">
+                            <li class="userdetail-name">{{ request.user.username }}</li>
+                            <li><a href="#">进入个人中心</a></li>
+                            <li><a href="#">退出</a></li>
+                        </ul>
+                    {% else %}
+                        <a href="#" class="fas fa-sign-in-alt signin-btn"></a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -462,7 +471,7 @@
                 return {
                     'q': args.query,
                     'count': args.limit,
-                                    {#'csrfmiddlewaretoken': '{{ csrf_token }}'#}
+                    {#'csrfmiddlewaretoken': '{{ csrf_token }}'#}
                 };
             }
         });
