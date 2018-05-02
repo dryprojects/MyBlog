@@ -202,8 +202,8 @@ body {
 
 .post-excerpt .post-thumbnail {
     display: block;
-    width: 100%;
-    height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .post-tags {
@@ -787,12 +787,12 @@ input, textarea {
     text-align: right;
 }
 
-.comment-panel-header-body a{
+.comment-panel-header-body a {
     color: #dedede;
     text-decoration: none;
 }
 
-.comment-panel-header-body a:hover{
+.comment-panel-header-body a:hover {
     color: #86aca3;
 }
 
@@ -875,12 +875,12 @@ input, textarea {
     list-style-type: none;
 }
 
-#toc-container ul{
+#toc-container ul {
     list-style: none;
     margin-left: 20px;
 }
 
-#toc-container ul li a{
+#toc-container ul li a {
     text-decoration: none;
     font-family: 'Open Sans', sans-serif;
     font-size: 13px;
@@ -888,6 +888,6 @@ input, textarea {
     color: #b9b9b9;
 }
 
-#toc-container ul li a:hover{
+#toc-container ul li a:hover {
     color: #86aca3;
 }
