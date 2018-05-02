@@ -105,7 +105,7 @@ body {
     height: 74px;
 }
 
-.header .social-wrapper a {
+.header .social-wrapper .signin-btn {
     line-height: 74px;
     font-size: 22px;
     color: #e3e3e3;
@@ -115,6 +115,46 @@ body {
 .header .social-wrapper a:hover {
 
     color: #86aca3;
+}
+
+.header .social-wrapper img {
+    height: 50px;
+    width: 50px;
+    margin-top: 12px;
+}
+
+.hide {
+    display: none;
+}
+
+.userdetail {
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    position: fixed;
+    margin-top: 10px;
+    list-style: none;
+}
+
+.userdetail li {
+    font-size: 16px;
+    font-weight: lighter;
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 5px 0px 5px;
+}
+
+.userdetail li a {
+    line-height: 30px;
+    text-decoration: none;
+    color: #bebebe;
+}
+
+.userdetail li a:hover {
+    color: powderblue;
+}
+
+.userdetail-name {
+    color: #bebebe;
 }
 
 .logo {
@@ -202,8 +242,8 @@ body {
 
 .post-excerpt .post-thumbnail {
     display: block;
-    width: 100%;
-    height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .post-tags {
@@ -315,6 +355,7 @@ body {
 
 .notice-list li {
     line-height: 26px;
+    color: #dedede;
 }
 
 .notice-list li span {
@@ -787,6 +828,15 @@ input, textarea {
     text-align: right;
 }
 
+.comment-panel-header-body a {
+    color: #dedede;
+    text-decoration: none;
+}
+
+.comment-panel-header-body a:hover {
+    color: #86aca3;
+}
+
 #comment-widget {
     margin-bottom: 12px;
     max-width: 100%;
@@ -866,12 +916,12 @@ input, textarea {
     list-style-type: none;
 }
 
-#toc-container ul{
+#toc-container ul {
     list-style: none;
     margin-left: 20px;
 }
 
-#toc-container ul li a{
+#toc-container ul li a {
     text-decoration: none;
     font-family: 'Open Sans', sans-serif;
     font-size: 13px;
@@ -879,6 +929,6 @@ input, textarea {
     color: #b9b9b9;
 }
 
-#toc-container ul li a:hover{
+#toc-container ul li a:hover {
     color: #86aca3;
 }

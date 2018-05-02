@@ -83,11 +83,8 @@
             </div>
             <div class="col-md-4 visible-lg visible-md">
                 <ul class="navbar row venus-menu hidden-xs">
-                    <li class="col-md-4 col-xs-12">
-                        <a href="{% url 'blog:post-list' %}">Blog</a>
-                    </li>
-                    <li class="col-md-4">
-                        <a href="#">Categroies</a>
+                    <li class="col-md-3">
+                        <a href="#">话题</a>
                         <ul>
                             <li><a href="#">Web Design</a></li>
                             <li><a href="#">Hosting</a></li>
@@ -111,8 +108,36 @@
                             <li><a href="#">Consulting</a></li>
                         </ul>
                     </li>
-                    <li class="col-md-4">
-                        <a href="#">Contact</a>
+                    <li class="col-md-3 col-xs-12">
+                        <a href="{% url 'blog:post-list' %}">博文</a>
+                    </li>
+                    <li class="col-md-3">
+                        <a href="#">分类</a>
+                        <ul>
+                            <li><a href="#">Web Design</a></li>
+                            <li><a href="#">Hosting</a></li>
+                            <li>
+                                <a href="#">Design</a>
+                                <ul>
+                                    <li><a href="#">Graphics</a></li>
+                                    <li><a href="#">Vectors</a></li>
+                                    <li>
+                                        <a href="#">Photoshop</a>
+                                        <ul>
+                                            <li><a href="#">Photo editing</a></li>
+                                            <li><a href="#">Business cards</a></li>
+                                            <li><a href="#">Websites</a></li>
+                                            <li><a href="#">Flyers</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Fonts</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Consulting</a></li>
+                        </ul>
+                    </li>
+                    <li class="col-md-3">
+                        <a href="#">关于我</a>
                     </li>
                 </ul>
             </div>
@@ -132,7 +157,16 @@
             </div>
             <div class="col-md-3">
                 <div class="social-wrapper row hidden-xs hidden-sm">
-                    <a href="#" class="fas fa-sign-in-alt col-md-offset-6"></a>
+                    {% if request.user.is_authenticated %}
+                        <img id="user-image" src="{% static 'blog/images/avatar.png' %}"/>
+                        <ul class="userdetail hide">
+                            <li class="userdetail-name">{{ request.user.username }}</li>
+                            <li><a href="#">进入个人中心</a></li>
+                            <li><a href="#">退出</a></li>
+                        </ul>
+                    {% else %}
+                        <a href="#" class="fas fa-sign-in-alt signin-btn"></a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -437,7 +471,7 @@
                 return {
                     'q': args.query,
                     'count': args.limit,
-                                    {#'csrfmiddlewaretoken': '{{ csrf_token }}'#}
+                    {#'csrfmiddlewaretoken': '{{ csrf_token }}'#}
                 };
             }
         });

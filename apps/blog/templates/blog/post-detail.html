@@ -31,15 +31,19 @@
         <div class="comment-panel-header">
             <div class="comment-panel-header-meta">
                 <span class="comment-caution">文明留言， 说说你的看法。</span>
-                <span class="comment-caution-meta pull-right">3 条评论, 4 人参与</span>
+                <span class="comment-caution-meta pull-right">{{ post.n_comments }} 条评论, {{ post.n_comment_users }} 人参与</span>
             </div>
             <div class="comment-panel-header-body">
-                <textarea id="comment-widget"></textarea>
+                {% if request.user.is_authenticated %}
+                    <textarea id="comment-widget"></textarea>
+                    <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
+                {% else %}
+                    <a href="#">请登陆后操作</a>
+                {% endif %}
                 <input type="hidden" id="content_type" value="{{ ct }}">
                 <input type="hidden" id="object_id" value="{{ post.id }}">
                 <input type="hidden" id="comment_content_type" value="{{ cmt_ct }}">
                 <input type="hidden" id="username" value="{{ request.user.username }}">
-                <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
                 <div class="line"></div>
             </div>
         </div>
@@ -49,6 +53,32 @@
 
 
 {% block blog-meta-area %}
+    <div class="msg-board">
+        <div class="msg-title">
+            博主
+        </div>
+        <div class="msg-content">
+            <ul class="author-list">
+                <li>
+                    <div class="author row">
+                        <a href="" class="col-xs-4">
+                            <img src="{% static 'blog/images/thumb.jpg' %}" alt="" width="100px" height="100px">
+                        </a>
+                        <div class="author-meta col-xs-8">
+                            <p><span class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
+                            </p>
+                            <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
+                            <p><span class="fab fa-github">&nbsp;&nbsp;<a
+                                    href="https://gitee.com/RenKang303288346"
+                                    target="_blank">https://github.com/Jennei</a></span>
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="line"></div>
     <div class="msg-board">
         <div class="msg-title">
             目录
@@ -64,18 +94,14 @@
         </div>
         <div class="msg-content">
             <ul class="notice-list row">
-                <li>
-                    <a href="#" class="col-xs-9">xxx文档.doc</a>
-                    <span class="col-xs-3">2018年4月4日</span>
-                </li>
-                <li>
-                    <a href="#" class="col-xs-9">xxxx.zip</a>
-                    <span class="col-xs-3">2018年4月4日</span>
-                </li>
-                <li>
-                    <a href="#" class="col-xs-9">xxx.tar.gz</a>
-                    <span class="col-xs-3">2018年4月4日</span>
-                </li>
+                {% for rc in post.resources.all %}
+                    <li>
+                        <a href="{{ rc.resource.url }}" class="col-xs-9">{{ rc.name }}</a>
+                        <span class="col-xs-3">{{ rc.add_time }}</span>
+                    </li>
+                {% empty %}
+                    <li>该博文没有资源</li>
+                {% endfor %}
             </ul>
         </div>
     </div>

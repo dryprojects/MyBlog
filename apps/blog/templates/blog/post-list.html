@@ -26,17 +26,15 @@
                 <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.n_browsers }}</span>
             </div>
             <div class="post-body row">
-                <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
                 <div class="post-excerpt">
-                    <div class="row">
-                                <span class="post-excerpt-content col-md-8 col-xs-8">
-                                    {{ post.excerpt }}
-                                </span>
-                        <a href="{{ post.get_absolute_url }}" class="col-md-4 col-xs-4">
-                            <span class="more hide"></span>
-                            <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
-                        </a>
-                    </div>
+                    <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
+                    <span class="post-excerpt-content col-md-8" style="padding-left: 0">
+                        {{ post.excerpt }}
+                    </span>
+                    <a href="{{ post.get_absolute_url }}" class="col-md-4" style="padding-right: 0">
+                        <span class="more hide"></span>
+                        <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
+                    </a>
                 </div>
                 <div class="line"></div>
                 <div class="post-tags">

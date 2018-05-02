@@ -38,9 +38,11 @@ class Comment(MPTTModel):
     def n_sub_comment(self):
         """
         该评论的子评论个数
+        see more:
+            https://django-mptt.readthedocs.io/en/latest/models.html#mpttmodel-instance-methods
         :return:
         """
-        return 0
+        return self.get_descendant_count()
 
     def was_published_recently(self):
         now = datetime.datetime.now()

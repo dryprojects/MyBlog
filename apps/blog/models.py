@@ -3,8 +3,12 @@ import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
+from django.db import transaction
 
 from mptt.models import MPTTModel, TreeForeignKey
+
+from comment.models import Comment
 
 # Create your models here.
 User = get_user_model()
@@ -48,9 +52,9 @@ class Post(models.Model):
     content = models.TextField(verbose_name='博文内容')
     status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default='draft')
     n_praise = models.PositiveIntegerField(verbose_name="点赞数量", default=0)
-    n_comments = models.PositiveIntegerField(verbose_name='评论数量', default=0)
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
+    comments = GenericRelation(Comment, related_query_name='post')
 
     class Meta:
         verbose_name = '博文'
@@ -69,11 +73,44 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post-detail', kwargs={'pk':self.pk})
 
+    @property
+    def n_comments(self):
+        """
+        获取该博文的所有评论个数
+        :return:
+        """
+        root_count = 0
+        sub_count = 0
+
+        with transaction.atomic():
+            #这里的comments都是content_type为Post的评论，（根评论）
+            for comment in self.comments.all():
+                if comment:
+                    root_count += 1
+                    sub_count += comment.n_sub_comment
+
+        return root_count + sub_count
+
+    @property
+    def n_comment_users(self):
+        """
+        该博文评论用户的参与人数
+        :return:
+        """
+        user_set = set()
+        with transaction.atomic():
+            for root_comment in self.comments.all():
+                if root_comment:
+                    for sub_comment in root_comment.get_descendants(include_self=True).all():
+                        user_set.add(sub_comment.author.username)
+
+        return len(user_set)
+
 
 class Resources(models.Model):
-    post = models.ForeignKey(Post, verbose_name='所属博文', on_delete=models.CASCADE, blank=True, null=True)
+    post = models.ForeignKey(Post, verbose_name='所属博文', on_delete=models.CASCADE, blank=True, null=True, related_name='resources')
     name = models.CharField(verbose_name='资源名称', max_length=50)
-    resource = models.FileField(verbose_name='资源文件', max_length=200)
+    resource = models.FileField(verbose_name='资源文件', max_length=200, upload_to='blog/resources/%Y/%m/')
     add_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)
 
     class Meta:
