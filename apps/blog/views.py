@@ -37,8 +37,15 @@ class PostDetailView(DetailView):
 
         context['ct'] = ct.id
         context['cmt_ct'] = cmt_ct.id
+        #可以在这里统计浏览次数
+        self.count_browsers()
 
         return super().get_context_data(**context)
+
+    def count_browsers(self):
+        p = self.get_object()
+        p.n_browsers += 1
+        p.save()
 
 
 class PostSearchView(PaginationMixin, SearchView):
