@@ -355,6 +355,7 @@ body {
 
 .notice-list li {
     line-height: 26px;
+    color: #dedede;
 }
 
 .notice-list li span {
