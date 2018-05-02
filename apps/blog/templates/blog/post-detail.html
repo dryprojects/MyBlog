@@ -34,12 +34,16 @@
                 <span class="comment-caution-meta pull-right">3 条评论, 4 人参与</span>
             </div>
             <div class="comment-panel-header-body">
+                {% if request.user.is_authenticated %}
                 <textarea id="comment-widget"></textarea>
+                <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
+                {% else %}
+                    <a href="#">请登陆后操作</a>
+                {% endif %}
                 <input type="hidden" id="content_type" value="{{ ct }}">
                 <input type="hidden" id="object_id" value="{{ post.id }}">
                 <input type="hidden" id="comment_content_type" value="{{ cmt_ct }}">
                 <input type="hidden" id="username" value="{{ request.user.username }}">
-                <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
                 <div class="line"></div>
             </div>
         </div>

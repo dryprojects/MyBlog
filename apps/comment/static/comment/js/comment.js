@@ -31,8 +31,6 @@ jQuery(document).ready(function ($) {
 
     // Comment
     function MyBlogComment(settings) {
-        var username = $('#username').val();
-        $('.comment-caution').text(' 文明留言， 说说你的看法。 当前登陆用户：' + username);
         this.__init__(settings);
     }
 
@@ -86,6 +84,7 @@ jQuery(document).ready(function ($) {
             this.is_replying = false;
             this.liking_dict = {};
             this.replying_list = [];
+            this.comment_caution_text = $('.comment-caution').text();
 
             this.load_comment_reply();
         },
@@ -159,25 +158,11 @@ jQuery(document).ready(function ($) {
                 $('.comment-panel-body .post-comment-list').after('<div class="line"></div>');
             });
         },
-        remove_comment: function (cmt_id) {
-            //删除博文评论或者回复
-        },
-        remove_reply: function (reply_id) {
-
-        },
-        incr_comment_like: function (reply_id) {
-            //博文评论，或者回复，喜欢增加或者减少。
-        },
-        incr_reply_like: function (reply_id) {
-
-        },
         set_comment_caution: function (label) {
-            var username = $('#username').val();
-            $('.comment-caution').text(label + ' 当前登陆用户：' + username);
+            $('.comment-caution').text(label);
         },
         reset_comment_caution: function () {
-            var username = $('#username').val();
-            $('.comment-caution').text(' 文明留言， 说说你的看法。 当前登陆用户：' + username);
+            $('.comment-caution').text(this.comment_caution_text);
         },
         get_cmt_content: function () {
             var rich_comment = this.$textarea.val();

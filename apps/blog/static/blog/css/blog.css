@@ -787,6 +787,15 @@ input, textarea {
     text-align: right;
 }
 
+.comment-panel-header-body a{
+    color: #dedede;
+    text-decoration: none;
+}
+
+.comment-panel-header-body a:hover{
+    color: #86aca3;
+}
+
 #comment-widget {
     margin-bottom: 12px;
     max-width: 100%;
