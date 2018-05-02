@@ -110,7 +110,7 @@ class Post(models.Model):
 class Resources(models.Model):
     post = models.ForeignKey(Post, verbose_name='所属博文', on_delete=models.CASCADE, blank=True, null=True, related_name='resources')
     name = models.CharField(verbose_name='资源名称', max_length=50)
-    resource = models.FileField(verbose_name='资源文件', max_length=200)
+    resource = models.FileField(verbose_name='资源文件', max_length=200, upload_to='blog/resources/%Y/%m/')
     add_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)
 
     class Meta:
