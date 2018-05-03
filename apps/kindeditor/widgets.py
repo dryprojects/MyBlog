@@ -15,15 +15,19 @@ class KindTextareaWidget(forms.Textarea):
     def __init__(self, attrs=None, config=None):
         self.config = config or {
             "height": "300px",
-            "width": "690px"
+            "width": "800px"
         }
 
         self.config.update({
             "items": [
-                'emoticons', 'image', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'bold',
+                'emoticons', 'image', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter',
+                'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'formatblock', 'fontname', 'fontsize', '|',
+                'forecolor', 'bold',
                 'italic', 'underline', 'lineheight', '|', 'link', 'unlink', 'fullscreen'
-            ]
+            ],
+            "filterMode": False,
+            "uploadJson": '/kindeditor/upload/'
         })
 
         super(KindTextareaWidget, self).__init__(attrs)  # for python2.7

@@ -78,12 +78,7 @@ class PostModalAdmin(admin.ModelAdmin):
 
     # formfield_overrides = {
     #     models.TextField:{
-    #         'widget':KindTextareaWidget(config={
-    #             'width':"800px",
-    #             'height':"300px",
-    #             "filterMode":False,
-    #             "uploadJson":'/kindeditor/upload/'
-    #         })
+    #         'widget':KindTextareaWidget
     #     }
     # }
     formfield_overrides = {
