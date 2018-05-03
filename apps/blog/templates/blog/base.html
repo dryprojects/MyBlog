@@ -1,4 +1,5 @@
 {% load static %}
+{% load blog_tags %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -383,18 +384,15 @@
                         </div>
                         <div class="footer-board-content">
                             <ul class="post-archive-list">
-                                <li>
-                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
-                                            class="col-xs-4">2篇</span></a>
-                                </li>
-                                <li>
-                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
-                                            class="col-xs-4">2篇</span></a>
-                                </li>
-                                <li>
-                                    <a href="#"><span class="col-xs-8">2017年12月</span><span
-                                            class="col-xs-4">2篇</span></a>
-                                </li>
+                                {% for ar_date in post_archive_date_list %}
+                                    {% get_post_archive_count ar_date.year ar_date.month as ar_count%}
+                                    <li>
+                                        <a href="{% url 'blog:post-archive' ar_date.year ar_date.month %}"><span class="col-xs-8">{{ ar_date.year }}年{{ ar_date.month }}月</span><span
+                                                class="col-xs-4">{{ ar_count }}篇</span></a>
+                                    </li>
+                                {% empty %}
+                                    暂无归档
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>

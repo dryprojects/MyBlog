@@ -85,3 +85,15 @@ class PostAutoCompleteView(View):
         for suggest in suggestions:
             context.append({"value": suggest, "label": suggest})
         return json.dumps(context)
+
+
+class PostArchiveView(PaginationMixin, ListView):
+    template_name = 'blog/post-list.html'
+    model = Post
+    ordering = '-published_time'
+    paginate_by = 3
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        ar_list = queryset.filter(published_time__year=self.kwargs['year'], published_time__month=self.kwargs['month'])
+        return ar_list.filter(status='published')
