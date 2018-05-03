@@ -14,7 +14,7 @@ KindEditor.ready(function (K) {
         "items": [
             'emoticons', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
             'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'bold',
-            'italic', 'underline', 'lineheight', '|', 'fullscreen'
+            'italic', 'underline', 'lineheight'
         ],
         "uploadJson":"/kindeditor/upload/",
     });
