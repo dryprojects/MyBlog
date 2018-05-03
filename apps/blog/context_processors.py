@@ -18,5 +18,7 @@ def post_extra(request):
     #所有博文的标签
     post_tag_list = Tag.objects.all()
     context['post_tag_list'] = post_tag_list
+    #评论最多的
+
 
     return context
