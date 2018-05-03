@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 
-from blog.models import Post, Tag
+from blog.models import Post, Tag, Category
 from comment.models import Comment
 
 from pure_pagination.mixins import PaginationMixin
@@ -111,3 +111,23 @@ class PostTagListView(PaginationMixin, ListView):
         tag = get_object_or_404(Tag, pk=self.kwargs['pk'])
         tag_post_list = queryset.filter(tags=tag)
         return tag_post_list.filter(status='published')
+
+
+class PostCategoryListView(PaginationMixin, ListView):
+    template_name = 'blog/post-list.html'
+    model = Post
+    ordering = '-published_time'
+    paginate_by = 3
+
+    def get_queryset(self):
+        """
+        分类前端css只控制到第三级
+        所以为了前端便于显示分类不要超过三级， 虽然后端可以无限分类。
+        :return:
+        """
+        queryset = super().get_queryset()
+        cg = get_object_or_404(Category, pk=self.kwargs['pk'])
+        #获取该分类的所有子分类
+        cg_list = cg.get_descendants(include_self=True)
+        queryset = Post.objects.filter(category__in=cg_list, status='published')
+        return queryset

@@ -1,5 +1,7 @@
 {% load static %}
 {% load blog_tags %}
+{% load mptt_tags %}
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -114,27 +116,17 @@
                     </li>
                     <li class="col-md-3">
                         <a href="#">分类</a>
-                        <ul>
-                            <li><a href="#">Web Design</a></li>
-                            <li><a href="#">Hosting</a></li>
-                            <li>
-                                <a href="#">Design</a>
-                                <ul>
-                                    <li><a href="#">Graphics</a></li>
-                                    <li><a href="#">Vectors</a></li>
-                                    <li>
-                                        <a href="#">Photoshop</a>
-                                        <ul>
-                                            <li><a href="#">Photo editing</a></li>
-                                            <li><a href="#">Business cards</a></li>
-                                            <li><a href="#">Websites</a></li>
-                                            <li><a href="#">Flyers</a></li>
+                        <ul class="root">
+                            {% recursetree post_category_list %}
+                                <li>
+                                    <a href="{% url 'blog:post-category' node.id %}">{{ node.name }}</a>
+                                    {% if not node.is_leaf_node %}
+                                        <ul class="children">
+                                            {{ children }}
                                         </ul>
-                                    </li>
-                                    <li><a href="#">Fonts</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Consulting</a></li>
+                                    {% endif %}
+                                </li>
+                            {% endrecursetree %}
                         </ul>
                     </li>
                     <li class="col-md-3">
