@@ -15,5 +15,6 @@ urlpatterns = [
     path('search/', views.PostSearchView.as_view(), name='post-search'),
     path('auto/', views.PostAutoCompleteView.as_view(), name='post-autocomplete'),
     path('latest/post/', feeds.LatestPostFeed(), name='post-latest'),
-    path('archive/<int:year>/<int:month>/', views.PostArchiveView.as_view(), name='post-archive')
+    path('archive/<int:year>/<int:month>/', views.PostArchiveListView.as_view(), name='post-archive'),
+    path('tag/<int:pk>/', views.PostTagListView.as_view(), name='post-tag')
 ]
