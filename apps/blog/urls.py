@@ -3,16 +3,18 @@ __author__ = 'Ren Kang'
 __date__ = '2018/3/26 22:28'
 
 from django.urls import path, re_path
-from blog.views import PostDetailView, PostListView, PostSearchView, PostAutoCompleteView
-from blog.feeds import LatestPostFeed
+from blog import views
+from blog import feeds
 
 
 app_name = 'blog'
 
 urlpatterns = [
-    path('<int:pk>/', PostDetailView.as_view(), name='post-detail'),
-    path('', PostListView.as_view(), name='post-list'),
-    path('search/', PostSearchView.as_view(), name='post-search'),
-    path('auto/', PostAutoCompleteView.as_view(), name='post-autocomplete'),
-    path('latest/post/', LatestPostFeed(), name='post-latest')
+    path('<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
+    path('', views.PostListView.as_view(), name='post-list'),
+    path('search/', views.PostSearchView.as_view(), name='post-search'),
+    path('auto/', views.PostAutoCompleteView.as_view(), name='post-autocomplete'),
+    path('latest/post/', feeds.LatestPostFeed(), name='post-latest'),
+    path('archive/<int:year>/<int:month>/', views.PostArchiveListView.as_view(), name='post-archive'),
+    path('tag/<int:pk>/', views.PostTagListView.as_view(), name='post-tag')
 ]

@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, View, TemplateView
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
 
-from blog.models import Post
+from blog.models import Post, Tag
 from comment.models import Comment
 
 from pure_pagination.mixins import PaginationMixin
@@ -85,3 +86,28 @@ class PostAutoCompleteView(View):
         for suggest in suggestions:
             context.append({"value": suggest, "label": suggest})
         return json.dumps(context)
+
+
+class PostArchiveListView(PaginationMixin, ListView):
+    template_name = 'blog/post-list.html'
+    model = Post
+    ordering = '-published_time'
+    paginate_by = 3
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        ar_list = queryset.filter(published_time__year=self.kwargs['year'], published_time__month=self.kwargs['month'])
+        return ar_list.filter(status='published')
+
+
+class PostTagListView(PaginationMixin, ListView):
+    template_name = 'blog/post-list.html'
+    model = Post
+    ordering = '-published_time'
+    paginate_by = 3
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        tag = get_object_or_404(Tag, pk=self.kwargs['pk'])
+        tag_post_list = queryset.filter(tags=tag)
+        return tag_post_list.filter(status='published')
