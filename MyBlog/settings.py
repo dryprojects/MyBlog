@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'social_django',
     'haystack',
     'django.contrib.sites',
+    'captcha',
     'kindeditor',
     'mdeditor',
     'mptt',
@@ -118,6 +119,8 @@ AUTH_USER_MODEL = 'bloguser.UserProfile'
 SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
 SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+
+LOGIN_REDIRECT_URL = '/'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

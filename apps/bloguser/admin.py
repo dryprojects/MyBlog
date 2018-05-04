@@ -4,10 +4,13 @@ from django.utils.html import format_html
 from django.utils.translation import gettext, gettext_lazy as _
 
 from bloguser.models import UserProfile
+from bloguser.forms import BlogUserChangeForm, BlogUserCreationForm
 
 
 @admin.register(UserProfile)
 class UserPrifileModelAdmin(UserAdmin):
+    form = BlogUserChangeForm
+    add_form = BlogUserCreationForm
     list_display = ('get_image', 'username', 'email', 'is_staff')
     fieldsets = (
         (None, {'fields': ('username', 'image', 'password')}),
@@ -15,12 +18,6 @@ class UserPrifileModelAdmin(UserAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-    )
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (('username', 'image'), 'password1', 'password2'),
-        }),
     )
 
     def get_image(self, instance):

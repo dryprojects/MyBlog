@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-# Create your views here.
+from bloguser import forms
+
+
+class BlogUserLoginView(auth_views.LoginView):
+    template_name = 'bloguser/login.html'
+    form_class = forms.BlogUserAuthenticationForm
