@@ -5,7 +5,8 @@
 {% block search_form_pc %}
     <form class="searchform row" method="get" action="{% url 'blog:post-search' %}">
         <div class="col-md-10">
-            <input id="search-input" type="text" name="q" placeholder="{% if not query %}请输入关键字{% endif %}" value="{% if query %}{{ query }}{% endif %}"
+            <input id="search-input" type="text" name="q" placeholder="{% if not query %}请输入关键字{% endif %}"
+                   value="{% if query %}{{ query }}{% endif %}"
                    style="letter-spacing: 1.25px;"/>
         </div>
         <div class="col-md-2">
@@ -31,10 +32,12 @@
                     <div class="post-title"><a href="#">{% highlight post.object.title with query %}</a></div>
                     <div class="post-excerpt">
                         <div class="row">
-                                <span class="post-excerpt-content col-md-8 col-xs-8">
-                                    {% highlight post.object.excerpt with query %}
-                                </span>
-                            <a href="#" class="col-md-4 col-xs-4">
+                            <div class="post-excerpt-content col-md-8 col-xs-8">
+                                <div id="editormd-view{{ forloop.counter }}">
+                                    <p id="markdown-doc" style="display: none">{% autoescape off %}{% highlight post.object.excerpt with query html_tag "div" max_length 400 %}{% endautoescape %}</p>
+                                </div>
+                            </div>
+                            <a href="{{ post.object.get_absolute_url }}" class="col-md-4 col-xs-4">
                                 <span class="more hide"></span>
                                 <img src="{{ post.object.cover.url }}" alt="" class="post-thumbnail hidden-xs">
                             </a>
@@ -43,7 +46,7 @@
                     <div class="line"></div>
                     <div class="post-tags">
                         {% for tag in post.object.tags.all %}
-                            <span class="fas fa-tag"> <a href="#">{{ tag.name }}</a></span>
+                            <span class="fas fa-tag"> <a href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
                         {% empty %}
                             <span>该文章没有标签</span>
                         {% endfor %}
@@ -52,7 +55,7 @@
                 <div class="post-nav row"></div>
             </div>
         {% empty %}
-            <h1>没有找到结果？</h1>
+            <h1 style="color: #dedede">没有找到结果？</h1>
         {% endfor %}
     {% else %}
     {% endif %}
@@ -62,4 +65,34 @@
     {% if query %}
         {% include 'blog/pagination.html' %}
     {% endif %}
+{% endblock %}
+
+{% block extra-css %}
+    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.preview.css' %}">
+{% endblock %}
+
+{% block extra-js %}
+    <script src="{% static 'mdeditor/lib/marked.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/jquery.flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/editormd.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            {% for post in object_list %}
+                editormd.markdownToHTML("editormd-view{{ forloop.counter }}", {
+                    emoji: true,
+                    taskList: true,
+                    tex: true,  // 默认不解析
+                    flowChart: true,  // 默认不解析
+                    sequenceDiagram: true,  // 默认不解析
+                    tocm: true
+                });
+            {% empty %}
+            {% endfor %}
+        });
+    </script>
 {% endblock %}
