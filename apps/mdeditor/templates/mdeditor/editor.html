@@ -1,19 +1,6 @@
 {% load static %}
-<style type="text/css">
-    .wmd-wrapper ul {
-        margin-left: 0px !important;
-    }
 
-    .wmd-wrapper ul li {
-        list-style: disc !important;
-    }
-
-    .wmd-wrapper ul ul li {
-        list-style: circle !important;
-    }
-</style>
-
-<div id="editormd" style="z-index:1001;" class="wmd-wrapper">
+<div id="editormd_{{ id }}"  class="wmd-wrapper">
     <textarea {{ final_attrs|safe }}>{{ value }}</textarea>
 </div>
 
@@ -23,7 +10,7 @@
     };
     (function ($) {
         $(document).ready(function () {
-            editormd("editormd", {
+            var ed = editormd("editormd_{{ id }}", {
                 width: "{{ config.width }}",
                 height: "{{ config.heigth }}",
                 syncScrolling: "single",
@@ -49,12 +36,10 @@
                     return {{ config.toolbar|safe }};
                 },
                 onfullscreen: function () {
-                    $('.wmd-wrapper').hide();
-                    $('#' + this.id).show();
+                    $('#'+this.id).css('z-index', 1100);
                 },
                 onfullscreenExit: function () {
-                    $('#' + this.id).hide();
-                    $('.wmd-wrapper').show();
+                    $('#'+this.id).css('z-index', 1001);
                 },
             });
         });

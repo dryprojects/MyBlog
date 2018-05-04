@@ -72,7 +72,8 @@ class MdTextWidget(forms.Textarea):
     def media(self):
         css = {
             'all': ('mdeditor/css/editormd.min.css',
-                    'mdeditor/css/editormd.preview.css'
+                    'mdeditor/css/editormd.preview.css',
+                    'mdeditor/css/custom.css',
                     )
         }
         js = [

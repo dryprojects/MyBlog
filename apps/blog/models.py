@@ -48,7 +48,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
     author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE) # n ~ 1
-    excerpt = models.CharField(verbose_name="博文摘要", max_length=300)
+    excerpt = models.TextField(verbose_name="博文摘要", blank=True)
     content = models.TextField(verbose_name='博文内容')
     status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default='draft')
     n_praise = models.PositiveIntegerField(verbose_name="点赞数量", default=0)

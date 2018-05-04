@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from django.contrib.contenttypes.admin import GenericStackedInline, GenericTabularInline
 from django.utils.html import format_html
 from django.db import models
-from django.urls import reverse
 
 from blog.models import Post, Category, Tag, Resources
-from comment.models import Comment
 from kindeditor.widgets import KindTextareaWidget
 from mdeditor.widgets import MdTextWidget
 
@@ -36,13 +33,6 @@ if not USE_ADMIN_SITE:
         site_title = "我的博客"
 
 
-# class CommentInline(GenericTabularInline):
-#     model = Comment
-#     extra = 1
-#     autocomplete_fields = ['author']
-
-
-
 class PostTagRelationShipInline(admin.TabularInline):
     model = Post.tags.rel.through
     extra = 1
@@ -60,7 +50,7 @@ class PostModalAdmin(admin.ModelAdmin):
         https://docs.djangoproject.com/en/2.0/intro/tutorial07/
     """
     fieldsets = [
-        ('博文基本信息',  {"fields":[('title', 'category', 'author'), ('excerpt', 'status'), 'content'], 'classes': ('wide', 'extrapretty')}),
+        ('博文基本信息',  {"fields":[('title', 'category', 'author'), 'status', 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息',  {"fields":[('cover', 'published_time'), ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')], "classes":('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
@@ -90,7 +80,6 @@ class PostModalAdmin(admin.ModelAdmin):
     def get_cover(self, object):
         return format_html("<a href='{}'><img src='{}' alt='' width='150'/></a>", object.get_absolute_url(), object.cover.url)
     get_cover.short_description = '封面'
-
 
 
 class CategoryModelAdmin(DraggableMPTTAdmin):

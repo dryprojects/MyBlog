@@ -28,9 +28,11 @@
             <div class="post-body row">
                 <div class="post-excerpt">
                     <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
-                    <span class="post-excerpt-content col-md-8" style="padding-left: 0">
-                        {{ post.excerpt }}
-                    </span>
+                    <div class="post-excerpt-content col-md-8" style="padding-left: 0">
+                        <div id="editormd-view{{ forloop.counter }}">
+                            <textarea style="display:none;" id="markdown-doc">{{ post.excerpt|safe }}</textarea>
+                        </div>
+                    </div>
                     <a href="{{ post.get_absolute_url }}" class="col-md-4" style="padding-right: 0">
                         <span class="more hide"></span>
                         <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
@@ -54,4 +56,34 @@
 
 {% block paginator-area %}
     {% include 'blog/pagination.html' %}
+{% endblock %}
+
+{% block extra-css %}
+    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.preview.css' %}">
+{% endblock %}
+
+{% block extra-js %}
+    <script src="{% static 'mdeditor/lib/marked.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/lib/jquery.flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/editormd.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            {% for post in post_list %}
+                editormd.markdownToHTML("editormd-view{{ forloop.counter }}", {
+                    emoji: true,
+                    taskList: true,
+                    tex: true,  // 默认不解析
+                    flowChart: true,  // 默认不解析
+                    sequenceDiagram: true,  // 默认不解析
+                    tocm: true
+                });
+            {% empty %}
+            {% endfor %}
+        });
+    </script>
 {% endblock %}
