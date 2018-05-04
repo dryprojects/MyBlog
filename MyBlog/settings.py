@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'django_celery_beat',
     'guardian',
+    'bloguser',
     'django_filters',
     'rest_framework',
     'social_django',
@@ -111,6 +112,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
+
+AUTH_USER_MODEL = 'bloguser.UserProfile'
 
 SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
 SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
