@@ -1,1 +1,28 @@
 {% extends 'bloguser/base.html' %}
+
+{% block title %}MyBlog-登陆{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+    {% csrf_token %}
+        <div class="row">
+            <input type="text" name="username" class="username col" placeholder="用户名/邮箱">
+            <input type="password" name="password" class="password col" style="margin-top: 25px;" placeholder="密码">
+            <div class="col" style="margin-top: 25px">
+                <button type="submit" class="button button-glow button-rounded button-royal">登陆</button>
+            </div>
+            <div class="col links" style="margin-top: 25px;">
+                <a href="#" class="pull-left">忘记密码？</a>
+                <a href="#" class="pull-right">注册一个帐号？</a>
+            </div>
+        </div>
+    </form>
+    <div class="connect row">
+        <p class="col">社交帐号登陆</p>
+        <p class="col">
+            <a class="fab fa-github github" href="{% url 'social:begin' 'github' %}"></a>
+            <a class="fab fa-weibo weibo" href="#"></a>
+            {{ backends }}
+        </p>
+    </div>
+{% endblock %}

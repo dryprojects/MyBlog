@@ -158,7 +158,7 @@
                             <li><a href="#">退出</a></li>
                         </ul>
                     {% else %}
-                        <a href="#" class="fas fa-sign-in-alt signin-btn"></a>
+                        <a href="{% url 'bloguser:bloguser-login' %}" class="fas fa-sign-in-alt signin-btn"></a>
                     {% endif %}
                 </div>
             </div>

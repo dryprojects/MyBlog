@@ -35,8 +35,9 @@ urlpatterns = [
     path('comment/', include('comment.urls', namespace='comment')),
     path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
     path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
+    path('account/', include('bloguser.urls', namespace='bloguser')),
     path('social/', include('social_django.urls', namespace='social')),
-    path('captcha/', include('captcha.urls', namespace='captcha')),
+    path('captcha/', include(('captcha.urls', 'captcha'), namespace='captcha')),
     path('api-auth/', include('rest_framework.urls')),
     path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False))
 ]

@@ -7,7 +7,7 @@
 @time:      2018/05/04 
 """ 
 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from bloguser.models import UserProfile
 
@@ -18,6 +18,8 @@ class BlogUserCreationForm(UserCreationForm):
     """
     for user register
     """
+    captcha = CaptchaField()
+
     class Meta:
         model = UserProfile
         fields = UserCreationForm.Meta.fields + ('image', )
@@ -30,10 +32,3 @@ class BlogUserChangeForm(UserChangeForm):
     class Meta:
         model = UserProfile
         fields = '__all__'
-
-
-class BlogUserAuthenticationForm(AuthenticationForm):
-    """
-    for user login
-    """
-    captcha = CaptchaField()

@@ -7,3 +7,13 @@
 @time:      2018/05/04 
 """ 
 
+from django.urls import path, include
+
+from bloguser import views
+
+
+app_name = 'bloguser'
+
+urlpatterns = [
+    path('login/', views.BlogUserLoginView.as_view(), name='bloguser-login')
+]
