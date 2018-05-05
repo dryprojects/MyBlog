@@ -157,6 +157,10 @@ body {
     color: #bebebe;
 }
 
+#user-image{
+    border-radius: 100%;
+}
+
 .logo {
     width: auto;
     height: 74px;
