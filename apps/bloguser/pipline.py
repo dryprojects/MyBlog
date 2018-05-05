@@ -31,8 +31,12 @@ def save_bloguser_extra_profile(backend, user, response, *args, **kwargs):
     """
     if backend.name == 'github':
         #这里获取保存用户github的头像
-        image_file = get_image_from_url(response.get('avatar_url'))
-        if image_file is not None:
-            #给头像文件命名采用uuid
-            avatar_name = 'avatar' + uuid4().hex[:16]
-            user.image.save(avatar_name, image_file, save=True)
+        if user.image_url is '':
+            image_url = response.get('avatar_url')
+            image_file = get_image_from_url(image_url)
+            if image_file is not None:
+                #给头像文件命名采用uuid
+                avatar_name = 'avatar' + uuid4().hex[:16]
+                user.image.save(avatar_name, image_file)
+                user.image_url = image_url
+                user.save()

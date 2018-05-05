@@ -31,4 +31,4 @@ class BlogUserChangeForm(UserChangeForm):
     """
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        exclude = ['image_url']
