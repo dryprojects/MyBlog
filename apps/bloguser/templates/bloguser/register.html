@@ -1,19 +1,36 @@
 {% extends 'bloguser/base.html' %}
 
+{% load static %}
+
 {% block title %}MyBlog-注册{% endblock %}
 
 {% block content %}
     <form action="" method="post">
-        <div class="row">
+        {% csrf_token %}
+        <div class="row form-widgets">
             <input type="text" name="username" class="username col" placeholder="用户名/邮箱">
             <input type="password" name="password1" class="password col" style="margin-top: 25px;" placeholder="请输入密码">
-            <input type="password" name="password2" class="password col" style="margin-top: 25px;" placeholder="请再次输入密码">
-            <div class="col" style="margin-top: 25px">
-                <button type="submit" class="button button-glow button-rounded button-royal">注册</button>
+            <input type="password" name="password2" class="password col" style="margin-top: 25px;"
+                   placeholder="请再次输入密码">
+            {{ form.captcha }}
+            <div class="col">
+                <button type="submit" class="button button-glow button-rounded button-royal" style="margin-top: 25px">
+                    注册
+                </button>
             </div>
             <div class="col links" style="margin-top: 25px;">
-                <a href="#" class="pull-left">已经有了帐号？</a>
+                <a href="{% url 'bloguser:bloguser-login' %}" class="pull-left">已经有了帐号？</a>
             </div>
         </div>
     </form>
+{% endblock %}
+{% block extra-js %}
+    <script src="{% static 'bloguser/js/simple-captcha.js' %}"></script>
+    <script>
+        $(function () {
+            var captcha = new SimpleCaptcha({
+                captcha_refresh_url: "{% url 'captcha-refresh' %}",
+            });
+        });
+    </script>
 {% endblock %}

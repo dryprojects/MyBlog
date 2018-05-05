@@ -20,3 +20,4 @@ class BlogUserLogutView(auth_views.LogoutView):
 class BlogUserRegisterView(CreateView):
     form_class = forms.BlogUserCreationForm
     template_name = 'bloguser/register.html'
+

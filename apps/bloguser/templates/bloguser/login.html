@@ -3,7 +3,7 @@
 {% block title %}MyBlog-登陆{% endblock %}
 
 {% block content %}
-    <form action="" method="post">
+    <form action="" method="post" id="#login-form">
         {% csrf_token %}
         <div class="row">
             <input type="text" name="username" class="username col" {% if form.username.errors %}{% for error in form.username.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="用户名/邮箱"{% endif %}>
@@ -13,7 +13,7 @@
             </div>
             <div class="col links" style="margin-top: 25px;">
                 <a href="#" class="pull-left">忘记密码？</a>
-                <a href="#" class="pull-right">注册一个帐号？</a>
+                <a href="{% url 'bloguser:bloguser-register' %}" class="pull-right">注册一个帐号？</a>
             </div>
         </div>
         {% if form.non_field_errors %}
