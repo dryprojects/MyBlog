@@ -7,7 +7,7 @@
 @time:      2018/05/04 
 """ 
 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 
 from bloguser.models import UserProfile
 
@@ -22,7 +22,7 @@ class BlogUserCreationForm(UserCreationForm):
 
     class Meta:
         model = UserProfile
-        fields = UserCreationForm.Meta.fields + ('image', )
+        fields = UserCreationForm.Meta.fields
 
 
 class BlogUserChangeForm(UserChangeForm):

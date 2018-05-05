@@ -1,4 +1,5 @@
 from django.contrib.auth import views as auth_views
+from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from bloguser import forms
@@ -15,3 +16,7 @@ class BlogUserLogutView(auth_views.LogoutView):
     从而不会再把请求转发到get,post等方法。
     """
 
+
+class BlogUserRegisterView(CreateView):
+    form_class = forms.BlogUserCreationForm
+    template_name = 'bloguser/register.html'

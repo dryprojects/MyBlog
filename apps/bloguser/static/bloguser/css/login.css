@@ -80,7 +80,7 @@ h1 {
 
 form {
     position: relative;
-    width: 305px;
+    width: 80%;
     margin: 15px auto 0 auto;
     text-align: center;
 }
@@ -185,34 +185,6 @@ button:active {
     border: 0px solid #ef4300;
 }
 
-.error {
-    display: none;
-    position: absolute;
-    top: 27px;
-    right: -55px;
-    width: 40px;
-    height: 40px;
-    background: #2d2d2d; /* browsers that don't support rgba */
-    background: rgba(45,45,45,.25);
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
-}
-
-.error span {
-    display: inline-block;
-    margin-left: 2px;
-    font-size: 40px;
-    font-weight: 700;
-    line-height: 40px;
-    text-shadow: 0 1px 2px rgba(0,0,0,.1);
-    -o-transform: rotate(45deg);
-    -moz-transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-
-}
-
 .connect {
     width: 305px;
     margin: 35px auto 0 auto;
@@ -268,4 +240,18 @@ button:active {
     border: none;
 }
 
+.error {
+    position: absolute;
+    width: 80%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.33);
+    top: 0;
+    left: 350px;
+    padding: 10px;
+    font-size: 14px;
+    color: #bebebe;
+}
 
+.errorlist{
+    list-style: none;
+}

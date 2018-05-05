@@ -108,6 +108,7 @@ if DEBUG:
     }
 
 AUTHENTICATION_BACKENDS = (
+    'bloguser.backends.UserBackend.UserBackend',
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.weibo.WeiboOAuth2',
     'django.contrib.auth.backends.ModelBackend',
