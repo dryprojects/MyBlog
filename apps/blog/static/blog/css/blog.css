@@ -131,7 +131,6 @@ body {
     background-color: rgba(0, 0, 0, 0.25);
     z-index: 1000;
     position: fixed;
-    margin-top: 10px;
     list-style: none;
 }
 
@@ -147,6 +146,13 @@ body {
     line-height: 30px;
     text-decoration: none;
     color: #bebebe;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.userdetail li:hover {
+    background-color: rgba(0, 0, 0, 0.33);
 }
 
 .userdetail li a:hover {
@@ -155,10 +161,20 @@ body {
 
 .userdetail-name {
     color: #bebebe;
+    display: block;
+    float: left;
+    height: 100%;
 }
 
-#user-image{
+#user-image {
     border-radius: 100%;
+    float: left;
+    margin-right: 10px;
+}
+
+.user-meta {
+    height: 74px;
+    line-height: 74px;
 }
 
 .logo {

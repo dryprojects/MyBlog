@@ -151,14 +151,17 @@
             <div class="col-md-3">
                 <div class="social-wrapper row hidden-xs hidden-sm">
                     {% if request.user.is_authenticated %}
-                        <img id="user-image" src="{{ request.user.image.url }}"/>
+                        <div class="user-meta">
+                            <img id="user-image" src="{{ request.user.image.url }}"/>
+                            <span class="userdetail-name">{{ request.user.username }}</span>
+                        </div>
                         <ul class="userdetail hide">
-                            <li class="userdetail-name">{{ request.user.username }}</li>
                             <li><a href="#">进入个人中心</a></li>
                             <li><a href="#">退出</a></li>
                         </ul>
                     {% else %}
-                        <a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}" class="fas fa-sign-in-alt signin-btn"></a>
+                        <a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}"
+                           class="fas fa-sign-in-alt signin-btn"></a>
                     {% endif %}
                 </div>
             </div>
