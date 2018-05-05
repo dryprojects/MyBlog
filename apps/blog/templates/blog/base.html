@@ -157,7 +157,7 @@
                         </div>
                         <ul class="userdetail hide">
                             <li><a href="#">进入个人中心</a></li>
-                            <li><a href="#">退出</a></li>
+                            <li><a href="{% url 'bloguser:bloguser-logout' %}?next={{ request.path }}">退出</a></li>
                         </ul>
                     {% else %}
                         <a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}"
