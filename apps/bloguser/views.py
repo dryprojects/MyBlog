@@ -79,6 +79,7 @@ class BlogUserAccountView(LoginRequiredMixin, View):
     """
     用户个人中心
     """
+    template = ''
 
 
 class BlogUserPasswordResetView(auth_views.PasswordResetView):
@@ -88,6 +89,7 @@ class BlogUserPasswordResetView(auth_views.PasswordResetView):
     template_name = 'bloguser/password_reset_form.html'
     email_template_name = 'bloguser/password_reset_email.html'
     success_url = reverse_lazy('bloguser:bloguser-password-reset-done')
+    form_class = forms.BlogUserPasswordResetForm
 
 
 class BlogUserPasswordResetDoneView(auth_views.PasswordResetDoneView):
