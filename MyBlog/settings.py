@@ -171,6 +171,18 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+REGISTER_REDIRECT_URL = '/' #自定义
+
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '303288346@qq.com'
+EMAIL_HOST_PASSWORD = 'qjisygavtvktbggi'
+EMAIL_USE_TLS = True
+EMAIL_FROM = '303288346@qq.com' #自定义
+DEFAULT_FROM_EMAIL = EMAIL_FROM
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -327,3 +339,5 @@ LOGGING = {
         },
     }
 }
+
+ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]

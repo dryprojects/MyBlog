@@ -74,3 +74,9 @@ if ADD_PASSWORD_FORGET:
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+#see more https://docs.djangoproject.com/en/2.0/topics/http/views/
+# handler404 = ''
+# handler500 = ''
+# handler403 = ''
+# handler400 = ''

@@ -245,8 +245,8 @@ button:active {
     width: 80%;
     height: auto;
     background-color: rgba(0, 0, 0, 0.33);
-    top: 0;
-    left: 350px;
+    top: 18%;
+    left: 110%;
     padding: 10px;
     font-size: 14px;
     color: #bebebe;
