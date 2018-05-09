@@ -35,7 +35,9 @@ urlpatterns = [
     path('comment/', include('comment.urls', namespace='comment')),
     path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
     path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
+    path('account/', include('bloguser.urls', namespace='bloguser')),
     path('social/', include('social_django.urls', namespace='social')),
+    path('captcha/', include('captcha.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False))
 ]
@@ -72,3 +74,9 @@ if ADD_PASSWORD_FORGET:
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+#see more https://docs.djangoproject.com/en/2.0/topics/http/views/
+# handler404 = ''
+# handler500 = ''
+# handler403 = ''
+# handler400 = ''

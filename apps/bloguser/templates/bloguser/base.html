@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS -->
+    <link href="{% static 'bloguser/css/bootstrap.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'bloguser/css/supersized.css' %}">
+    <link rel="stylesheet" href="{% static 'bloguser/css/login.css' %}">
+    <link rel="stylesheet" type='text/css' href='{% static "bloguser/css/fontawesome-all.css" %}'>
+    <link rel="stylesheet" type='text/css' href='{% static "bloguser/css/buttons.css" %}'>
+    {% block extra-css %}{% endblock %}
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="page-container container">
+    <a href="#"><img src="{% static 'blog/images/logo.png' %}" alt=""></a>
+    {% block content %}
+    {% endblock %}
+</div>
+<!-- Javascript -->
+<script src="{% static 'bloguser/js/jquery.min.js' %}"></script>
+<script src="{% static 'bloguser/js/supersized.3.2.7.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'bloguser/js/bootstrap.min.js' %}"></script>
+<script>
+    jQuery(function ($) {
+        $.supersized({
+            // Functionality
+            slide_interval: 4000,    // Length between transitions
+            transition: 1,    // 0-None, 1-Fade, 2-Slide Top, 3-Slide Right, 4-Slide Bottom, 5-Slide Left, 6-Carousel Right, 7-Carousel Left
+            transition_speed: 1000,    // Speed of transition
+            performance: 1,    // 0-Normal, 1-Hybrid speed/quality, 2-Optimizes image quality, 3-Optimizes transition speed // (Only works for Firefox/IE, not Webkit)
+            // Size & Position
+            min_width: 0,    // Min width allowed (in pixels)
+            min_height: 0,    // Min height allowed (in pixels)
+            vertical_center: 1,    // Vertically center background
+            horizontal_center: 1,    // Horizontally center background
+            fit_always: 0,    // Image will never exceed browser width or height (Ignores min. dimensions)
+            fit_portrait: 1,    // Portrait images will not exceed browser height
+            fit_landscape: 0,    // Landscape images will not exceed browser width
+
+            // Components
+            slide_links: 'blank',    // Individual links for each slide (Options: false, 'num', 'name', 'blank')
+            slides: [    // Slideshow Images
+                {image: '{% static "blog/images/bg/bg6.jpg" %}'},
+                {image: '{% static "blog/images/bg/bg5.jpg" %}'},
+                {image: '{% static "blog/images/bg/bg4.jpg" %}'}
+            ]
+
+        });
+
+    });
+</script>
+{% block extra-js %}{% endblock %}
+</body>
+</html>

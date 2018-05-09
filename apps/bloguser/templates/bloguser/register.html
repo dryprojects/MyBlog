@@ -1,0 +1,45 @@
+{% extends 'bloguser/base.html' %}
+
+{% load static %}
+
+{% block title %}MyBlog-注册{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="row form-widgets">
+            <input type="text" name="email" class="username col"
+                   {% if form.email.errors %}{% for error in form.email.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="邮箱"{% endif %}>
+            <input type="password" name="password1" class="password col" style="margin-top: 25px;"
+                   {% if form.password1.errors %}{% for error in form.password1.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="请输入密码"{% endif %}>
+            <input type="password" name="password2" class="password col" style="margin-top: 25px;"
+                   {% if form.password2.errors %}{% for error in form.password2.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="请再次输入密码"{% endif %}>
+            {{ form.captcha }}
+            <div class="col">
+                <button type="submit" class="button button-glow button-rounded button-royal" style="margin-top: 25px">
+                    注册
+                </button>
+            </div>
+            <div class="col links" style="margin-top: 25px;">
+                <a href="{% url 'bloguser:bloguser-login' %}" class="pull-left">已经有了帐号？</a>
+            </div>
+        </div>
+        {% if form.captcha.errors %}
+            <div class="error row">
+                {% for error in form.captcha.errors %}
+                    <p class="pull-left" style="line-height: 20px">验证码：{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}
+{% block extra-js %}
+    <script src="{% static 'bloguser/js/simple-captcha.js' %}"></script>
+    <script>
+        $(function () {
+            var captcha = new SimpleCaptcha({
+                captcha_refresh_url: "{% url 'captcha-refresh' %}",
+            });
+        });
+    </script>
+{% endblock %}

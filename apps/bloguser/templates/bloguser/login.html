@@ -1,0 +1,34 @@
+{% extends 'bloguser/base.html' %}
+
+{% block title %}MyBlog-登陆{% endblock %}
+
+{% block content %}
+    <form action="" method="post" id="#login-form">
+        {% csrf_token %}
+        <div class="row">
+            <input type="text" name="username" class="username col" {% if form.username.errors %}{% for error in form.username.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="用户名/邮箱"{% endif %}>
+            <input type="password" name="password" class="password col" style="margin-top: 25px;" {% if form.password.errors %}{% for error in form.password.errors %}placeholder="{{ error }}" {% endfor %}{% else %}placeholder="密码"{% endif %}>
+            <div class="col" style="margin-top: 25px">
+                <button type="submit" class="button button-glow button-rounded button-royal">登陆</button>
+            </div>
+            <div class="col links" style="margin-top: 25px;">
+                <a href="#" class="pull-left">忘记密码？</a>
+                <a href="{% url 'bloguser:bloguser-register' %}" class="pull-right">注册一个帐号？</a>
+            </div>
+        </div>
+        {% if form.non_field_errors %}
+            <div class="error row">
+                {% for error in form.non_field_errors %}
+                    <p class="pull-left" style="line-height: 20px">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </form>
+    <div class="connect row">
+        <p class="col">社交帐号登陆</p>
+        <p class="col">
+            <a class="fab fa-github github" href="{% url 'social:begin' 'github' %}"></a>
+            <a class="fab fa-weibo weibo" href="#"></a>
+        </p>
+    </div>
+{% endblock %}
