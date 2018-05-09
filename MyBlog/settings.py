@@ -172,6 +172,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 REGISTER_REDIRECT_URL = '/' #自定义
+LOGIN_URL = '/account/login/'
 
 
 EMAIL_HOST = 'smtp.qq.com'

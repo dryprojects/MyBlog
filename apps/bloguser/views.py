@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ValidationError
 from django.utils.http import urlsafe_base64_decode
 from django.http import Http404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect, resolve_url
 
 from bloguser import forms
@@ -73,3 +73,31 @@ class BlogUserActiveConfirmView(View):
             return redirect(active_done_redirect)
         else:
             raise Http404("无效邮箱验证请求")
+
+
+class BlogUserAccountView(LoginRequiredMixin, View):
+    """
+    用户个人中心
+    """
+
+
+class BlogUserPasswordResetView(auth_views.PasswordResetView):
+    """
+    重置密码
+    """
+    template_name = 'bloguser/password_reset_form.html'
+    email_template_name = 'bloguser/password_reset_email.html'
+    success_url = reverse_lazy('bloguser:bloguser-password-reset-done')
+
+
+class BlogUserPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'bloguser/password_reset_done.html'
+
+
+class BlogUserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'bloguser/password_reset_confirm.html'
+    success_url = reverse_lazy('bloguser:bloguser-password-reset-complete')
+
+
+class BlogUserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'bloguser/password_reset_complete.html'
