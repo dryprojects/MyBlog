@@ -584,9 +584,9 @@ body {
     background: transparent url(../images/line.png) center top repeat-x;
 }
 
-.active {
-    background-color: rgba(134, 172, 163, 0.33);
-}
+/*.active {*/
+/*background-color: rgba(134, 172, 163, 0.33);*/
+/*}*/
 
 .site-claim {
     background: rgba(0, 0, 0, 0.55);
@@ -953,4 +953,31 @@ input, textarea {
 
 #toc-container ul li a:hover {
     color: #86aca3;
+}
+
+a {
+    color: #dedede;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+    background-color: indianred;
+}
+
+.userinfo-meta{
+    color: #dedede;
+    list-style: none;
+    font-size: 13px;
+}
+
+.userinfo-meta label{
+    padding: 0;
+    text-align: center;
+    height: 26px;
+    line-height: 26px;
+}
+
+.userinfo-meta input{
+    padding: 0 7px;
+    font-size: 13px;
+    height: 30px;
 }

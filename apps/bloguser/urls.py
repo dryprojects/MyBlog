@@ -24,3 +24,7 @@ urlpatterns = [
     path('password-reset-confirm/<str:uidb64>/<str:token>/', views.BlogUserPasswordResetConfirmView.as_view(), name='bloguser-password-reset-confirm'),
     path('password-reset-complete/', views.BlogUserPasswordResetCompleteView.as_view(), name='bloguser-password-reset-complete')
 ]
+
+urlpatterns += [
+    path('usercenter/', views.BlogUserAccountView.as_view(), name='bloguser-usercenter')
+]

@@ -9,7 +9,6 @@ from bloguser.forms import BlogUserChangeForm, BlogUserCreationForm
 
 @admin.register(UserProfile)
 class UserPrifileModelAdmin(UserAdmin):
-    form = BlogUserChangeForm
     list_display = ('get_image', 'username', 'email', 'is_staff')
     fieldsets = (
         (None, {'fields': ('username', 'image', 'password')}),

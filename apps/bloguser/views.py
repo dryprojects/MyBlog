@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.tokens import default_token_generator
 from django.views.generic.edit import FormView, View
+from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ValidationError
 from django.utils.http import urlsafe_base64_decode
@@ -75,11 +76,31 @@ class BlogUserActiveConfirmView(View):
             raise Http404("无效邮箱验证请求")
 
 
-class BlogUserAccountView(LoginRequiredMixin, View):
+class BlogUserAccountView(LoginRequiredMixin, mixins.RedirectMixin, FormView):
     """
     用户个人中心
     """
-    template = ''
+    template_name = 'bloguser/usercenter.html'
+    form_class = forms.BlogUserChangeForm
+
+    def form_valid(self, form):
+        """
+        更新用户信息
+        :param form:
+        :return:
+        """
+        form.save()
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'instance': self.request.user
+        })
+
+        return kwargs
 
 
 class BlogUserPasswordResetView(auth_views.PasswordResetView):

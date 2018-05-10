@@ -1,0 +1,23 @@
+{% extends 'blog/base.html' %}
+
+{% block content-panel %}
+    <div class="content-meta col-md-2">
+        <div class="blog-meta">
+            {% block blog-meta-area %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="content-body col-md-10">
+        <!--POST BEGIN-->
+        {% block post-area %}{% endblock %}
+        <!--POST END-->
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <footer class="navbar-fixed-bottom">
+        <div class="site-claim">
+            <p>Copyright <span class="far fa-copyright"></span> myblog 2017~2018 All Rights Reserved</p>
+        </div>
+    </footer>
+{% endblock %}
