@@ -154,9 +154,12 @@
                         <div class="user-meta">
                             <img id="user-image" src="{{ request.user.image.url }}"/>
                             <span class="userdetail-name">{{ request.user.username }}</span>
+                            <a href="{% url 'bloguser:bloguser-usercenter' %}" class="far fa-bell" style="color: #dedede; margin-left: 26px; font-size: 26px; cursor: grabbing; text-decoration: none;">
+                                <span class="message-num" style="font-size: 16px;">{{ request.user.get_n_unread }}</span>
+                            </a>
                         </div>
                         <ul class="userdetail hide">
-                            <li><a href="#">进入个人中心</a></li>
+                            <li><a href="{% url 'bloguser:bloguser-usercenter' %}">进入个人中心</a></li>
                             <li><a href="{% url 'bloguser:bloguser-logout' %}?next={{ request.path }}">退出</a></li>
                         </ul>
                     {% else %}
@@ -170,161 +173,168 @@
         <div class="placebar"></div>
         <!-- CONTENT BEGIN -->
         <div class="content-panel row">
-            <div class="content-body col-md-8">
-                <!--POST BEGIN-->
-                {% block post-area %}{% endblock %}
-                <!--POST END-->
-                {% block paginator-area %}{% endblock %}
-            </div>
-            <div class="content-meta col-md-4">
-                <div class="blog-meta">
-                    {% block blog-meta-area %}
-                        <div class="msg-board">
-                            <div class="msg-title">
-                                博主
-                            </div>
-                            <div class="msg-content">
-                                <ul class="author-list">
-                                    <li>
-                                        <div class="author row">
-                                            <a href="" class="col-xs-4">
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="author-meta col-xs-8">
-                                                <p><span class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
-                                                </p>
-                                                <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
-                                                <p><span class="fab fa-github">&nbsp;&nbsp;<a
-                                                        href="https://gitee.com/RenKang303288346"
-                                                        target="_blank">https://github.com/Jennei</a></span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="msg-board">
-                            <div class="msg-title">
-                                公告
-                            </div>
-                            <div class="msg-content">
-                                <ul class="notice-list row">
-                                    <li>
-                                        <a href="#" class="col-xs-9">由于个人离职，博客暂停答复。</a>
-                                        <span class="col-xs-3">2018年4月4日</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="col-xs-9">今天心情不好，不回复任何问题。</a>
-                                        <span class="col-xs-3">2018年4月4日</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="col-xs-9">博客暂定5月初上线。</a>
-                                        <span class="col-xs-3">2018年4月4日</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="msg-board">
-                            <div class="msg-title">
-                                热门博文
-                            </div>
-                            <div class="msg-content">
-                                <ul class="post-list">
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="msg-board">
-                            <div class="msg-title">
-                                博主推荐
-                            </div>
-                            <div class="msg-content">
-                                <ul class="post-list">
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="hot-post row">
-                                            <a href="" class="col-xs-4">
-                                                <span class="more hide"></span>
-                                                <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                            </a>
-                                            <div class="hot-post-meta col-xs-8">
-                                                <a href="#">Charming Winter</a>
-                                                <p>28th Sep 2012</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    {% endblock %}
+            {% block content-panel %}
+                <div class="content-body col-md-8">
+                    <!--POST BEGIN-->
+                    {% block post-area %}{% endblock %}
+                    <!--POST END-->
+                    {% block paginator-area %}{% endblock %}
                 </div>
-            </div>
+                <div class="content-meta col-md-4">
+                    <div class="blog-meta">
+                        {% block blog-meta-area %}
+                            <div class="msg-board">
+                                <div class="msg-title">
+                                    博主
+                                </div>
+                                <div class="msg-content">
+                                    <ul class="author-list">
+                                        <li>
+                                            <div class="author row">
+                                                <a href="" class="col-xs-4">
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="author-meta col-xs-8">
+                                                    <p><span
+                                                            class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
+                                                    </p>
+                                                    <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
+                                                    <p><span class="fab fa-github">&nbsp;&nbsp;<a
+                                                            href="https://gitee.com/RenKang303288346"
+                                                            target="_blank">https://github.com/Jennei</a></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="msg-board">
+                                <div class="msg-title">
+                                    公告
+                                </div>
+                                <div class="msg-content">
+                                    <ul class="notice-list row">
+                                        <li>
+                                            <a href="#" class="col-xs-9">由于个人离职，博客暂停答复。</a>
+                                            <span class="col-xs-3">2018年4月4日</span>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="col-xs-9">今天心情不好，不回复任何问题。</a>
+                                            <span class="col-xs-3">2018年4月4日</span>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="col-xs-9">博客暂定5月初上线。</a>
+                                            <span class="col-xs-3">2018年4月4日</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="msg-board">
+                                <div class="msg-title">
+                                    热门博文
+                                </div>
+                                <div class="msg-content">
+                                    <ul class="post-list">
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="msg-board">
+                                <div class="msg-title">
+                                    博主推荐
+                                </div>
+                                <div class="msg-content">
+                                    <ul class="post-list">
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="hot-post row">
+                                                <a href="" class="col-xs-4">
+                                                    <span class="more hide"></span>
+                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                </a>
+                                                <div class="hot-post-meta col-xs-8">
+                                                    <a href="#">Charming Winter</a>
+                                                    <p>28th Sep 2012</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            {% endblock %}
         </div>
         <!-- CONTENT END -->
         <div class="placebar"></div>
-        <!-- BEGIN FOOTER -->
+    </div>
+</div>
+<!-- BEGIN FOOTER -->
+{% block footer %}
+    <footer>
         <div class="footer box-top row hidden-xs hidden-sm">
             <div class="footer-content">
                 {% block footer-content-area %}
@@ -338,7 +348,8 @@
                                     <div class="rec-blog col-xs-4">
                                         <a href="#">
                                             <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
+                                                 alt="">
                                         </a>
                                     </div>
                                     <div class="rec-blog-meta col-xs-8">
@@ -350,7 +361,8 @@
                                     <div class="rec-blog col-xs-4">
                                         <a href="#">
                                             <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
+                                                 alt="">
                                         </a>
                                     </div>
                                     <div class="rec-blog-meta col-xs-8">
@@ -362,7 +374,8 @@
                                     <div class="rec-blog col-xs-4">
                                         <a href="#">
                                             <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover" alt="">
+                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
+                                                 alt="">
                                         </a>
                                     </div>
                                     <div class="rec-blog-meta col-xs-8">
@@ -436,9 +449,9 @@
         <div class="site-claim">
             <p>Copyright <span class="far fa-copyright"></span> myblog 2017~2018 All Rights Reserved</p>
         </div>
-        <!-- END FOOTER -->
-    </div>
-</div>
+    </footer>
+{% endblock %}
+<!-- END FOOTER -->
 <script type="text/javascript">
     $(function () {
         $.backstretch("{% static 'blog/images/bg/bg3.jpg' %}");

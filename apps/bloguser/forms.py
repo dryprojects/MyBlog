@@ -7,7 +7,7 @@
 @time:      2018/05/04 
 """
 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -35,7 +35,7 @@ class BlogUserCreationForm(UserCreationForm):
         fields = ['email', 'password1', 'password2', 'captcha']
 
     def async_send_mail(self, subject_template_name, email_template_name,
-                  context, from_email, to_email, html_email_template_name=None):
+                        context, from_email, to_email, html_email_template_name=None):
 
         subject = loader.render_to_string(subject_template_name, context)
         # Email subject *must not* contain newlines
@@ -52,9 +52,9 @@ class BlogUserCreationForm(UserCreationForm):
         domain = current_site.domain
 
         context = {
-            'email':kwargs.pop('email'),
-            'site_name':site_name,
-            'domain':domain,
+            'email': kwargs.pop('email'),
+            'site_name': site_name,
+            'domain': domain,
             'protocol': 'https' if request.is_secure() else 'http',
             'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'user': user,
@@ -82,11 +82,28 @@ class BlogUserCreationForm(UserCreationForm):
         return user
 
 
-class BlogUserChangeForm(UserChangeForm):
+class BlogUserChangeForm(forms.ModelForm):
     """
     for update user info
     """
-
     class Meta:
         model = UserProfile
-        exclude = ['image_url']
+        fields = ['image', 'username', 'email']
+
+
+class BlogUserPasswordResetForm(PasswordResetForm):
+    """
+    将发送邮件重置密码重写为异步发送
+    """
+
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        """
+                Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+                """
+        subject = loader.render_to_string(subject_template_name, context)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+
+        send_mail.delay(subject, body, from_email, [to_email])

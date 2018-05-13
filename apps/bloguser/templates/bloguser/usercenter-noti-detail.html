@@ -1,0 +1,22 @@
+{% extends 'bloguser/usercenter_base.html' %}
+
+{% block blog-meta-area %}
+    <div class="msg-board">
+        <ul class="nav nav-pills nav-stacked" role="tablist">
+            <li role="presentation" class="active">
+                <a href="{% url 'bloguser:bloguser-usercenter' %}">返回</a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block post-area %}
+    <div class="post-detail">
+        <div class="notification row">
+            <span class="col-md-10">{{ notification.content }}</span>
+            <span class="col-md-2">{{ notification.published_time }}</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}消息详情{% endblock %}

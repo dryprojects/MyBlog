@@ -27,3 +27,8 @@ class UserProfile(AbstractUser):
         """
         from oper.models import Notification
         Notification.objects.create(user=self, content=content)
+
+    def get_n_unread(self):
+        """获取用户未读消息数"""
+        from oper.tasks import get_n_unread
+        return get_n_unread(self.pk)

@@ -54,9 +54,25 @@ def get_n_unread(self, user_id):
         return cache.get(key)
     else:
         user = User.objects.get(pk=user_id)
-        nt_c = NotificationUnReadCounter.objects.get(user=user)
-        cache.set(key, nt_c.n_unread, None)
+        try:
+            nt_c = NotificationUnReadCounter.objects.get(user=user)
+        except NotificationUnReadCounter.DoesNotExist as e:
+            cache.set(key, 0, None)
+        else:
+            cache.set(key, nt_c.n_unread, None)
+
         return cache.get(key)
+
+
+@shared_task(bind=True)
+def mark_as_read(self, user_id, notification_id):
+    from oper.models import Notification
+    #写成一条语句，更新has_read，相当于把这些操作看成一次事务，自动加锁。
+    #这样如果并发时有多个请求更改has_read的操作，其它请求会等待在第一个请求执行完has_read=True
+    #最后其它请求就会知道has_read已经为True了。
+    #这里的has_read会被竞争性访问修改，只有保证了这一步的原子性，下一步原子更新未读数才有意义。
+    affected_rows = Notification.objects.filter(pk=notification_id, has_read=False).update(has_read=True)
+    update_n_unread.delay(user_id, -affected_rows)
 
 
 @shared_task(bind=True)
@@ -77,7 +93,11 @@ def sync_n_unread(self):
             if any(filter(lambda x: x.startswith('oper:notification:'), cache.keys('*'))):
                 for c in filter(lambda x: x.startswith('oper:notification:'), cache.keys('*')):
                     user_id = c.split(':').pop()
-                    user = User.objects.get(pk=user_id)
+                    try:
+                        user = User.objects.get(pk=user_id)
+                    except User.DoesNotExist as e:
+                        return True
+
                     cache_n_unread = cache.get(c)
 
                     try:

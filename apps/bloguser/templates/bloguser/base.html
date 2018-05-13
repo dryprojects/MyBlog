@@ -16,7 +16,7 @@
 <body>
 <div class="scanlines"></div>
 <div class="page-container container">
-    <a href="#"><img src="{% static 'blog/images/logo.png' %}" alt=""></a>
+    <a href="{% url 'blog:post-list' %}"><img src="{% static 'blog/images/logo.png' %}" alt=""></a>
     {% block content %}
     {% endblock %}
 </div>

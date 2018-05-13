@@ -1,0 +1,141 @@
+{% extends 'bloguser/usercenter_base.html' %}
+
+{% block blog-meta-area %}
+    <div class="msg-board">
+        <ul class="nav nav-pills nav-stacked" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">通知 <span
+                        class="message-num pull-right">{{ request.user.get_n_unread }}</span></a>
+            </li>
+            <li role="presentation">
+                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">个人信息</a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block post-area %}
+    <div class="post-detail">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="profile">
+                <div class="userinfo">
+                    <form action="" method="post" class="row" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="col-md-1">
+                            <img src="{{ request.user.image.url }}" alt="" style="border-radius: 100%;" width="100px"
+                                 height="100px">
+                        </div>
+                        <ul class="col-md-11 userinfo-meta">
+                            <li class="row">
+                                <label for="username" class="col-md-1">用户名</label>
+                                <input type="text" id="username" name="username" value="{{ request.user.username }}"
+                                       class="col-md-3">
+                                {% if form.username.errors %}{% for error in form.username.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                            </li>
+                            <li class="row" style="margin-top: 10px">
+                                <label for="avatar" class="col-md-1">头像</label>
+                                <input type="file" id="avatar" name="image" class="col-md-3">
+                                {% if form.image.errors %}{% for error in form.image.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                            </li>
+                            <li class="row" style="margin-top: 10px">
+                                <label for="email" class="col-md-1">邮箱</label>
+                                <input type="email" name="email" value="{{ request.user.email }}" id="email"
+                                       class="col-md-3">
+                                {% if form.email.errors %}{% for error in form.email.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                            </li>
+                            <li class="row" style="margin-top: 10px">
+                                <input type="submit" value="保存" class="col-md-offset-1 col-md-3">
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane fade in active" id="messages">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="margin-bottom: 15px;">
+                    <li role="presentation" class="active">
+                        <a href="#pills-unread" aria-controls="pills-unread" role="tab" data-toggle="tab">未读消息 <span
+                                class="message-num">{{ request.user.get_n_unread }}</span></a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade in active" id="pills-unread" role="tabpanel">
+                        <ul class="message-list">
+                            {% for notification in notification_list %}
+                                <li class="message row" id="noti{{ notification.pk }}">
+                                    <div class="message-content col-xs-8">
+                                        <a href="{% url 'bloguser:bloguser-noti-detail' notification.pk %}" style="color: #dedede; text-decoration: none;">{{ notification.content|truncatechars:27 }}</a>
+                                    </div>
+                                    <span class="message-date col-xs-2">{{ notification.published_time }}</span>
+                                    {% if not notification.has_read %}
+                                        <span class="far fa-envelope col-xs-1"></span>
+                                    {% else %}
+                                        <span class="far fa-envelope-open col-xs-1"></span>
+                                    {% endif %}
+                                    <span class="fas fa-trash-alt message-del col-xs-1"></span>
+                                </li>
+                            {% empty %}
+                            {% endfor %}
+                        </ul>
+                        <div class="line"></div>
+                        {% include 'blog/pagination.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}个人中心{% endblock %}
+
+{% block extra-js %}
+    <script>
+        $(function () {
+            //用户点击删除消息后删除消息
+            $('.message-list').on('click', '.message-del', function () {
+                var message = $(this).parent('li');
+                var message_id = message.attr('id').replace('noti', '');
+
+                //ajax csrf settings
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: '/account/usercenter/notification/' + message_id + '/',
+                    type: 'DELETE',
+                    success: function () {
+                        message.remove();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
