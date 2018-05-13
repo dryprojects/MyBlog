@@ -1,17 +1,23 @@
+import json
+
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.tokens import default_token_generator
-from django.views.generic.edit import FormView, View
-from django.views.generic import TemplateView, DeleteView
+from django.views.generic.edit import FormView, View, FormMixin
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ValidationError
 from django.utils.http import urlsafe_base64_decode
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect, resolve_url
+
+from pure_pagination.mixins import PaginationMixin
 
 from bloguser import forms
 from bloguser import mixins
 from bloguser.models import UserProfile
+from oper.models import Notification
+from oper.tasks import get_n_unread, mark_as_read
 
 
 class BlogUserLoginView(auth_views.LoginView):
@@ -76,12 +82,38 @@ class BlogUserActiveConfirmView(View):
             raise Http404("无效邮箱验证请求")
 
 
-class BlogUserAccountView(LoginRequiredMixin, mixins.RedirectMixin, FormView):
+class BlogUserAccountView(LoginRequiredMixin, PaginationMixin, mixins.RedirectMixin, FormMixin, ListView):
     """
     用户个人中心
+        个人信息
+        通知
     """
     template_name = 'bloguser/usercenter.html'
     form_class = forms.BlogUserChangeForm
+    queryset = Notification.objects.all()
+    paginate_by = 15
+    ordering = '-published_time'
+
+    def post(self, request):
+        """
+        更新用户个人信息
+        :param request:
+        :return:
+        """
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_queryset(self):
+        """
+        获取用户的相关通知
+        :return:
+        """
+        queryset = super().get_queryset()
+
+        return queryset.filter(user=self.request.user)
 
     def form_valid(self, form):
         """
@@ -101,6 +133,25 @@ class BlogUserAccountView(LoginRequiredMixin, mixins.RedirectMixin, FormView):
         })
 
         return kwargs
+
+
+class BlogUserDetailView(DetailView):
+    model = Notification
+    template_name = 'bloguser/usercenter-noti-detail.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return HttpResponse(json.dumps({'status':'success'}), status=204, content_type="application/json")
+
+    def get_context_data(self, **kwargs):
+        """将用户通知标记为已读"""
+        if not self.object.has_read:
+            # 更新缓存
+            mark_as_read(self.request.user.pk, self.kwargs.get('pk'))
+
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 class BlogUserPasswordResetView(auth_views.PasswordResetView):

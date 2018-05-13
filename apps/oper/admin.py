@@ -27,4 +27,5 @@ class NotificationModelAdmin(admin.ModelAdmin):
 @admin.register(NotificationUnReadCounter)
 class NotificationUnReadCounter(admin.ModelAdmin):
     list_display = ('user', 'n_unread')
+    readonly_fields = ['user', 'n_unread']
 

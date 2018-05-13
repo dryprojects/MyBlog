@@ -347,12 +347,12 @@ body {
     text-decoration: none;
     color: #797979;
     display: block;
-    width: auto;
+    width: 100%;
     line-height: 41px;
 }
 
 .paginatorbar .page-list li:hover {
-    background-color: rgba(134, 172, 163, 0.33);
+    background-color: rgba(205, 92, 92, 0.33);
 }
 
 .msg-board {
@@ -584,9 +584,9 @@ body {
     background: transparent url(../images/line.png) center top repeat-x;
 }
 
-/*.active {*/
-/*background-color: rgba(134, 172, 163, 0.33);*/
-/*}*/
+.page-active {
+    background-color: rgba(134, 172, 163, 0.33);
+}
 
 .site-claim {
     background: rgba(0, 0, 0, 0.55);
@@ -963,32 +963,32 @@ a {
     background-color: indianred;
 }
 
-.userinfo-meta{
+.userinfo-meta {
     color: #dedede;
     list-style: none;
     font-size: 13px;
 }
 
-.userinfo-meta label{
+.userinfo-meta label {
     padding: 0;
     text-align: center;
     height: 26px;
     line-height: 26px;
 }
 
-.userinfo-meta input{
+.userinfo-meta input {
     padding: 0 7px;
     font-size: 13px;
     height: 30px;
 }
 
-.message-list{
+.message-list {
     list-style: none;
     color: #bebebe;
     margin-bottom: 25px;
 }
 
-.message{
+.message {
     width: auto;
     height: auto;
     line-height: 25px;
@@ -998,11 +998,11 @@ a {
     cursor: grab;
 }
 
-#pills-unread .paginatorbar{
+#pills-unread .paginatorbar {
     margin-bottom: 0;
 }
 
-#pills-read .paginatorbar{
+#pills-read .paginatorbar {
     margin-bottom: 0;
 }
 
@@ -1010,8 +1010,12 @@ a {
     border-radius: 100%;
     background-color: indianred;
     display: inline-block;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     text-align: center;
-    line-height: 22px;
+    line-height: 24px;
+}
+
+.notification{
+    color: #dedede;
 }

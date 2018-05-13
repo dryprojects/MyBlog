@@ -4,10 +4,11 @@
     <div class="msg-board">
         <ul class="nav nav-pills nav-stacked" role="tablist">
             <li role="presentation" class="active">
-                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">个人信息</a>
+                <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">通知 <span
+                        class="message-num pull-right">{{ request.user.get_n_unread }}</span></a>
             </li>
             <li role="presentation">
-                <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">通知 <span class="message-num pull-right">2</span></a>
+                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">个人信息</a>
             </li>
         </ul>
     </div>
@@ -16,7 +17,7 @@
 {% block post-area %}
     <div class="post-detail">
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane fade in active" id="profile">
+            <div role="tabpanel" class="tab-pane fade" id="profile">
                 <div class="userinfo">
                     <form action="" method="post" class="row" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -52,38 +53,31 @@
                     </form>
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane fade" id="messages">
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <div role="tabpanel" class="tab-pane fade in active" id="messages">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="margin-bottom: 15px;">
                     <li role="presentation" class="active">
-                        <a href="#pills-unread" aria-controls="pills-unread" role="tab" data-toggle="tab">未读消息 <span class="message-num">2</span></a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#pills-read" aria-controls="pills-read" role="tab" data-toggle="tab">已读消息</a>
+                        <a href="#pills-unread" aria-controls="pills-unread" role="tab" data-toggle="tab">未读消息 <span
+                                class="message-num">{{ request.user.get_n_unread }}</span></a>
                     </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade in active" id="pills-unread" role="tabpanel">
                         <ul class="message-list">
-                            <li class="message row">
-                                <div class="message-content col-xs-6">
-                                    czxczx
-                                </div>
-                                <span class="message-date col-xs-5">2018年5月10日 22:08:56</span>
-                                <span class="fas fa-trash-alt message-del col-xs-1"></span>
-                            </li>
-                        </ul>
-                        <div class="line"></div>
-                        {% include 'blog/pagination.html' %}
-                    </div>
-                    <div class="tab-pane fade" id="pills-read" role="tabpanel">
-                        <ul class="message-list">
-                            <li class="message row">
-                                <div class="message-content col-xs-6">
-                                    12312312
-                                </div>
-                                <span class="message-date col-xs-5">2018年5月10日 22:08:56</span>
-                                <span class="fas fa-trash-alt message-del col-xs-1"></span>
-                            </li>
+                            {% for notification in notification_list %}
+                                <li class="message row" id="noti{{ notification.pk }}">
+                                    <div class="message-content col-xs-8">
+                                        <a href="{% url 'bloguser:bloguser-noti-detail' notification.pk %}" style="color: #dedede; text-decoration: none;">{{ notification.content|truncatechars:27 }}</a>
+                                    </div>
+                                    <span class="message-date col-xs-2">{{ notification.published_time }}</span>
+                                    {% if not notification.has_read %}
+                                        <span class="far fa-envelope col-xs-1"></span>
+                                    {% else %}
+                                        <span class="far fa-envelope-open col-xs-1"></span>
+                                    {% endif %}
+                                    <span class="fas fa-trash-alt message-del col-xs-1"></span>
+                                </li>
+                            {% empty %}
+                            {% endfor %}
                         </ul>
                         <div class="line"></div>
                         {% include 'blog/pagination.html' %}
@@ -95,3 +89,53 @@
 {% endblock %}
 
 {% block title %}个人中心{% endblock %}
+
+{% block extra-js %}
+    <script>
+        $(function () {
+            //用户点击删除消息后删除消息
+            $('.message-list').on('click', '.message-del', function () {
+                var message = $(this).parent('li');
+                var message_id = message.attr('id').replace('noti', '');
+
+                //ajax csrf settings
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: '/account/usercenter/notification/' + message_id + '/',
+                    type: 'DELETE',
+                    success: function () {
+                        message.remove();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

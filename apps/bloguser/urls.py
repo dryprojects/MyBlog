@@ -26,5 +26,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('usercenter/', views.BlogUserAccountView.as_view(), name='bloguser-usercenter')
+    path('usercenter/', views.BlogUserAccountView.as_view(), name='bloguser-usercenter'),
+    path('usercenter/notification/<int:pk>/', views.BlogUserDetailView.as_view(), name='bloguser-noti-detail'),
 ]
