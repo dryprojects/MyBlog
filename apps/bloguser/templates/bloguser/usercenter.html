@@ -7,7 +7,7 @@
                 <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">个人信息</a>
             </li>
             <li role="presentation">
-                <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">通知</a>
+                <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">通知 <span class="message-num pull-right">2</span></a>
             </li>
         </ul>
     </div>
@@ -22,23 +22,28 @@
                         {% csrf_token %}
                         <div class="col-md-1">
                             <img src="{{ request.user.image.url }}" alt="" style="border-radius: 100%;" width="100px"
-                             height="100px">
+                                 height="100px">
                         </div>
                         <ul class="col-md-11 userinfo-meta">
                             <li class="row">
                                 <label for="username" class="col-md-1">用户名</label>
-                                <input type="text" id="username" name="username" value="{{ request.user.username }}" class="col-md-3">
-                                {% if form.username.errors %}{% for error in form.username.errors %}<span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                                <input type="text" id="username" name="username" value="{{ request.user.username }}"
+                                       class="col-md-3">
+                                {% if form.username.errors %}{% for error in form.username.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
                             </li>
                             <li class="row" style="margin-top: 10px">
                                 <label for="avatar" class="col-md-1">头像</label>
                                 <input type="file" id="avatar" name="image" class="col-md-3">
-                                {% if form.image.errors %}{% for error in form.image.errors %}<span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                                {% if form.image.errors %}{% for error in form.image.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
                             </li>
                             <li class="row" style="margin-top: 10px">
                                 <label for="email" class="col-md-1">邮箱</label>
-                                <input type="email" name="email" value="{{ request.user.email }}" id="email" class="col-md-3">
-                                {% if form.email.errors %}{% for error in form.email.errors %}<span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
+                                <input type="email" name="email" value="{{ request.user.email }}" id="email"
+                                       class="col-md-3">
+                                {% if form.email.errors %}{% for error in form.email.errors %}
+                                    <span class="col-md-3">{{ error }}</span>{% endfor %}{% endif %}
                             </li>
                             <li class="row" style="margin-top: 10px">
                                 <input type="submit" value="保存" class="col-md-offset-1 col-md-3">
@@ -48,7 +53,42 @@
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane fade" id="messages">
-                <p style="color:#dedede;">This is msg</p>
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#pills-unread" aria-controls="pills-unread" role="tab" data-toggle="tab">未读消息 <span class="message-num">2</span></a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#pills-read" aria-controls="pills-read" role="tab" data-toggle="tab">已读消息</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade in active" id="pills-unread" role="tabpanel">
+                        <ul class="message-list">
+                            <li class="message row">
+                                <div class="message-content col-xs-6">
+                                    czxczx
+                                </div>
+                                <span class="message-date col-xs-5">2018年5月10日 22:08:56</span>
+                                <span class="fas fa-trash-alt message-del col-xs-1"></span>
+                            </li>
+                        </ul>
+                        <div class="line"></div>
+                        {% include 'blog/pagination.html' %}
+                    </div>
+                    <div class="tab-pane fade" id="pills-read" role="tabpanel">
+                        <ul class="message-list">
+                            <li class="message row">
+                                <div class="message-content col-xs-6">
+                                    12312312
+                                </div>
+                                <span class="message-date col-xs-5">2018年5月10日 22:08:56</span>
+                                <span class="fas fa-trash-alt message-del col-xs-1"></span>
+                            </li>
+                        </ul>
+                        <div class="line"></div>
+                        {% include 'blog/pagination.html' %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

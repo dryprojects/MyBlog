@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.tokens import default_token_generator
 from django.views.generic.edit import FormView, View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ValidationError
 from django.utils.http import urlsafe_base64_decode

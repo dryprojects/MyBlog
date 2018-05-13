@@ -154,6 +154,9 @@
                         <div class="user-meta">
                             <img id="user-image" src="{{ request.user.image.url }}"/>
                             <span class="userdetail-name">{{ request.user.username }}</span>
+                            <a href="{% url 'bloguser:bloguser-usercenter' %}" class="far fa-bell" style="color: #dedede; margin-left: 26px; font-size: 26px; cursor: grabbing; text-decoration: none;">
+                                <span class="message-num" style="font-size: 16px;">99</span>
+                            </a>
                         </div>
                         <ul class="userdetail hide">
                             <li><a href="{% url 'bloguser:bloguser-usercenter' %}">进入个人中心</a></li>

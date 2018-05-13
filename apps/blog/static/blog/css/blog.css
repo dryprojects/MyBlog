@@ -981,3 +981,37 @@ a {
     font-size: 13px;
     height: 30px;
 }
+
+.message-list{
+    list-style: none;
+    color: #bebebe;
+    margin-bottom: 25px;
+}
+
+.message{
+    width: auto;
+    height: auto;
+    line-height: 25px;
+}
+
+.message-del {
+    cursor: grab;
+}
+
+#pills-unread .paginatorbar{
+    margin-bottom: 0;
+}
+
+#pills-read .paginatorbar{
+    margin-bottom: 0;
+}
+
+.message-num {
+    border-radius: 100%;
+    background-color: indianred;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+}
