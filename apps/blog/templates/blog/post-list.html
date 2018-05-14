@@ -17,7 +17,7 @@
 {% block title %}MyBlog-PostList{% endblock %}
 {% block post-area %}
     {% for post in post_list %}
-        <div class="post">
+        <div class="post" {% if forloop.counter|divisibleby:2 %}style="float: right; margin-right: 0;" {% endif %}>
             <div class="post-meta row">
                 <span class="far fa-image col-md-8 col-xs-5">&nbsp;{{ post.published_time }}</span>
                 <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_comments }}</span>
@@ -26,17 +26,17 @@
                 <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.n_browsers }}</span>
             </div>
             <div class="post-body row">
+                <a href="{{ post.get_absolute_url }}" class="post-thumbnail-parent" style="padding-right: 0">
+                    <span class="more hide"></span>
+                    <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
+                </a>
                 <div class="post-excerpt">
                     <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
-                    <div class="post-excerpt-content col-md-8" style="padding-left: 0">
+                    <div class="post-excerpt-content" style="padding-left: 0">
                         <div id="editormd-view{{ forloop.counter }}">
                             <textarea style="display:none;" id="markdown-doc">{{ post.excerpt|safe }}</textarea>
                         </div>
                     </div>
-                    <a href="{{ post.get_absolute_url }}" class="col-md-4" style="padding-right: 0">
-                        <span class="more hide"></span>
-                        <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
-                    </a>
                 </div>
                 <div class="line"></div>
                 <div class="post-tags">
