@@ -5,9 +5,7 @@
 {% block post-area %}
     <div class="post-detail">
         <div class="post-detail-title row">
-            <a href="#" class="prev-post col-xs-2"><span class="fas fa-angle-double-left"></span>Prev</a>
-            <span class="col-xs-8">{{ post.title }}</span>
-            <a href="#" class="next-post col-xs-2">Next<span class="fas fa-angle-double-right"></span></a>
+            <span>{{ post.title }}</span>
         </div>
         <div class="post-detail-meta row">
             <p class="author">{{ post.author }}&nbsp;<span>{{ post.published_time }}</span></p>
@@ -21,8 +19,16 @@
             </div>
         </div>
         <div class="post-detail-footer row">
-            <a href="#" class="prev-post col-xs-6"><span class="fas fa-angle-double-left"></span>Prev</a>
-            <a href="#" class="next-post col-xs-6">Next<span class="fas fa-angle-double-right"></span></a>
+            <div class="line"></div>
+            {% if post.prev %}
+                <a href="{{ post.prev.get_absolute_url }}" class="prev-post col-xs-6"><span
+                        class="fas fa-angle-double-left"></span>上一篇 {{ post.prev.title }}</a>
+            {% endif %}
+            {% if post.next %}
+                <a href="{{ post.next.get_absolute_url }}"
+                   class="next-post col-xs-6 pull-right">下一篇 {{ post.next.title }}<span
+                        class="fas fa-angle-double-right"></span></a>
+            {% endif %}
         </div>
     </div>
     <!--POST END-->
