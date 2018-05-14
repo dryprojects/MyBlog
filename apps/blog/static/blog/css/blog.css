@@ -210,9 +210,8 @@ body {
     width: 49%;
     height: auto;
     margin-bottom: 20px;
-    /*margin-right: 2%;*/
     padding: 0 14px;
-    float: left;
+    display: inline-block;
     border-radius: 4%;
 }
 

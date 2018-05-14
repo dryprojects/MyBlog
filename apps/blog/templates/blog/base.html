@@ -35,43 +35,25 @@
 <div class="mobile-nav">
     <ul class="fancynav-add">
         <li>
-            <a href="#">Blog</a>
+            <a href="{% url 'blog:post-list' %}">博文</a>
         </li>
         <li>
-            <a href="#">Categroies</a>
-            <ul>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Hosting</a></li>
-                <li>
-                    <a href="#">Design</a>
-                    <ul>
-                        <li><a href="#">Graphics</a></li>
-                        <li><a href="#">Vectors</a></li>
-                        <li>
-                            <a href="#">Photoshop</a>
-                            <ul>
-                                <li><a href="#">Photo editing</a></li>
-                                <li><a href="#">Business cards</a></li>
-                                <li><a href="#">Websites</a></li>
-                                <li><a href="#">Flyers</a></li>
+            <a href="#">分类</a>
+            <ul class="root">
+                {% recursetree post_category_list %}
+                    <li>
+                        <a href="{% url 'blog:post-category' node.id %}">{{ node.name }}</a>
+                        {% if not node.is_leaf_node %}
+                            <ul class="children">
+                                {{ children }}
                             </ul>
-                        </li>
-                        <li><a href="#">Fonts</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Consulting</a></li>
+                        {% endif %}
+                    </li>
+                {% endrecursetree %}
             </ul>
         </li>
         <li>
-            <a href="#">Contact</a>
-        </li>
-        <li><a href="#">Login</a></li>
-        <li>
-            <form action="#" method="get" id="mobile-search" class="container">
-                <input type="text" name="q" placeholder="Search" id="mobile-search-input">
-                <button type="submit"
-                        class="button button-normal button-plain button-borderless fa fa-search"></button>
-            </form>
+            <a href="#">关于</a>
         </li>
     </ul>
 </div>
