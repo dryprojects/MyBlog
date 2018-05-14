@@ -270,7 +270,7 @@
                                         {% for recommend_post in recommend_posts %}
                                             <li>
                                                 <div class="hot-post row">
-                                                    <a href="" class="col-xs-4">
+                                                    <a href="{{ recommend_post.get_absolute_url }}" class="col-xs-4">
                                                         <span class="more hide"></span>
                                                         <img src="{{ recommend_post.cover.url }}" alt="">
                                                     </a>
