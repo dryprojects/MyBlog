@@ -20,7 +20,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'image']
 
 
 class CommentTreeSerializer(WritableNestedModelSerializer):

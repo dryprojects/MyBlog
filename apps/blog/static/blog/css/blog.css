@@ -233,12 +233,12 @@ body {
     padding: 0 20px;
 }
 
-.see-more{
+.see-more {
     color: #dedede;
     text-decoration: none;
 }
 
-.see-more:hover{
+.see-more:hover {
     color: indianred;
     text-decoration: none;
 }
@@ -854,6 +854,12 @@ input, textarea {
     width: 100%;
     height: auto;
     padding: 20px 20px;
+}
+
+.comment-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
 }
 
 .post-comment-list img {

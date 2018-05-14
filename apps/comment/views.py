@@ -20,9 +20,29 @@ class CommentViewset(viewsets.ModelViewSet):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentTreeSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('parent', 'content_type', 'object_id')
+
+    def get_permissions(self):
+        """
+        对不同的操作设置不同权限
+        action:
+            list                IsAuthenticatedOrReadOnly
+            create              IsAuthenticatedOrReadOnly
+            retrieve            IsAuthenticatedOrReadOnly
+            update              IsOwnerOrReadOnly
+            partial_update      IsOwnerOrReadOnly
+            destroy             IsOwnerOrReadOnly
+            like                IsAuthenticatedOrReadOnly
+            cancel_like         IsAuthenticatedOrReadOnly
+        :return:
+        """
+        if self.action in ['destroy', 'update', 'partial_update']:
+            permission_classes = [IsOwnerOrReadOnly]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk, *args, **kwargs):
@@ -36,7 +56,7 @@ class CommentViewset(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'])
-    def dislike(self, request, pk, *args, **kwargs):
+    def cancel_like(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
         comment_obj.n_like -= 1
         comment_obj.save()
