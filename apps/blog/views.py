@@ -20,7 +20,7 @@ class PostListView(PaginationMixin, ListView):
     template_name = 'blog/post-list.html'
     model = Post
     ordering = '-published_time'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         queryset = super().get_queryset()

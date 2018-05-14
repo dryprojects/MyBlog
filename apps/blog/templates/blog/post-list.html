@@ -28,7 +28,7 @@
             <div class="post-body row">
                 <a href="{{ post.get_absolute_url }}" class="post-thumbnail-parent" style="padding-right: 0">
                     <span class="more hide"></span>
-                    <img src="{{ post.cover.url }}" alt="" class="post-thumbnail hidden-xs">
+                    <img src="{{ post.cover.url }}" alt="" class="post-thumbnail">
                 </a>
                 <div class="post-excerpt">
                     <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
@@ -37,6 +37,7 @@
                             <textarea style="display:none;" id="markdown-doc">{{ post.excerpt|safe }}</textarea>
                         </div>
                     </div>
+                    <a href="{{ post.get_absolute_url }}" class="pull-right see-more">See More >>></a>
                 </div>
                 <div class="line"></div>
                 <div class="post-tags">

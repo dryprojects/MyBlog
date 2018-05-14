@@ -233,8 +233,19 @@ body {
     padding: 0 20px;
 }
 
+.see-more{
+    color: #dedede;
+    text-decoration: none;
+}
+
+.see-more:hover{
+    color: indianred;
+    text-decoration: none;
+}
+
 .post-title {
     margin-bottom: 12px;
+    margin-top: 15px;
 }
 
 .post-title a {
