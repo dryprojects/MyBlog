@@ -221,42 +221,22 @@
                                 </div>
                                 <div class="msg-content">
                                     <ul class="post-list">
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
+                                        {% for hot_post in hot_posts %}
+                                            <li>
+                                                <div class="hot-post row">
+                                                    <a href="" class="col-xs-4">
+                                                        <span class="more hide"></span>
+                                                        <img src="{{ hot_post.cover.url }}" alt="">
+                                                    </a>
+                                                    <div class="hot-post-meta col-xs-8">
+                                                        <a href="{{ hot_post.get_absolute_url }}">{{ hot_post.title }}</a>
+                                                        <p>{{ hot_post.published_time }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        {% empty %}
+                                            <p>暂时没有热门博文</p>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>

@@ -13,7 +13,7 @@ from oper.models import BlogOwner, FriendshipLinks
 
 def post_extra(request):
     context = {}
-    post_queryset = Post.objects.all()
+    post_queryset = Post.objects.filter(status='published')
     #按月份归档
     post_archive_date_list = post_queryset.dates('published_time', 'month', order='DESC')
     context['post_archive_date_list'] = post_archive_date_list
@@ -25,6 +25,8 @@ def post_extra(request):
     context['post_category_list'] = cts
     #好评最多的 喜欢数排序
     #热门博文 浏览数排序
+    hot_posts = post_queryset.order_by('-n_browsers')[:3]
+    context['hot_posts'] = hot_posts
     #博主推荐
     blogowner = BlogOwner.objects.first()
     recommend_posts = blogowner.recommend_posts.all()
