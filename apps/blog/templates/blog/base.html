@@ -178,15 +178,19 @@
                                     搜索
                                 </div>
                                 <div class="msg-content">
-                                    <form class="searchform" method="get" id="search-meta-form" action="{% url 'blog:post-search' %}">
-                                        <div class="col-md-10">
-                                            <input id="search-input-meta" type="text" name="q" placeholder="Search"/>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button type="submit"
-                                                    class="button button-normal button-plain button-borderless fa fa-search"></button>
-                                        </div>
-                                    </form>
+                                    {% block search_form_mobile %}
+                                        <form class="searchform" method="get" id="search-meta-form"
+                                              action="{% url 'blog:post-search' %}">
+                                            <div class="col-md-10">
+                                                <input id="search-input-meta" type="text" name="q"
+                                                       placeholder="Search"/>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="submit"
+                                                        class="button button-normal button-plain button-borderless fa fa-search"></button>
+                                            </div>
+                                        </form>
+                                    {% endblock %}
                                 </div>
                             </div>
                             <div class="line" style="clear: both;"></div>
@@ -369,7 +373,7 @@
         $('#search-input').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,
-            cache: false,
+            cache: true,
             combine: function (args) {
                 return {
                     'q': args.query,
@@ -380,7 +384,7 @@
         $('#search-input-meta').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,
-            cache: false,
+            cache: true,
             combine: function (args) {
                 return {
                     'q': args.query,

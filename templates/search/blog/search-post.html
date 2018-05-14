@@ -16,6 +16,19 @@
     </form>
 {% endblock %}
 
+{% block search_form_mobile %}
+    <form class="searchform" method="get" id="search-meta-form" action="{% url 'blog:post-search' %}">
+        <div class="col-md-10">
+            <input id="search-input-meta" type="text" name="q"
+                   placeholder="{% if not query %}请输入关键字{% endif %}"
+                   value="{% if query %}{{ query }}{% endif %}"/>
+        </div>
+        <div class="col-md-2">
+            <button type="submit"
+                    class="button button-normal button-plain button-borderless fa fa-search"></button>
+        </div>
+    </form>
+{% endblock %}
 {% block title %}MyBlog-SearchPostList{% endblock %}
 {% block post-area %}
     {% if query %}
@@ -34,7 +47,9 @@
                         <img src="{{ post.object.cover.url }}" alt="" class="post-thumbnail">
                     </a>
                     <div class="post-excerpt">
-                        <div class="post-title"><a href="{{ post.object.get_absolute_url }}">{% highlight post.object.title with query html_tag "div" %}</a></div>
+                        <div class="post-title"><a
+                                href="{{ post.object.get_absolute_url }}">{% highlight post.object.title with query html_tag "div" %}</a>
+                        </div>
                         <div class="post-excerpt-content" style="padding-left: 0">
                             <div id="editormd-view{{ forloop.counter }}">
                                 <p id="markdown-doc" style="display: none">{% autoescape off %}
