@@ -129,8 +129,10 @@
                         <div class="user-meta">
                             <img id="user-image" src="{{ request.user.image.url }}"/>
                             <span class="userdetail-name">{{ request.user.username }}</span>
-                            <a href="{% url 'bloguser:bloguser-usercenter' %}" class="far fa-bell" style="color: #dedede; margin-left: 26px; font-size: 26px; cursor: grabbing; text-decoration: none;">
-                                <span class="message-num" style="font-size: 16px;">{{ request.user.get_n_unread }}</span>
+                            <a href="{% url 'bloguser:bloguser-usercenter' %}" class="far fa-bell"
+                               style="color: #dedede; margin-left: 26px; font-size: 26px; cursor: grabbing; text-decoration: none;">
+                                <span class="message-num"
+                                      style="font-size: 16px;">{{ request.user.get_n_unread }}</span>
                             </a>
                         </div>
                         <ul class="userdetail hide">
@@ -167,16 +169,23 @@
                                         <li>
                                             <div class="author row">
                                                 <a href="" class="col-xs-4">
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
+                                                    <img src="{{ blog_owner.user.image.url }}" alt=""
+                                                         style="width: 100px; height: 100px; margin: 0 auto;">
                                                 </a>
                                                 <div class="author-meta col-xs-8">
                                                     <p><span
-                                                            class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
+                                                            class="far fa-envelope">&nbsp;&nbsp;{{ blog_owner.user.email }}</span>
                                                     </p>
-                                                    <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
+                                                    <p><span class="fab fa-qq">&nbsp;&nbsp;{{ blog_owner.qq }}</span>
+                                                    </p>
                                                     <p><span class="fab fa-github">&nbsp;&nbsp;<a
-                                                            href="https://gitee.com/RenKang303288346"
-                                                            target="_blank">https://github.com/Jennei</a></span>
+                                                            href="{{ blog_owner.github }}"
+                                                            target="_blank">博主的github主页</a></span>
+                                                    </p>
+                                                    <p>
+                                                        <span class="fab fa-git">&nbsp;&nbsp;<a
+                                                                href="{{ blog_owner.gitee }}"
+                                                                target="_blank">博主的gitee主页</a></span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -191,18 +200,17 @@
                                 </div>
                                 <div class="msg-content">
                                     <ul class="notice-list row">
-                                        <li>
-                                            <a href="#" class="col-xs-9">由于个人离职，博客暂停答复。</a>
-                                            <span class="col-xs-3">2018年4月4日</span>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="col-xs-9">今天心情不好，不回复任何问题。</a>
-                                            <span class="col-xs-3">2018年4月4日</span>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="col-xs-9">博客暂定5月初上线。</a>
-                                            <span class="col-xs-3">2018年4月4日</span>
-                                        </li>
+                                        {% for blog_noti in blog_notifications %}
+                                            <li>
+                                                <a href="{{ blog_noti.get_absolute_url }}"
+                                                   class="col-xs-9">{{ blog_noti.title }}</a>
+                                                <span class="col-xs-3">{{ blog_noti.published_time }}</span>
+                                            </li>
+                                        {% empty %}
+                                            <li>
+                                                <span>暂时没有公告</span>
+                                            </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -213,42 +221,22 @@
                                 </div>
                                 <div class="msg-content">
                                     <ul class="post-list">
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
+                                        {% for hot_post in hot_posts %}
+                                            <li>
+                                                <div class="hot-post row">
+                                                    <a href="" class="col-xs-4">
+                                                        <span class="more hide"></span>
+                                                        <img src="{{ hot_post.cover.url }}" alt="">
+                                                    </a>
+                                                    <div class="hot-post-meta col-xs-8">
+                                                        <a href="{{ hot_post.get_absolute_url }}">{{ hot_post.title }}</a>
+                                                        <p>{{ hot_post.published_time }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        {% empty %}
+                                            <p>暂时没有热门博文</p>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -259,42 +247,22 @@
                                 </div>
                                 <div class="msg-content">
                                     <ul class="post-list">
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
+                                        {% for recommend_post in recommend_posts %}
+                                            <li>
+                                                <div class="hot-post row">
+                                                    <a href="{{ recommend_post.get_absolute_url }}" class="col-xs-4">
+                                                        <span class="more hide"></span>
+                                                        <img src="{{ recommend_post.cover.url }}" alt="">
+                                                    </a>
+                                                    <div class="hot-post-meta col-xs-8">
+                                                        <a href="{{ recommend_post.get_absolute_url }}">{{ recommend_post.title }}</a>
+                                                        <p>{{ recommend_post.published_time }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="hot-post row">
-                                                <a href="" class="col-xs-4">
-                                                    <span class="more hide"></span>
-                                                    <img src="{% static 'blog/images/thumb.jpg' %}" alt="">
-                                                </a>
-                                                <div class="hot-post-meta col-xs-8">
-                                                    <a href="#">Charming Winter</a>
-                                                    <p>28th Sep 2012</p>
-                                                </div>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        {% empty %}
+                                            <li><span>暂时没有推荐</span></li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -315,49 +283,27 @@
                 {% block footer-content-area %}
                     <div class="footer-board col-xs-3">
                         <div class="footer-board-title">
-                            好评最多
+                            点赞最多
                         </div>
                         <div class="footer-board-content">
                             <ul class="rec-blog-list">
-                                <li>
-                                    <div class="rec-blog col-xs-4">
-                                        <a href="#">
-                                            <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
-                                                 alt="">
-                                        </a>
-                                    </div>
-                                    <div class="rec-blog-meta col-xs-8">
-                                        <a href="#">Django部署完全指南</a>
-                                        <p>2018年4月4日 20:35:12</p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="rec-blog col-xs-4">
-                                        <a href="#">
-                                            <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
-                                                 alt="">
-                                        </a>
-                                    </div>
-                                    <div class="rec-blog-meta col-xs-8">
-                                        <a href="#">Django部署完全指南</a>
-                                        <p>2018年4月4日 20:35:12</p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="rec-blog col-xs-4">
-                                        <a href="#">
-                                            <span class="more hide"></span>
-                                            <img src="{% static 'blog/images/thumb.jpg' %}" class="thumb-cover"
-                                                 alt="">
-                                        </a>
-                                    </div>
-                                    <div class="rec-blog-meta col-xs-8">
-                                        <a href="#">Django部署完全指南</a>
-                                        <p>2018年4月4日 20:35:12</p>
-                                    </div>
-                                </li>
+                                {% for post_thumb_most in post_thumb_most_list %}
+                                    <li>
+                                        <div class="rec-blog col-xs-4">
+                                            <a href="{{ post_thumb_most.get_absolute_url }}">
+                                                <span class="more hide"></span>
+                                                <img src="{{ post_thumb_most.cover.url }}" class="thumb-cover"
+                                                     alt="">
+                                            </a>
+                                        </div>
+                                        <div class="rec-blog-meta col-xs-8">
+                                            <a href="{{ post_thumb_most.get_absolute_url }}">{{ post_thumb_most.title }}</a>
+                                            <p>{{ post_thumb_most.published_time }}</p>
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li><p>暂时没有点赞最多的</p></li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
@@ -400,21 +346,15 @@
                         </div>
                         <div class="footer-board-content">
                             <ul class="friendship-link-list">
-                                <li>
-                                    <a href="#">somebody's blog</a>
-                                </li>
-                                <li>
-                                    <a href="#">somebody's blog</a>
-                                </li>
-                                <li>
-                                    <a href="#">somebody's blog</a>
-                                </li>
-                                <li>
-                                    <a href="#">somebody's blog</a>
-                                </li>
-                                <li>
-                                    <a href="#">somebody's blog</a>
-                                </li>
+                                {% for friendship_link in friendship_links %}
+                                    <li>
+                                        <a href="{{ friendship_link.url }}" target="_blank">{{ friendship_link.name }}:&nbsp;&nbsp;{{ friendship_link.url }}</a>
+                                    </li>
+                                {% empty %}
+                                    <li>
+                                        <span>暂时没有友情链接</span>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>

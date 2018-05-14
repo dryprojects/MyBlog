@@ -205,7 +205,7 @@ jQuery(document).ready(function ($) {
         },
         render_comment_template: function (data, template) {
             var user_name = data.author.username;
-            var user_image = 'images/avatar.png';
+            var user_image = data.author.image;
             var comment_datetime = data.published_time;
             var comment_content = data.content;
             var comment_n_like = data.n_like;
@@ -225,7 +225,7 @@ jQuery(document).ready(function ($) {
         },
         render_reply_template: function (data, template, reply_name) {
             var user_name = data.author.username;
-            var user_image = 'images/avatar.png';
+            var user_image = data.author.image;
             var comment_datetime = data.published_time;
             var comment_content = data.content;
             var comment_n_like = data.n_like;
@@ -314,7 +314,7 @@ jQuery(document).ready(function ($) {
             //点赞
             $('#comment' + cmt_id).on('click', '.comment-like' + cmt_id, function () {
                 var like_url = self.comment_reply_url + cmt_id + '/' + 'like' + '/';
-                var dislike_url = self.comment_reply_url + cmt_id + '/' + 'dislike' + '/';
+                var dislike_url = self.comment_reply_url + cmt_id + '/' + 'cancel_like' + '/';
 
                 if (self.liking_dict['.comment-like' + cmt_id] != '.comment-like' + cmt_id) {
                     $.ajax({
@@ -387,7 +387,7 @@ jQuery(document).ready(function ($) {
             //点赞
             $('#reply' + reply_id).on('click', '.reply-like' + reply_id, function () {
                 var like_url = self.comment_reply_url + reply_id + '/' + 'like' + '/';
-                var dislike_url = self.comment_reply_url + reply_id + '/' + 'dislike' + '/';
+                var dislike_url = self.comment_reply_url + reply_id + '/' + 'cancel_like' + '/';
 
                 if (self.liking_dict['.reply-like' + reply_id] != '.reply-like' + reply_id) {
                     $.ajax({

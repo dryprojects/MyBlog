@@ -36,6 +36,8 @@ class PostTagRelationShipInline(admin.TabularInline):
     model = Post.tags.rel.through
     extra = 1
     autocomplete_fields = ['tag']
+    verbose_name = '博文标签'
+    verbose_name_plural = verbose_name
 
 
 class ResourcesInline(admin.TabularInline):
@@ -51,16 +53,16 @@ class PostModalAdmin(DraggableMPTTAdmin):
     fieldsets = [
         ('博文基本信息',
          {"fields": [('title', 'category', 'author'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
-        ('博文附加信息', {"fields": [('cover', 'published_time'), ('status', 'parent'),
+        ('博文附加信息', {"fields": [('cover', 'published_time'), ('status', 'type', 'parent'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users']
-    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'published_time',
+    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'type','published_time',
                     'status', 'was_published_recently']
-    list_editable = ['status']
+    list_editable = ['status', 'type']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
                    )

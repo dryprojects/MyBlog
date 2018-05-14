@@ -233,12 +233,12 @@ body {
     padding: 0 20px;
 }
 
-.see-more{
+.see-more {
     color: #dedede;
     text-decoration: none;
 }
 
-.see-more:hover{
+.see-more:hover {
     color: indianred;
     text-decoration: none;
 }
@@ -424,7 +424,8 @@ body {
 
 .hot-post img {
     display: block;
-    max-width: 100%;
+    width: 100%;
+    height: 126px;
     z-index: 100;
 }
 
@@ -558,7 +559,7 @@ body {
     float: left;
     display: block;
     height: 30%;
-    width: auto;
+    width: 100%;
     margin-bottom: 20px;
 }
 
@@ -568,7 +569,7 @@ body {
 
 .rec-blog-list .thumb-cover {
     width: 100%;
-    height: 100%;
+    height: 100px;
 }
 
 .rec-blog {
@@ -800,6 +801,30 @@ body {
     padding: 0px 0px;
 }
 
+.post-detail-actions {
+    clear: both;
+    margin-bottom: 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 22px;
+    color: #bebebe;
+}
+
+.action-thumbs {
+    border-radius: 100%;
+    background-color: rgba(0, 0, 0, 0.33);
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    margin: 0 auto;
+    cursor: grabbing;
+    display: inline-block;
+}
+
+.action-thumbs:hover {
+    background-color: indianred;
+}
+
 .author {
     margin-bottom: 10px;
 }
@@ -854,6 +879,12 @@ input, textarea {
     width: 100%;
     height: auto;
     padding: 20px 20px;
+}
+
+.comment-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
 }
 
 .post-comment-list img {

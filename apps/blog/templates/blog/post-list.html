@@ -19,10 +19,9 @@
     {% for post in post_list %}
         <div class="post" {% if forloop.counter|divisibleby:2 %}style="float: right; margin-right: 0;" {% endif %}>
             <div class="post-meta row">
-                <span class="far fa-image col-md-8 col-xs-5">&nbsp;{{ post.published_time }}</span>
+                <span class="far fa-image col-md-9 col-xs-5">&nbsp;{{ post.published_time }}</span>
                 <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_comments }}</span>
                 <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_praise }}</span>
-                <span class="far fa-heart col-md-1 col-xs-2 hold-right">&nbsp;0</span>
                 <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.n_browsers }}</span>
             </div>
             <div class="post-body row">

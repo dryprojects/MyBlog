@@ -44,12 +44,16 @@ class Post(MPTTModel):
         ('draft', "草稿"),
         ('published', "已发表")
     )
+    TYPES = (
+        ('post', '博文'),
+        ('notification', '公告')
+    )
     parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
     cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
-    author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE) # n ~ 1
+    author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, blank=True, null=True) # n ~ 1
     excerpt = models.TextField(verbose_name="博文摘要", blank=True)
     content = models.TextField(verbose_name='博文内容')
     status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default='draft')
@@ -57,6 +61,7 @@ class Post(MPTTModel):
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
+    type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
 
     class Meta:
         verbose_name = '博文'

@@ -11,4 +11,4 @@ register = template.Library()
 
 @register.simple_tag
 def get_post_archive_count(year, month):
-    return Post.objects.filter(published_time__year=year, published_time__month=month).count()
+    return Post.objects.filter(published_time__year=year, published_time__month=month, type='post').count()

@@ -10,7 +10,7 @@
         <div class="post-detail-meta row">
             <p class="author">{{ post.author }}&nbsp;<span>{{ post.published_time }}</span></p>
             <span class="far fa-comments">&nbsp;{{ post.n_comments }}</span>
-            <span class="far fa-heart">&nbsp;223</span>
+            <span class="far fa-thumbs-up">&nbsp;223</span>
             <span class="fas fa-eye">&nbsp;{{ post.n_browsers }}</span>
         </div>
         <div class="post-detail-content">
@@ -31,6 +31,10 @@
             {% endif %}
         </div>
     </div>
+    <div class="post-detail-actions">
+        <div class="action-thumbs"><span class="far fa-thumbs-up"></span></div>
+        <span class="thumb-text">{{ post.n_praise }}</span>
+    </div>
     <!--POST END-->
     <!--COMMENT-->
     <div class="comment-panel">
@@ -44,7 +48,7 @@
                     <textarea id="comment-widget"></textarea>
                     <span class="comment-btn button button-glow button-rounded button-royal">发表</span>
                 {% else %}
-                    <a href="#">请登陆后操作</a>
+                    <a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}">请登陆后操作</a>
                 {% endif %}
                 <input type="hidden" id="content_type" value="{{ ct }}">
                 <input type="hidden" id="object_id" value="{{ post.id }}">
@@ -191,6 +195,13 @@
 
             $('.comment-panel-header-body').on('click', '.comment-btn', function () {
                 comment.create_comment();
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            new PostThumb({
+                thumb_url:'{% url "blog:post-thumb" post.pk %}'
             });
         });
     </script>

@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status
 from rest_framework import permissions
+from django.db.models import F
 
 from django_filters import rest_framework as filters
 
@@ -20,27 +20,50 @@ class CommentViewset(viewsets.ModelViewSet):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentTreeSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('parent', 'content_type', 'object_id')
+
+    def get_permissions(self):
+        """
+        对不同的操作设置不同权限
+        action:
+            list                IsAuthenticatedOrReadOnly
+            create              IsAuthenticatedOrReadOnly
+            retrieve            IsAuthenticatedOrReadOnly
+            update              IsOwnerOrReadOnly
+            partial_update      IsOwnerOrReadOnly
+            destroy             IsOwnerOrReadOnly
+            like                IsAuthenticatedOrReadOnly
+            cancel_like         IsAuthenticatedOrReadOnly
+        :return:
+        """
+        if self.action in ['destroy', 'update', 'partial_update']:
+            permission_classes = [IsOwnerOrReadOnly]
+        else:
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
-        comment_obj.n_like += 1
+        comment_obj.n_like = F('n_like') + 1
         comment_obj.save()
 
         #发送点赞信号
         post_like.send(sender=Comment, comment_obj=comment_obj, content_type = comment_obj.content_type, object_id = comment_obj.object_id)
+        #使用F表达式后需要重新求值
+        comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'])
-    def dislike(self, request, pk, *args, **kwargs):
+    def cancel_like(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
-        comment_obj.n_like -= 1
+        comment_obj.n_like = F('n_like') - 1
         comment_obj.save()
 
+        comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
