@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import transaction
 
 from mptt.models import MPTTModel, TreeForeignKey
+from mptt.utils import previous_current_next
 
 from comment.models import Comment
 
@@ -38,11 +39,12 @@ class Category(MPTTModel):
         return self.name
 
 
-class Post(models.Model):
+class Post(MPTTModel):
     STATUS = (
         ('draft', "草稿"),
         ('published', "已发表")
     )
+    parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
     cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
@@ -59,6 +61,9 @@ class Post(models.Model):
     class Meta:
         verbose_name = '博文'
         verbose_name_plural = verbose_name
+
+    class MPTTMeta:
+        order_insertion_by = ['title']
 
     def __str__(self):
         return self.title
@@ -105,6 +110,34 @@ class Post(models.Model):
                         user_set.add(sub_comment.author.username)
 
         return len(user_set)
+
+    @property
+    def prev_this_next(self):
+        """
+        返回上一篇博文， 当前博文， 下一篇博文的元组
+        如果上一篇或者下一篇不存在， 元组对应位置返回 None
+        :return: tuple
+        """
+        queryset = self.get_root().get_descendants(include_self=True)
+        for t in previous_current_next(queryset):
+            if t[1] == self:
+                return t
+
+    @property
+    def prev(self):
+        """
+        返回上一篇博文
+        :return:
+        """
+        return self.prev_this_next[0]
+
+    @property
+    def next(self):
+        """
+        返回下一篇博文
+        :return:
+        """
+        return self.prev_this_next[2]
 
 
 class Resources(models.Model):

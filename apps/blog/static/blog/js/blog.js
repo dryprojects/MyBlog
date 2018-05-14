@@ -14,7 +14,7 @@ jQuery(document).ready(function ($) {
     });
 
 
-    $('.post-excerpt a').mouseenter(function (e) {
+    $('.post-body a').mouseenter(function (e) {
         $(this).children('span').removeClass('hide');
         $(this).children('span').fadeIn(300);
     }).mouseleave(function (e) {
