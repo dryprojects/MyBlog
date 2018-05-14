@@ -2,7 +2,7 @@ KindEditor.ready(function (K) {
     window.editor = K.create("#comment-widget", {
         "afterCreate": function () {
             this.sync();
-            this.removeAttr('style');
+            $(this).removeAttr('style');
         },
         "afterChange": function () {
             this.sync();

@@ -23,7 +23,9 @@ def post_extra(request):
     #所有的博文分类
     cts = Category.objects.all()
     context['post_category_list'] = cts
-    #好评最多的 喜欢数排序
+    #点赞最多的 点赞数排序
+    post_thumb_most_list = post_queryset.order_by('-n_praise')[:3]
+    context['post_thumb_most_list'] = post_thumb_most_list
     #热门博文 浏览数排序
     hot_posts = post_queryset.order_by('-n_browsers')[:3]
     context['hot_posts'] = hot_posts

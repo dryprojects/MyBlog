@@ -10,7 +10,7 @@
         <div class="post-detail-meta row">
             <p class="author">{{ post.author }}&nbsp;<span>{{ post.published_time }}</span></p>
             <span class="far fa-comments">&nbsp;{{ post.n_comments }}</span>
-            <span class="far fa-heart">&nbsp;223</span>
+            <span class="far fa-thumbs-up">&nbsp;223</span>
             <span class="fas fa-eye">&nbsp;{{ post.n_browsers }}</span>
         </div>
         <div class="post-detail-content">
@@ -30,6 +30,10 @@
                         class="fas fa-angle-double-right"></span></a>
             {% endif %}
         </div>
+    </div>
+    <div class="post-detail-actions">
+        <div class="action-thumbs"><span class="far fa-thumbs-up"></span></div>
+        <span class="thumb-text">{{ post.n_praise }}</span>
     </div>
     <!--POST END-->
     <!--COMMENT-->
@@ -191,6 +195,13 @@
 
             $('.comment-panel-header-body').on('click', '.comment-btn', function () {
                 comment.create_comment();
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            new PostThumb({
+                thumb_url:'{% url "blog:post-thumb" post.pk %}'
             });
         });
     </script>

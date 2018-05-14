@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status
 from rest_framework import permissions
+from django.db.models import F
 
 from django_filters import rest_framework as filters
 
@@ -47,20 +47,23 @@ class CommentViewset(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def like(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
-        comment_obj.n_like += 1
+        comment_obj.n_like = F('n_like') + 1
         comment_obj.save()
 
         #发送点赞信号
         post_like.send(sender=Comment, comment_obj=comment_obj, content_type = comment_obj.content_type, object_id = comment_obj.object_id)
+        #使用F表达式后需要重新求值
+        comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'])
     def cancel_like(self, request, pk, *args, **kwargs):
         comment_obj = self.get_object()
-        comment_obj.n_like -= 1
+        comment_obj.n_like = F('n_like') - 1
         comment_obj.save()
 
+        comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)
         return Response(serializer.data)
 
