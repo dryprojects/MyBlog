@@ -1,5 +1,5 @@
 from django.contrib import admin
-from oper.models import Notification, NotificationUnReadCounter
+from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks
 # Register your models here.
 
 @admin.register(Notification)
@@ -25,7 +25,29 @@ class NotificationModelAdmin(admin.ModelAdmin):
 
 
 @admin.register(NotificationUnReadCounter)
-class NotificationUnReadCounter(admin.ModelAdmin):
+class NotificationUnReadCounterModelAdmin(admin.ModelAdmin):
     list_display = ('user', 'n_unread')
     readonly_fields = ['user', 'n_unread']
 
+
+class BlogOwnerRecommendPostRelationShipInline(admin.TabularInline):
+    model = BlogOwner.recommend_posts.rel.through
+    extra = 1
+    autocomplete_fields = ['post']
+    verbose_name = '博主推荐博文'
+    verbose_name_plural = verbose_name
+
+
+@admin.register(BlogOwner)
+class BlogOwnerModelAdmin(admin.ModelAdmin):
+    inlines = [BlogOwnerRecommendPostRelationShipInline]
+    fieldsets = [
+        ('博主基本信息', {"fields": [('user', 'qq'), ('github', 'gitee')], 'classes': ('wide', 'extrapretty')}),
+    ]
+    exclude = ['recommend_posts']
+    autocomplete_fields = ['user']
+
+
+@admin.register(FriendshipLinks)
+class FriendshipLinksModelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url']

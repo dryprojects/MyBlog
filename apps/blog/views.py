@@ -24,7 +24,7 @@ class PostListView(PaginationMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(status='published')
+        return queryset.filter(status='published', type='post')
 
 
 class PostDetailView(DetailView):
@@ -51,7 +51,7 @@ class PostDetailView(DetailView):
 
 class PostSearchView(PaginationMixin, SearchView):
     template_name = 'search/blog/search-post.html'
-    paginate_by = 3
+    paginate_by = 4
 
 
 class PostAutoCompleteView(View):
@@ -92,32 +92,32 @@ class PostArchiveListView(PaginationMixin, ListView):
     template_name = 'blog/post-list.html'
     model = Post
     ordering = '-published_time'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         queryset = super().get_queryset()
         ar_list = queryset.filter(published_time__year=self.kwargs['year'], published_time__month=self.kwargs['month'])
-        return ar_list.filter(status='published')
+        return ar_list.filter(status='published', type='post')
 
 
 class PostTagListView(PaginationMixin, ListView):
     template_name = 'blog/post-list.html'
     model = Post
     ordering = '-published_time'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         queryset = super().get_queryset()
         tag = get_object_or_404(Tag, pk=self.kwargs['pk'])
         tag_post_list = queryset.filter(tags=tag)
-        return tag_post_list.filter(status='published')
+        return tag_post_list.filter(status='published', type='post')
 
 
 class PostCategoryListView(PaginationMixin, ListView):
     template_name = 'blog/post-list.html'
     model = Post
     ordering = '-published_time'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         """
@@ -129,5 +129,5 @@ class PostCategoryListView(PaginationMixin, ListView):
         cg = get_object_or_404(Category, pk=self.kwargs['pk'])
         #获取该分类的所有子分类
         cg_list = cg.get_descendants(include_self=True)
-        queryset = Post.objects.filter(category__in=cg_list, status='published')
+        queryset = Post.objects.filter(category__in=cg_list, status='published', type='post')
         return queryset
