@@ -63,3 +63,24 @@ def handler_post_comment(sender, comment_obj, content_type, object_id, request, 
             message = loader.render_to_string(email_post_comment_template, context)
             post.author.notify_user(noti_text)
             post.author.email_user(subject, message, html_msg=message)
+    elif content_type == comment_ct:
+        """评论回复"""
+        try:
+            pass
+        except Comment.DoesNotExist as e:
+            pass
+        else:
+            comment = Comment.objects.get(pk=object_id)
+            context = {
+                'comment': comment,
+                'site_name': site_name,
+                'comment_object': comment_obj,
+                'protocol': protocol,
+                'domain': domain,
+            }
+            subject = '你的评论收到{}的回复'.format(comment_obj.author)
+            noti_text = '你的评论{}收到{}的回复 {}'.format(comment.content, comment_obj.author, comment_obj.content)
+            message = loader.render_to_string(email_comment_reply_template, context)
+
+            comment.author.notify_user(noti_text)
+            comment.author.email_user(subject, message, html_msg=message)
