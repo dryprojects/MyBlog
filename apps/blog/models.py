@@ -62,6 +62,7 @@ class Post(MPTTModel):
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
     type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
+    is_banner = models.BooleanField(verbose_name='是否是轮播图', default=False)
 
     class Meta:
         verbose_name = '博文'

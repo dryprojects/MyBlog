@@ -16,6 +16,10 @@
 
 {% block title %}MyBlog-PostList{% endblock %}
 {% block post-area %}
+    {% if post_banners %}
+        {% include 'blog/banner.html' %}
+        <div class="placebar"></div>
+    {% endif %}
     {% for post in post_list %}
         <div class="post {% if forloop.counter|divisibleby:2 %}pull-right{% endif %}">
             <div class="post-meta row">

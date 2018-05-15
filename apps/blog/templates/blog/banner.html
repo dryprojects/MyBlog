@@ -1,0 +1,36 @@
+{% load static %}
+
+<div class="main_banner hidden-xs hidden-sm hidden-md">
+    <div class="main_banner_bg"></div>
+    <div class="main_banner_wrap">
+        <div class="main_banner_box" id="m_box">
+            <a href="javascript:void(0)" class="banner_btn js_pre">
+                <span class="banner_btn_arrow"><i></i></span>
+            </a>
+            <a href="javascript:void(0)" class="banner_btn btn_next js_next">
+                <span class="banner_btn_arrow"><i></i></span>
+            </a>
+            <ul>
+                {% for post_banner in post_banners %}
+                    <li id="imgCard{{ forloop.counter0 }}">
+                        <a href="{{ post_banner.get_absolute_url }}"><span {% ifnotequal forloop.counter0 0 %}
+                            style="opacity: 0.5;"{% endifnotequal %}></span></a>
+                        <img src="{{ post_banner.cover.url }}" alt="">
+                        <p {% ifequal forloop.counter0 0 %}style="bottom: 0px;"{% endifequal %}>{{ post_banner.title }}</p>
+                    </li>
+                {% empty %}
+                {% endfor %}
+            </ul>
+            <!--火狐倒影图层-->
+            <p id="rflt"></p>
+            <!--火狐倒影图层-->
+        </div>
+        <!--序列号按钮-->
+        <div class="btn_list">
+            {% for post_banner in post_banners %}
+                <span {% ifequal forloop.counter0 0 %}class="cur curr"{% else %}class=""{% endifequal %}></span>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -53,7 +53,7 @@ class PostModalAdmin(DraggableMPTTAdmin):
     fieldsets = [
         ('博文基本信息',
          {"fields": [('title', 'category', 'author'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
-        ('博文附加信息', {"fields": [('cover', 'published_time'), ('status', 'type', 'parent'),
+        ('博文附加信息', {"fields": [('cover', 'published_time', 'is_banner'), ('status', 'type', 'parent'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')],
                     "classes": ('wide', 'extrapretty')}),
     ]
@@ -61,8 +61,8 @@ class PostModalAdmin(DraggableMPTTAdmin):
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users']
     list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'type','published_time',
-                    'status', 'was_published_recently']
-    list_editable = ['status', 'type']
+                    'status', 'is_banner', 'was_published_recently']
+    list_editable = ['status', 'type', 'is_banner']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
                    )

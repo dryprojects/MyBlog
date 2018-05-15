@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.html import  format_html
+
 from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks
 # Register your models here.
 
@@ -8,19 +10,20 @@ class NotificationModelAdmin(admin.ModelAdmin):
     list_display = ['user', 'expert', 'has_read', 'published_time']
     list_display_links = ['expert']
     fieldsets = (
-        ('用户消息',{
-            'fields':['content'],
-            'classes':('extrapretty',)
-            }
-        ),
-        ('消息元数据',{
-           'fields':[('user', 'has_read', 'published_time')],
+        ('用户消息', {
+            'fields': ['content'],
+            'classes': ('extrapretty',)
+        }
+         ),
+        ('消息元数据', {
+            'fields': [('user', 'has_read', 'published_time')],
             'classes': ('extrapretty',)
         }),
     )
 
     def expert(self, instance):
         return str(instance)
+
     expert.short_description = "摘要"
 
 

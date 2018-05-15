@@ -41,5 +41,8 @@ def post_extra(request):
     context['blog_notifications'] = blog_notifications
     #博主信息
     context['blog_owner'] = blogowner
+    #轮播
+    post_banners = post_queryset.filter(status='published', type='post', is_banner=True)[:5]
+    context['post_banners'] = post_banners
 
     return context

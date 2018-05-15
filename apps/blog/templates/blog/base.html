@@ -16,6 +16,7 @@
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/fontawesome-all.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.autocompleter.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.windstagball.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/banner.css' %}">
     {% block extra-css %}{% endblock %}
 
     <script src="{% static 'blog/js/jquery.min.js' %}"></script>
@@ -26,6 +27,7 @@
     <script type="text/javascript" src="{% static 'blog/js/jquery.autocompleter.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/blog.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/jquery.windstagball.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/js/banner.js' %}"></script>
 </head>
 <body>
 <div class="scanlines"></div>
@@ -348,7 +350,7 @@
                             <ul class="friendship-link-list">
                                 {% for friendship_link in friendship_links %}
                                     <li>
-                                        <a href="{{ friendship_link.url }}" target="_blank">{{ friendship_link.name }}:&nbsp;&nbsp;{{ friendship_link.url }}</a>
+                                        <a href="{{ friendship_link.url }}" target="_blank" style="text-align: left">{{ friendship_link.name }}:&nbsp;&nbsp;{{ friendship_link.url }}</a>
                                     </li>
                                 {% empty %}
                                     <li>
