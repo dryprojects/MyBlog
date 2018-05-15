@@ -1,0 +1,3 @@
+<h1>{{ site_name }}</h1>
+<p>博文<b><a href="{{ protocol }}://{{ domain }}{{ post.get_absolute_url }}">{{ post.title }}</a></b></p>
+<p>收到<b>{{ comment_object.author }}</b>的评论<b>{{ comment_object.content|safe }}</b></p>

@@ -13,7 +13,7 @@
 {% block post-area %}
     <div class="post-detail">
         <div class="notification row">
-            <span class="col-md-10">{{ notification.content }}</span>
+            <span class="col-md-10">{{ notification.content|safe }}</span>
             <span class="col-md-2">{{ notification.published_time }}</span>
         </div>
     </div>
