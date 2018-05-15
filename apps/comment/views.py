@@ -51,7 +51,7 @@ class CommentViewset(viewsets.ModelViewSet):
         comment_obj.save()
 
         #发送点赞信号
-        post_like.send(sender=Comment, comment_obj=comment_obj, content_type = comment_obj.content_type, object_id = comment_obj.object_id)
+        post_like.send(sender=Comment, comment_obj=comment_obj, content_type = comment_obj.content_type, object_id = comment_obj.object_id, request=self.request)
         #使用F表达式后需要重新求值
         comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)

@@ -66,7 +66,7 @@
                             {% for notification in notification_list %}
                                 <li class="message row" id="noti{{ notification.pk }}">
                                     <div class="message-content col-xs-8">
-                                        <a href="{% url 'bloguser:bloguser-noti-detail' notification.pk %}" style="color: #dedede; text-decoration: none;">{{ notification.content|truncatechars:27 }}</a>
+                                        <a href="{% url 'bloguser:bloguser-noti-detail' notification.pk %}" style="color: #dedede; text-decoration: none;">{{ notification.content|truncatechars:47}}</a>
                                     </div>
                                     <span class="message-date col-xs-2">{{ notification.published_time }}</span>
                                     {% if not notification.has_read %}

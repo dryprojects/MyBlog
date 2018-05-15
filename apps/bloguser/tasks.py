@@ -16,5 +16,5 @@ logger = get_task_logger(__name__)
 
 
 @shared_task(bind=True)
-def send_mail(self, subject, message, from_email, recipient_list):
-    _send_mail(subject, message, from_email, recipient_list)
+def send_mail(self, subject, message, from_email, recipient_list, html_msg=None):
+    _send_mail(subject, message, from_email, recipient_list, html_message=html_msg)

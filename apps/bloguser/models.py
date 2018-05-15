@@ -16,8 +16,8 @@ class UserProfile(AbstractUser):
         verbose_name = '用户信息'
         verbose_name_plural = verbose_name
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        send_mail.delay(subject, message, from_email, [self.email], **kwargs)
+    def email_user(self, subject, message=None, from_email=None, html_msg=None, **kwargs):
+        send_mail.delay(subject, message, from_email, [self.email], html_msg, **kwargs)
 
     def notify_user(self, content):
         """
