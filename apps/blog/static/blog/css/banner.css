@@ -6,7 +6,7 @@ html, body, header, nav, footer, div, ul, ol, li, p, form, input, a, span, em, i
     border: none;
 }
 
-a {
+.main_banner a {
     text-align: center;
     text-decoration: none;
     outline: none;

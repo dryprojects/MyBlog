@@ -1,12 +1,11 @@
 KindEditor.ready(function (K) {
     window.editor = K.create("#comment-widget", {
+        width:'100%',
         "afterCreate": function () {
             this.sync();
-            $(this).removeAttr('style');
         },
         "afterChange": function () {
             this.sync();
-            $('.ke-container').removeAttr('style');
         },
         "afterBlur": function () {
             this.sync();
