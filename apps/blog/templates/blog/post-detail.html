@@ -65,23 +65,23 @@
 {% block blog-meta-area %}
     <div class="msg-board">
         <div class="msg-title">
-            博主
+            作者
         </div>
         <div class="msg-content">
             <ul class="author-list">
                 <li>
                     <div class="author row">
                         <a href="" class="col-xs-4">
-                            <img src="{% static 'blog/images/thumb.jpg' %}" alt="" width="100px" height="100px">
+                            <img src="{{ post.author.image.url }}" alt="" style="width: 100px; height: 100px; margin: 0 auto;">
                         </a>
                         <div class="author-meta col-xs-8">
-                            <p><span class="far fa-envelope">&nbsp;&nbsp;jennei@hotmail.com</span>
+                            <p><span class="far fa-envelope">&nbsp;&nbsp;{{ post.author.email }}</span>
                             </p>
-                            <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>
-                            <p><span class="fab fa-github">&nbsp;&nbsp;<a
-                                    href="https://gitee.com/RenKang303288346"
-                                    target="_blank">https://github.com/Jennei</a></span>
-                            </p>
+{#                            <p><span class="fab fa-qq">&nbsp;&nbsp;303288346</span></p>#}
+{#                            <p><span class="fab fa-github">&nbsp;&nbsp;<a#}
+{#                                    href="https://gitee.com/RenKang303288346"#}
+{#                                    target="_blank">https://github.com/Jennei</a></span>#}
+{#                            </p>#}
                         </div>
                     </div>
                 </li>
