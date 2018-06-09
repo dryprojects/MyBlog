@@ -1,7 +1,7 @@
 import json
 
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView, View, TemplateView
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic.detail import SingleObjectMixin
 from django.shortcuts import get_object_or_404
@@ -154,3 +154,10 @@ class PostThumbView(SingleObjectMixin, View):
         self.object.save()
 
         return HttpResponse(json.dumps({'n_praise': self.get_object().n_praise}))
+
+
+class BlogAbout(TemplateView):
+    template_name = 'blog/about.html'
+    extra_context = {
+        'title': '博客关于'
+    }

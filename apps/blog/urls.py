@@ -18,5 +18,6 @@ urlpatterns = [
     path('archive/<int:year>/<int:month>/', views.PostArchiveListView.as_view(), name='post-archive'),
     path('tag/<int:pk>/', views.PostTagListView.as_view(), name='post-tag'),
     path('category/<int:pk>/', views.PostCategoryListView.as_view(), name='post-category'),
-    path('thumb/<int:pk>/', views.PostThumbView.as_view(), name='post-thumb')
+    path('thumb/<int:pk>/', views.PostThumbView.as_view(), name='post-thumb'),
+    path('about/', views.BlogAbout.as_view(), name='blog-about')
 ]

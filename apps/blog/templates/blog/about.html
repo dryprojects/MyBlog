@@ -1,0 +1,51 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ title }} {% endblock %}
+
+{% block content-panel %}
+    <div class="content-meta col-md-2">
+        <div class="blog-meta">
+            {% block blog-meta-area %}
+                <div class="msg-board">
+                    <ul class="nav nav-pills nav-stacked" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">我的博客声明</a>
+                        </li>
+                    </ul>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+    <div class="content-body col-md-10">
+        <!--POST BEGIN-->
+        {% block post-area %}
+            <div class="post-detail">
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="messages" style="color: #dedede; font-size: 16px; letter-spacing: 2px; text-indent: 50px; line-height: 20px;">
+                        本博客主要采用Django结合DjangoRestFrameWork开发完成，主要模板来源自互联网，由博主修改而成，是一个适合个人的博客网站。
+                        本博客用于博主日常笔记管理，以及学习交流使用，欢迎各位读者对本站提出指点意见。
+                        <p style="text-indent: 50px;">
+                            该博客发表的文章，部分转载自互联网，博主将会在非原创博文开头部分注明博文来源，作者，地址等相关信息。
+                            博客部分博文遗失原文作者等相关信息，如果有相应文章对您构成了侵权，请联系博主，我将会在第一时间，屏蔽或者删除该文章。
+                        </p>
+                        <p style="text-align: right;">
+                            感谢您访问本站！！本站将一如既往，提供高品质博文。
+                        </p>
+                        <p style="text-align: right">
+                             2018 年 6 月 9 日 &nbsp; &nbsp;
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+        <!--POST END-->
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <footer class="navbar-fixed-bottom">
+        <div class="site-claim">
+            <p>Copyright <span class="far fa-copyright"></span> myblog 2017~2018 All Rights Reserved</p>
+        </div>
+    </footer>
+{% endblock %}
