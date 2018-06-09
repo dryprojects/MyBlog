@@ -39,7 +39,7 @@ urlpatterns = [
     path('social/', include('social_django.urls', namespace='social')),
     path('captcha/', include('captcha.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False))
+    path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
 ]
 
 if not USE_ADMIN_SITE:
@@ -76,7 +76,8 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #see more https://docs.djangoproject.com/en/2.0/topics/http/views/
-# handler404 = ''
-# handler500 = ''
-# handler403 = ''
-# handler400 = ''
+if not settings.DEBUG:
+    handler404 = 'django.views.defaults.page_not_found'
+    handler500 = 'django.views.defaults.server_error'
+    handler403 = 'django.views.defaults.permission_denied'
+    handler400 = 'django.views.defaults.bad_request'

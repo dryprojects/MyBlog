@@ -1,7 +1,7 @@
 {% extends 'error_page_base.html' %}
 {% load static %}
 
-{% block title %}没有相关内容{% endblock %}
+{% block title %}服务器内部发生错误{% endblock %}
 
 {% block extra_js %}
     <script>
@@ -24,7 +24,7 @@
             // Components
             slide_links: 'blank',    // Individual links for each slide (Options: false, 'num', 'name', 'blank')
             slides: [    // Slideshow Images
-                {image: '{% static "images/404.png" %}'},
+                {image: '{% static "images/500.png" %}'},
             ]
 
         });
