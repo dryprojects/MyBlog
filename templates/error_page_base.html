@@ -1,0 +1,17 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'blog/css/blog.css' %}">
+    <link rel="stylesheet" href="{% static 'bloguser/css/supersized.css' %}">
+    <script src="{% static 'bloguser/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bloguser/js/supersized.3.2.7.min.js' %}"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
