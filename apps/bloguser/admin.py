@@ -19,5 +19,5 @@ class UserPrifileModelAdmin(UserAdmin):
     )
 
     def get_image(self, instance):
-        return format_html("<img src='{}' alt='' width='50' height='50' />", instance.image.url)
+        return format_html("<img src='{}' alt='' width='50' height='50' />", instance.image_url)
     get_image.short_description = '用户头像'

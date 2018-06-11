@@ -32,3 +32,18 @@ class UserProfile(AbstractUser):
         """获取用户未读消息数"""
         from oper.tasks import get_n_unread
         return get_n_unread(self.pk)
+
+    def save(self, *args, **kwargs):
+        """
+        如果是本地用户，则把本地头像url存在image_url
+        如果是第三方用户，则不做处理，直接使用获取的第三方的image_url
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        super().save(*args, **kwargs)
+
+        if self.image.url is not None:
+            self.image_url = self.image.url
+
+        super().save(*args, **kwargs)

@@ -16,7 +16,7 @@
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/fontawesome-all.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.autocompleter.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'blog/css/jquery.windstagball.css' %}">
-    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/banner.css' %}">
+{#    <link rel="stylesheet" type='text/css' href="{% static 'blog/css/banner.css' %}">#}
     {% block extra-css %}{% endblock %}
 
     <script src="{% static 'blog/js/jquery.min.js' %}"></script>
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="{% static 'blog/js/jquery.autocompleter.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/blog.js' %}"></script>
     <script type="text/javascript" src="{% static 'blog/js/jquery.windstagball.js' %}"></script>
-    <script type="text/javascript" src="{% static 'blog/js/banner.js' %}"></script>
+{#    <script type="text/javascript" src="{% static 'blog/js/banner.js' %}"></script>#}
 </head>
 <body>
 <div class="scanlines"></div>
@@ -108,7 +108,7 @@
                 <div class="social-wrapper row hidden-xs hidden-sm">
                     {% if request.user.is_authenticated %}
                         <div class="user-meta">
-                            <img id="user-image" src="{{ request.user.image.url }}"/>
+                            <img id="user-image" src="{{ request.user.image_url }}"/>
                             <span class="userdetail-name">{{ request.user.username }}</span>
                             <a href="{% url 'bloguser:bloguser-usercenter' %}" class="far fa-bell"
                                style="color: #dedede; margin-left: 26px; font-size: 26px; cursor: grabbing; text-decoration: none;">
@@ -150,7 +150,7 @@
                                         <li>
                                             <div class="author row">
                                                 <a href="" class="col-xs-4">
-                                                    <img src="{{ blog_owner.user.image.url }}" alt=""
+                                                    <img src="{{ blog_owner.user.image_url }}" alt=""
                                                          style="width: 100px; height: 100px; margin: 0 auto;">
                                                 </a>
                                                 <div class="author-meta col-xs-8">
@@ -237,7 +237,7 @@
                                                 </div>
                                             </li>
                                         {% empty %}
-                                            <p>暂时没有热门博文</p>
+                                            <p style="color: #797979; font-size: 11px;">暂时没有热门博文</p>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -263,7 +263,7 @@
                                                 </div>
                                             </li>
                                         {% empty %}
-                                            <li><span>暂时没有推荐</span></li>
+                                            <li><span style="color: #797979; font-size: 11px;">暂时没有推荐</span></li>
                                         {% endfor %}
                                     </ul>
                                 </div>

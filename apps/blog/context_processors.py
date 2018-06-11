@@ -31,7 +31,10 @@ def post_extra(request):
     context['hot_posts'] = hot_posts
     #博主推荐
     blogowner = BlogOwner.objects.first()
-    recommend_posts = blogowner.recommend_posts.all()
+    if blogowner is not None:
+        recommend_posts = blogowner.recommend_posts.all()
+    else:
+        recommend_posts = []
     context['recommend_posts'] = recommend_posts
     #友情链接
     friendship_links = FriendshipLinks.objects.all()[:10]
