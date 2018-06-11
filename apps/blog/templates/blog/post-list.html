@@ -45,7 +45,8 @@
                 <div class="line"></div>
                 <div class="post-tags">
                     {% for tag in post.tags.all %}
-                        <span class="fas fa-tag"> <a href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
+                        <span class="fas fa-tag"> <a
+                                href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
                     {% empty %}
                         <span>该文章没有标签</span>
                     {% endfor %}

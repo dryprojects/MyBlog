@@ -22,7 +22,7 @@
                     <form action="" method="post" class="row" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="col-md-1">
-                            <img src="{{ request.user.image.url }}" alt="" style="border-radius: 100%;" width="100px"
+                            <img src="{{ request.user.image_url }}" alt="" style="border-radius: 100%;" width="100px"
                                  height="100px">
                         </div>
                         <ul class="col-md-11 userinfo-meta">

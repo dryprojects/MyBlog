@@ -1,0 +1,11 @@
+.wmd-wrapper ul {
+    margin-left: 0px !important;
+}
+
+.wmd-wrapper ul li {
+    list-style: disc !important;
+}
+
+.wmd-wrapper ul ul li {
+    list-style: circle !important;
+}

@@ -1,0 +1,3 @@
+#tagcloud {position:relative; width:100%; height: 300px;}
+#tagcloud a {position:absolute; top:0px; left:0px; font-family: Microsoft YaHei; color: #797979; font-weight:bold; text-decoration:none;}
+#tagcloud a:hover {color: #e3e3e3; }

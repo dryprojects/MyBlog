@@ -27,7 +27,7 @@ sys.path.insert(1, os.path.join(BASE_DIR, 'thirdparty_apps'))
 SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
@@ -61,7 +61,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    #    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,7 +68,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'MyBlog.urls'
@@ -104,6 +102,16 @@ if DEBUG:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'myblog',
+            'HOST': '127.0.0.1',
+            'PASSWORD': 'Jennei0122?',
+            'USER': 'root',
         }
     }
 
@@ -171,9 +179,8 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-REGISTER_REDIRECT_URL = '/' #自定义
+REGISTER_REDIRECT_URL = '/'  # 自定义
 LOGIN_URL = '/account/login/'
-
 
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
@@ -183,7 +190,6 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = '303288346@qq.com'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = '[MyBlog]'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -224,11 +230,11 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 if DEBUG:
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static/")]
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 SITE_ID = 1
 
@@ -301,20 +307,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': {
+        'task': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 2,
-            'formatter': 'verbose'
-        },
-        'tasks_file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/tasks.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 2,
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
             'formatter': 'standard'
         },
         'mail_admins': {
@@ -325,16 +321,16 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['file', 'mail_admins'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
         'oper.tasks': {
-            'handlers': ['console', 'tasks_file'],
+            'handlers': ['console', 'task'],
             'level': 'DEBUG',
             'propagate': True,
         },
