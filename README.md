@@ -19,6 +19,8 @@
 15. 博文后端导出
 16. 服务出错后，邮件通知
 
-###### QQ ：303288346
+#### 推荐部署环境 Linux7 Nginx Uwsgi MySql Supervisor Python3
 
+#### 联系我
+###### QQ ：303288346
 ###### Email :rk19931211@hotmail.com
