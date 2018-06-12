@@ -12,6 +12,10 @@ from celery import shared_task
 from celery.five import monotonic  #vine.five.monotonic
 from celery.utils.log import get_task_logger
 
+import shutil
+import sys
+import os
+
 
 logger = get_task_logger(__name__)
 LOCK_EXPIRE = 60 * 1 # Lock expires in 1 minutes
@@ -51,9 +55,3 @@ def task_lock(lock_id, oid):
             # to lessen the chance of releasing an expired lock
             # owned by someone else.
             cache.delete(lock_id)
-
-
-
-@shared_task(bind=True)
-def sync_redis(self, *args, **kwargs):
-    pass

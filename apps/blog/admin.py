@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.utils.html import format_html
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import HttpResponseRedirect
+from django.urls import reverse
 
 from blog.models import Post, Category, Tag, Resources
 from kindeditor.widgets import KindTextareaWidget
@@ -83,6 +86,7 @@ class PostModalAdmin(DraggableMPTTAdmin):
             'widget': MdTextWidget
         }
     }
+    actions = ['export_selected_post']
 
     def get_cover(self, object):
         return format_html("<a href='{}'><img src='{}' alt='' width='150' height='100'/></a>",
@@ -98,6 +102,14 @@ class PostModalAdmin(DraggableMPTTAdmin):
         )
 
     get_posts.short_description = '博文'
+
+    def export_selected_post(self, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        ct = ContentType.objects.get_for_model(queryset.model)
+        redirect_url = reverse('blog:export-post')+"?ct=%s&ids=%s"%(ct.pk, ",".join(selected))
+        return HttpResponseRedirect(redirect_url)
+
+    export_selected_post.short_description = '导出选中博文'
 
 
 class CategoryModelAdmin(DraggableMPTTAdmin):

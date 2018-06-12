@@ -1,4 +1,5 @@
 import json
+import csv
 
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, View, TemplateView
@@ -161,3 +162,31 @@ class BlogAbout(TemplateView):
     extra_context = {
         'title': '博客关于'
     }
+
+
+class ExportPostView(View):
+    def get(self, request, *args, **kwargs):
+        """
+        服务端博文导出重定向处理：
+            查询参数:
+                ct  ： 对象内容类型
+                ids : 所要导出的对象id 逗号分割
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="MyBlogPosts.csv"'
+        writer = csv.writer(response)
+
+        ids = request.GET.get('ids', None)
+        queryset = Post.objects.filter(id__in=ids.split(','))
+        writer.writerow(['id', 'parent_id', 'title', 'cover', 'category_id',
+                         'author_id', 'excerpt', 'content', 'status', 'n_praise',
+                         'n_browsers', 'published_time', 'type', 'is_banner',
+                         'lft', 'rght', 'tree_id', 'level'
+                         ])
+        for p in queryset.values_list():
+            writer.writerow(p)
+        return response
