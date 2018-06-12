@@ -19,5 +19,6 @@ urlpatterns = [
     path('tag/<int:pk>/', views.PostTagListView.as_view(), name='post-tag'),
     path('category/<int:pk>/', views.PostCategoryListView.as_view(), name='post-category'),
     path('thumb/<int:pk>/', views.PostThumbView.as_view(), name='post-thumb'),
-    path('about/', views.BlogAbout.as_view(), name='blog-about')
+    path('about/', views.BlogAbout.as_view(), name='blog-about'),
+    path('export/', views.ExportPostView.as_view(), name='export-post')
 ]
