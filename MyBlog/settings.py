@@ -15,6 +15,9 @@ import sys
 
 from celery.schedules import crontab
 
+#这里使用gettext_lazy代替gettext，是为了防止循环引入
+# from django.utils.translation import gettext_lazy as _
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -63,6 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -219,11 +223,18 @@ LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
-USE_I18N = True
+USE_I18N = False    #这里不做国际化与本地化翻译
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = False
+
+# LANGUAGES = [
+#     ('en', _('English')),
+#     ('ja', _('Japanese')),
+#     ('zh-hans', _('Simplified Chinese')),
+#     ('zh-hant', _('Traditional Chinese')),
+# ]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
