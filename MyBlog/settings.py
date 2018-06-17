@@ -112,7 +112,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'myblog',
             'HOST': '127.0.0.1',
-            'PASSWORD': '数据库密码',
+            'PASSWORD': 'Jennei0122?',
             'USER': 'root',
         }
     }
