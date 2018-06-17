@@ -21,38 +21,40 @@
         <div class="placebar"></div>
     {% endif %}
     {% for post in post_list %}
-        <div class="post {% if forloop.counter|divisibleby:2 %}pull-right{% endif %}">
-            <div class="post-meta row">
-                <span class="far fa-image col-md-9 col-xs-5">&nbsp;{{ post.published_time }}</span>
-                <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_comments }}</span>
-                <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_praise }}</span>
-                <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.n_browsers }}</span>
-            </div>
-            <div class="post-body row">
-                <a href="{{ post.get_absolute_url }}" class="post-thumbnail-parent" style="padding-right: 0">
-                    <span class="more hide"></span>
-                    <img src="{{ post.cover.url }}" alt="" class="post-thumbnail">
-                </a>
-                <div class="post-excerpt">
-                    <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
-                    <div class="post-excerpt-content" style="padding-left: 0">
-                        <div id="editormd-view{{ forloop.counter }}">
-                            <textarea style="display:none;" id="markdown-doc">{{ post.excerpt|safe }}</textarea>
+        <div class="col-xs-6 post-container">
+            <div class="post">
+                <div class="post-meta row">
+                    <span class="far fa-image col-md-9 col-xs-5">&nbsp;{{ post.published_time }}</span>
+                    <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_comments }}</span>
+                    <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.n_praise }}</span>
+                    <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.n_browsers }}</span>
+                </div>
+                <div class="post-body row">
+                    <a href="{{ post.get_absolute_url }}" class="post-thumbnail-parent" style="padding-right: 0">
+                        <span class="more hide"></span>
+                        <img src="{{ post.cover.url }}" alt="" class="post-thumbnail">
+                    </a>
+                    <div class="post-excerpt">
+                        <div class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></div>
+                        <div class="post-excerpt-content" style="padding-left: 0">
+                            <div id="editormd-view{{ forloop.counter }}">
+                                <textarea style="display:none;" id="markdown-doc">{{ post.excerpt|safe }}</textarea>
+                            </div>
                         </div>
+                        <a href="{{ post.get_absolute_url }}" class="pull-right see-more">See More >>></a>
                     </div>
-                    <a href="{{ post.get_absolute_url }}" class="pull-right see-more">See More >>></a>
+                    <div class="line"></div>
+                    <div class="post-tags">
+                        {% for tag in post.tags.all %}
+                            <span class="fas fa-tag"> <a
+                                    href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
+                        {% empty %}
+                            <span>该文章没有标签</span>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="line"></div>
-                <div class="post-tags">
-                    {% for tag in post.tags.all %}
-                        <span class="fas fa-tag"> <a
-                                href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
-                    {% empty %}
-                        <span>该文章没有标签</span>
-                    {% endfor %}
-                </div>
+                <div class="post-nav row"></div>
             </div>
-            <div class="post-nav row"></div>
         </div>
     {% empty %}
         <h1 style="color: #dedede">暂时没有相关博文</h1>

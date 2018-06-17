@@ -56,6 +56,8 @@
         </li>
         {% if not request.user.is_authenticated %}
             <li><a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}">登录</a></li>
+        {% else %}
+            <li><a href="{% url 'bloguser:bloguser-logout' %}?next={{ request.path }}">退出</a></li>
         {% endif %}
     </ul>
 </div>

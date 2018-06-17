@@ -10,11 +10,12 @@
         {% endfor %}
     </ol>
     <!-- 轮播（Carousel）项目 -->
-    <div class="carousel-inner">
+    <div class="carousel-inner" style="border-radius: 1.5em; max-height: 14em;">
         {% for post_banner in post_banners %}
-            <div style="height: 100%;" {% ifequal forloop.counter0 0 %}class="item active" {% else %}class="item"{% endifequal %}>
+            <div {% ifequal forloop.counter0 0 %}class="item active"
+                 {% else %}class="item"{% endifequal %}>
                 <a href="{{ post_banner.get_absolute_url }}">
-                    <img src="{{ post_banner.cover.url }}" alt="" style="width: 100%; height: 260px;">
+                    <img src="{{ post_banner.cover.url }}" alt="" style="height: 100%; width: 100%; max-height: 14em; border-radius: 1.25em;">
                 </a>
                 <div class="carousel-caption">{{ post_banner.title }}</div>
             </div>
@@ -22,11 +23,12 @@
         {% endfor %}
     </div>
     <!-- 轮播（Carousel）导航 -->
-    <a class="left carousel-control" href="#post-carousel" role="button" data-slide="prev">
+    <a class="left carousel-control" href="#post-carousel" role="button" data-slide="prev" style="border-radius: 1.2em">
         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
     </a>
-    <a class="right carousel-control" href="#post-carousel" role="button" data-slide="next">
+    <a class="right carousel-control" href="#post-carousel" role="button" data-slide="next"
+       style="border-radius: 1.2em">
         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
     </a>

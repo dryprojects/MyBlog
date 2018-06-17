@@ -191,12 +191,13 @@ body {
     width: 100%;
     height: auto;
     background-color: rgba(23, 23, 23, 0);
-    padding-left: 36px;
+    padding-left: 1.8em;
 }
 
 .content-body {
     display: block;
     box-sizing: border-box;
+    padding: 0;
 }
 
 .content-meta {
@@ -205,14 +206,16 @@ body {
     height: auto;
 }
 
+.post-container {
+    min-width: 18em;
+}
+
 .post {
     background: rgba(0, 0, 0, 0.44);
-    width: 49%;
     height: auto;
     margin-bottom: 20px;
     padding: 0 14px;
-    display: inline-block;
-    border-radius: 4%;
+    border-radius: 1.2em;
 }
 
 .post-meta {
