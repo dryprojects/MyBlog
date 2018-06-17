@@ -176,8 +176,8 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 #线上回调地址 http://example.com/social/complete/github
-SOCIAL_AUTH_GITHUB_KEY = 'Client ID'
-SOCIAL_AUTH_GITHUB_SECRET = 'Client Secert'
+SOCIAL_AUTH_GITHUB_KEY = 'ClientID'
+SOCIAL_AUTH_GITHUB_SECRET = 'ClientSecert'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 LOGIN_REDIRECT_URL = '/'
