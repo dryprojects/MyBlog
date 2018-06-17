@@ -114,7 +114,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'myblog',
             'HOST': '127.0.0.1',
-            'PASSWORD': 'Jennei0122?',
+            'PASSWORD': '数据库密码',
             'USER': 'root',
         }
     }
@@ -177,8 +177,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
-SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
+#线上回调地址 http://example.com/social/complete/github
+SOCIAL_AUTH_GITHUB_KEY = 'Client ID'
+SOCIAL_AUTH_GITHUB_SECRET = 'Client Secert'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 LOGIN_REDIRECT_URL = '/'
@@ -189,7 +190,7 @@ LOGIN_URL = '/account/login/'
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = '303288346@qq.com'
-EMAIL_HOST_PASSWORD = 'qjisygavtvktbggi'
+EMAIL_HOST_PASSWORD = 'QQ邮箱授权码'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = '303288346@qq.com'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
@@ -227,7 +228,7 @@ USE_I18N = False    #这里不做国际化与本地化翻译
 
 USE_L10N = False
 
-USE_TZ = False
+USE_TZ = False     #这里使用本地时区
 
 # LANGUAGES = [
 #     ('en', _('English')),
