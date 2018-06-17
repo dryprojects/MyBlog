@@ -17,8 +17,10 @@
 {% block title %}MyBlog-PostList{% endblock %}
 {% block post-area %}
     {% if post_banners %}
-        {% include 'blog/banner.html' %}
-        <div class="placebar"></div>
+        <div class="col-xs-12">
+            {% include 'blog/banner.html' %}
+            <div class="placebar"></div>
+        </div>
     {% endif %}
     {% for post in post_list %}
         <div class="col-xs-6 post-container">
