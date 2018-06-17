@@ -17,18 +17,21 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf import settings
 from django.contrib.auth import views as auth_views
+from django.contrib.sitemaps import views as sitemap_views
+
+from blog.sitemaps import BlogSitemap
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     from django.conf.urls.static import static
 
 from blog.admin import USE_ADMIN_SITE, ADD_PASSWORD_FORGET
+
 if not USE_ADMIN_SITE:
     from blog.admin import admin_site
 
 import social_django.urls
 from rest_framework.documentation import include_docs_urls
-
 
 urlpatterns = [
     path('', include('blog.urls', namespace='blog')),
@@ -40,6 +43,16 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
+]
+
+sitemaps = {
+    'blog': BlogSitemap
+}
+
+urlpatterns += [
+    path('sitemap.xml', sitemap_views.index, {'sitemaps': sitemaps}),
+    path('sitemap-<section>.xml', sitemap_views.sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap')
 ]
 
 if not USE_ADMIN_SITE:
@@ -75,7 +88,7 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-#see more https://docs.djangoproject.com/en/2.0/topics/http/views/
+# see more https://docs.djangoproject.com/en/2.0/topics/http/views/
 if not settings.DEBUG:
     handler404 = 'django.views.defaults.page_not_found'
     handler500 = 'django.views.defaults.server_error'
