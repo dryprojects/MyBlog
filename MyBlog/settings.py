@@ -223,9 +223,9 @@ LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
-USE_I18N = False    #这里不做国际化与本地化翻译
+USE_I18N = True    #这里不做国际化与本地化翻译
 
-USE_L10N = False
+USE_L10N = True
 
 USE_TZ = False     #这里使用本地时区
 
