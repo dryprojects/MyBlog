@@ -5,6 +5,8 @@
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/items.html
 
+import re
+
 import scrapy
 from scrapy import loader
 from scrapy.loader import processors
@@ -21,6 +23,21 @@ from django.db.utils import IntegrityError
 from robot import processors as proc
 
 
+def RemoveTagComment(tag_name:str):
+    #去除jobbole博文标签里的 ‘评论’
+    if "评论" in tag_name:
+        return ""
+    else:
+        return tag_name
+
+
+def RemovePostAdd(html:"html text"):
+    #去除jobbole博文里附加的内容
+    #<div class="post-adds"></div>
+    html = re.sub(r'<div class="post-adds">.*</div>', "", html, flags=re.S)
+    return html
+
+
 class JobboleItem(scrapy.Item):
     title = scrapy.Field(
         input_processor=MapCompose(proc.RemoveSpaceForce)
@@ -30,13 +47,13 @@ class JobboleItem(scrapy.Item):
     )
     category = scrapy.Field()
     tags = scrapy.Field(
-        input_processor=MapCompose(proc.RemoveSpaceForce),
+        input_processor=MapCompose(proc.RemoveSpaceForce, RemoveTagComment),
         output_processor = Join(',')
     )
     # 作者是scrapy_crawler
     author = scrapy.Field()
     content = scrapy.Field(
-        input_processor=MapCompose(proc.RemoveSpace, proc.ConvertToMarkDown)
+        input_processor=MapCompose(proc.RemoveSpace, RemovePostAdd, proc.ConvertToMarkDown)
     )
     published_time = scrapy.Field()
     origin_post_url = scrapy.Field(
@@ -74,14 +91,15 @@ class JobboleItem(scrapy.Item):
                 category.save()
 
             for tag_name in tags:
-                try:
-                    tag = Tag.objects.get(name=tag_name)
-                    tag_list.append(tag)
-                except Tag.DoesNotExist:
-                    tag = Tag()
-                    tag.name = tag_name
-                    tag.save()
-                    tag_list.append(tag)
+                if tag_name != "":
+                    try:
+                        tag = Tag.objects.get(name=tag_name)
+                        tag_list.append(tag)
+                    except Tag.DoesNotExist:
+                        tag = Tag()
+                        tag.name = tag_name
+                        tag.save()
+                        tag_list.append(tag)
 
         return (author, category, tag_list)
 
@@ -94,7 +112,7 @@ class JobboleItem(scrapy.Item):
                 # 博文不存在创建一个
                 post = Post()
                 post.cover_url = self['cover_url']
-                post.origin_post_url = self['origin_post_url']
+                post.origin_post_url = self.get('origin_post_url', "")
                 post.origin_post_from = self['origin_post_from']
                 post.url_object_id = self['url_object_id']
                 post.title = self['title']

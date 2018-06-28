@@ -15,7 +15,7 @@
             <div {% ifequal forloop.counter0 0 %}class="item active"
                  {% else %}class="item"{% endifequal %}>
                 <a href="{{ post_banner.get_absolute_url }}">
-                    <img src="{{ post_banner.cover.url }}" alt="" style="height: 100%; width: 100%; max-height: 14em; border-radius: 1.25em;">
+                    <img src="{{ post_banner.cover_url }}" alt="" style="height: 100%; width: 100%; max-height: 14em; border-radius: 1.25em;">
                 </a>
                 <div class="carousel-caption">{{ post_banner.title }}</div>
             </div>

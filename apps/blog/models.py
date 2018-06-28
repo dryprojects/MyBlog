@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import transaction
+from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
@@ -160,8 +161,9 @@ class Post(MPTTModel):
         :return:
         """
         super(Post, self).save()
+        MEDIA_PREFIX = settings.MEDIA_URL
 
-        default_cover_url = '/media/blog/blog_cover/default.jpg'
+        default_cover_url = MEDIA_PREFIX + 'blog/blog_cover/default.jpg'
 
         if self.cover.url != default_cover_url or self.cover_url == "":
             self.cover_url = self.cover.url
