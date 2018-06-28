@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import urllib
+import datetime
 
 import scrapy
 from scrapy.http import Request
@@ -46,7 +47,7 @@ class JobboleSpider(scrapy.Spider):
         item_loader.add_xpath('origin_post_url', '//div[@class="copyright-area"]/a/@href')
         item_loader.add_xpath('origin_post_from', '//div[@class="copyright-area"]/a/text()')
         item_loader.add_value('url_object_id', [response.url])
-        item_loader.add_xpath('published_time', '//p[@class="entry-meta-hide-on-mobile"]/text()')
+        item_loader.add_value('published_time', datetime.datetime.now())
         item_loader.add_xpath('content', '//div[@class="entry"]')
         item_loader.add_xpath('tags', '//p[@class="entry-meta-hide-on-mobile"]/a/text()')
 

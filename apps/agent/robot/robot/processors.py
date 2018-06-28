@@ -13,6 +13,7 @@ import datetime
 import time
 
 import html2text
+from w3lib.html import remove_tags
 
 
 class TakeSecond(object):
@@ -67,13 +68,24 @@ def RemoveSpace(value):
     return value
 
 
+def RemoveSpaceForce(value):
+    #除去文本中的所有空格， 回车换行等
+    return re.sub(r"\s", "", value)
+
+
+def RemoveDot(value:str) -> str:
+    #去除文本中的点'.', '·'
+    return re.sub(r"[\\.·]", "", value)
+
+
+def RemoveTags(html:"html text") -> str:
+    #去除文本中的html标签
+    return remove_tags(html)
+
+
 def ConvertToMd5(url):
     #获取url的md5摘要
-    if isinstance(url, str): #如果是unicode则编码为utf8
-        url = url.encode("utf-8")
-    m = hashlib.md5()
-    m.update(url)
-    return m.hexdigest()
+    return hashlib.md5(url.encode("utf-8")).hexdigest()
 
 
 def ConvertToMarkDown(html):
@@ -82,7 +94,6 @@ def ConvertToMarkDown(html):
     """
     html = html.strip()
     return html2text.html2text(html)
-
 
 
 def ExtractNumber(text):

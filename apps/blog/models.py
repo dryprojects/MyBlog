@@ -15,7 +15,7 @@ from comment.models import Comment
 # Create your models here.
 User = get_user_model()
 class Tag(models.Model):
-    name = models.CharField(verbose_name='标签名称', max_length=20)
+    name = models.CharField(verbose_name='标签名称', max_length=20, unique=True)
 
     class Meta:
         verbose_name = '博文标签'
@@ -26,7 +26,7 @@ class Tag(models.Model):
 
 
 class Category(MPTTModel):
-    name = models.CharField(verbose_name='类目名称', max_length=20)
+    name = models.CharField(verbose_name='类目名称', max_length=20, unique=True)
     parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
@@ -160,15 +160,16 @@ class Post(MPTTModel):
         :return:
         """
         super(Post, self).save()
-        if self.cover.url is not None:
+
+        default_cover_url = '/media/blog/blog_cover/default.jpg'
+
+        if self.cover.url != default_cover_url or self.cover_url == "":
             self.cover_url = self.cover.url
 
         if self.category is None:
             self.category = Category(name="其他")
 
-        m = hashlib.md5()
-        m.update(self.get_absolute_url().encode('utf-8'))
-        self.url_object_id = m.hexdigest()
+        self.url_object_id = hashlib.md5(self.get_absolute_url().encode('utf-8')).hexdigest()
         super(Post, self).save()
 
 
