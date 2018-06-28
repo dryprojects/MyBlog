@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -51,6 +52,7 @@ class Post(MPTTModel):
     parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
     cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
+    cover_url = models.URLField(verbose_name="博文封面url", default="")
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
     author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, blank=True, null=True) # n ~ 1
@@ -63,6 +65,9 @@ class Post(MPTTModel):
     comments = GenericRelation(Comment, related_query_name='post')
     type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
     is_banner = models.BooleanField(verbose_name='是否是轮播图', default=False)
+    origin_post_url = models.URLField(verbose_name='原博文URL链接', default="", null=True, blank=True)
+    origin_post_from = models.CharField(verbose_name="原博文出处名称", max_length=255, default="", null=True, blank=True)
+    url_object_id = models.CharField(verbose_name="源博文唯一标识", unique=True, max_length=255, null=True, blank=True, help_text="不写默认为博文url摘要")
 
     class Meta:
         verbose_name = '博文'
@@ -144,6 +149,27 @@ class Post(MPTTModel):
         :return:
         """
         return self.prev_this_next[2]
+
+    def save(self, *args, **kwargs):
+        """
+        如果有本地封面则cover_url为本地封面， 否则使用爬虫获取的封面.
+        如果博文category为None,则自动添加到默认分类其他
+        用博文的文的url生成唯一博文索引
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        super(Post, self).save()
+        if self.cover.url is not None:
+            self.cover_url = self.cover.url
+
+        if self.category is None:
+            self.category = Category(name="其他")
+
+        m = hashlib.md5()
+        m.update(self.get_absolute_url().encode('utf-8'))
+        self.url_object_id = m.hexdigest()
+        super(Post, self).save()
 
 
 class Resources(models.Model):

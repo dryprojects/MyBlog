@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))                      #这里�
 SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'blog',
     'comment',
     'oper',
+    'agent'
 ]
 
 MIDDLEWARE = [

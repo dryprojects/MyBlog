@@ -55,7 +55,7 @@ class PostModalAdmin(DraggableMPTTAdmin):
     """
     fieldsets = [
         ('博文基本信息',
-         {"fields": [('title', 'category', 'author'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
+         {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'published_time', 'is_banner'), ('status', 'type', 'parent'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')],
                     "classes": ('wide', 'extrapretty')}),
