@@ -9,4 +9,5 @@ sys.path.append(project_base)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'MyBlog.settings'
 
 import django
+
 django.setup()

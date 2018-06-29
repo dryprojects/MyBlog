@@ -33,42 +33,45 @@
 {% block post-area %}
     {% if query %}
         {% for post in object_list %}
-            <div class="post">
-                <div class="post-meta row">
-                    <span class="far fa-image col-md-8 col-xs-5">&nbsp;{{ post.object.published_time }}</span>
-                    <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_comments }}</span>
-                    <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_praise }}</span>
-                    <span class="far fa-heart col-md-1 col-xs-2 hold-right">&nbsp;0</span>
-                    <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.object.n_browsers }}</span>
-                </div>
-                <div class="post-body row">
-                    <a href="{{ post.object.get_absolute_url }}" class="post-thumbnail-parent" style="padding-right: 0">
-                        <span class="more hide"></span>
-                        <img src="{{ post.object.cover.url }}" alt="" class="post-thumbnail">
-                    </a>
-                    <div class="post-excerpt">
-                        <div class="post-title"><a
-                                href="{{ post.object.get_absolute_url }}">{% highlight post.object.title with query html_tag "div" %}</a>
-                        </div>
-                        <div class="post-excerpt-content" style="padding-left: 0">
-                            <div id="editormd-view{{ forloop.counter }}">
-                                <p id="markdown-doc" style="display: none">{% autoescape off %}
-                                    {% highlight post.object.excerpt with query html_tag "div" max_length 400 %}{% endautoescape %}</p>
+            <div class="col-xs-6 post-container">
+                <div class="post">
+                    <div class="post-meta row">
+                        <span class="far fa-image col-md-8 col-xs-5">&nbsp;{{ post.object.published_time }}</span>
+                        <span class="far fa-comments col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_comments }}</span>
+                        <span class="far fa-thumbs-up col-md-1 col-xs-2 hold-right">&nbsp;{{ post.object.n_praise }}</span>
+                        <span class="far fa-heart col-md-1 col-xs-2 hold-right">&nbsp;0</span>
+                        <span class="fas fa-eye col-md-1 col-xs-1 hold-right">&nbsp;{{ post.object.n_browsers }}</span>
+                    </div>
+                    <div class="post-body row">
+                        <a href="{{ post.object.get_absolute_url }}" class="post-thumbnail-parent"
+                           style="padding-right: 0">
+                            <span class="more hide"></span>
+                            <img src="{{ post.object.cover_url }}" alt="" class="post-thumbnail">
+                        </a>
+                        <div class="post-excerpt">
+                            <div class="post-title"><a
+                                    href="{{ post.object.get_absolute_url }}">{% highlight post.object.title with query html_tag "div" %}</a>
                             </div>
+                            <div class="post-excerpt-content" style="padding-left: 0">
+                                <div id="editormd-view{{ forloop.counter }}">
+                                    <p id="markdown-doc" style="display: none">{% autoescape off %}
+                                        {% highlight post.object.excerpt with query html_tag "div" max_length 400 %}{% endautoescape %}</p>
+                                </div>
+                            </div>
+                            <a href="{{ post.object.get_absolute_url }}" class="pull-right see-more">See More >>></a>
                         </div>
-                        <a href="{{ post.object.get_absolute_url }}" class="pull-right see-more">See More >>></a>
+                        <div class="line"></div>
+                        <div class="post-tags">
+                            {% for tag in post.object.tags.all %}
+                                <span class="fas fa-tag"> <a
+                                        href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
+                            {% empty %}
+                                <span>该文章没有标签</span>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <div class="line"></div>
-                    <div class="post-tags">
-                        {% for tag in post.object.tags.all %}
-                            <span class="fas fa-tag"> <a
-                                    href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
-                        {% empty %}
-                            <span>该文章没有标签</span>
-                        {% endfor %}
-                    </div>
+                    <div class="post-nav row"></div>
                 </div>
-                <div class="post-nav row"></div>
             </div>
         {% empty %}
             <h1 style="color: #dedede">没有找到结果？</h1>

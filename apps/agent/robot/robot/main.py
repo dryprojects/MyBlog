@@ -4,7 +4,8 @@
 """ 
 @author:    nico 
 @file:      main.py 
-@time:      2018/06/23 
+@time:      2018/06/23
+@desc:      爬虫调试脚本
 """
 
 import sys

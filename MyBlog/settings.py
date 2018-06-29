@@ -21,6 +21,7 @@ from celery.schedules import crontab
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))                      #这里需要把项目根目录下的apps设置为包搜索目录
+sys.path.append(os.path.join(BASE_DIR, 'apps', 'agent', 'robot'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -281,10 +282,19 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
-CELERYD_MAX_TASKS_PER_CHILD = 3
+# 这里写1保持celery工作线程只有一个， why?
+# The Twisted reactor cannot be restarted, so once one spider finishes running
+# and crawler stops the reactor implicitly, that worker is useless.
+# 所以为了实现重启reactor,可以换成每次重新启动一个worker来实现。
+# see https://stackoverflow.com/questions/22116493/run-a-scrapy-spider-in-a-celery-task
+CELERYD_MAX_TASKS_PER_CHILD = 1
 CELERY_BEAT_SCHEDULE = {
     "sync-cache-unread-to-db": {
         'task': 'oper.tasks.sync_n_unread',
+        'schedule': 60.0
+    },
+    "post-crawler":{
+        'task': 'agent.tasks.post_crawler',
         'schedule': 60.0
     }
 }
