@@ -57,7 +57,8 @@
         {% if not request.user.is_authenticated %}
             <li><a href="{% url 'bloguser:bloguser-login' %}?next={{ request.path }}">登录</a></li>
         {% else %}
-            <li><a href="{% url 'bloguser:bloguser-usercenter' %}">个人中心<span class="badge">{{ request.user.get_n_unread }}</span></a></li>
+            <li><a href="{% url 'bloguser:bloguser-usercenter' %}">个人中心<span
+                    class="badge">{{ request.user.get_n_unread }}</span></a></li>
             <li><a href="{% url 'bloguser:bloguser-logout' %}?next={{ request.path }}">退出</a></li>
         {% endif %}
     </ul>
@@ -234,7 +235,7 @@
                                                 <div class="hot-post row">
                                                     <a href="{{ hot_post.get_absolute_url }}" class="col-xs-4">
                                                         <span class="more hide"></span>
-                                                        <img src="{{ hot_post.cover.url }}" alt="">
+                                                        <img src="{{ hot_post.cover_url }}" alt="">
                                                     </a>
                                                     <div class="hot-post-meta col-xs-8">
                                                         <a href="{{ hot_post.get_absolute_url }}">{{ hot_post.title }}</a>
@@ -260,7 +261,7 @@
                                                 <div class="hot-post row">
                                                     <a href="{{ recommend_post.get_absolute_url }}" class="col-xs-4">
                                                         <span class="more hide"></span>
-                                                        <img src="{{ recommend_post.cover.url }}" alt="">
+                                                        <img src="{{ recommend_post.cover_url }}" alt="">
                                                     </a>
                                                     <div class="hot-post-meta col-xs-8">
                                                         <a href="{{ recommend_post.get_absolute_url }}">{{ recommend_post.title }}</a>
@@ -300,7 +301,7 @@
                                         <div class="rec-blog col-xs-4">
                                             <a href="{{ post_thumb_most.get_absolute_url }}">
                                                 <span class="more hide"></span>
-                                                <img src="{{ post_thumb_most.cover.url }}" class="thumb-cover"
+                                                <img src="{{ post_thumb_most.cover_url }}" class="thumb-cover"
                                                      alt="">
                                             </a>
                                         </div>
@@ -376,9 +377,17 @@
     </footer>
 {% endblock %}
 <!-- END FOOTER -->
+
+{% block blog_cover_js %}
+    <script type="text/javascript">
+        $(function () {
+            $.backstretch("{% static 'blog/images/bg/bg3.jpg' %}");
+        });
+    </script>
+{% endblock %}
+
 <script type="text/javascript">
     $(function () {
-        $.backstretch("{% static 'blog/images/bg/bg3.jpg' %}");
         $('#search-input').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,

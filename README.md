@@ -18,6 +18,7 @@
 14. 树形无限分类（前后端）
 15. 博文后端导出
 16. 服务出错后，邮件通知
+17. 博文爬虫定时抓取， 集成Scrapy， Celery调度
 
 #### 推荐部署环境 Linux7 Nginx Uwsgi MySql Supervisor Python3
 

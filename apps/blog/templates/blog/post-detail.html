@@ -130,7 +130,7 @@
                         <div class="hot-post row">
                             <a href="{{ r_post.object.get_absolute_url }}" class="col-xs-4">
                                 <span class="more hide"></span>
-                                <img src="{{ r_post.object.cover.url }}" alt="">
+                                <img src="{{ r_post.object.cover_url }}" alt="">
                             </a>
                             <div class="hot-post-meta col-xs-8">
                                 <a href="#">{{ r_post.object.title }}</a>
@@ -160,6 +160,14 @@
 
 {% block extra-css %}
     <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.preview.css' %}">
+{% endblock %}
+
+{% block blog_cover_js %}
+    <script type="text/javascript">
+        $(function () {
+            $.backstretch("{{ post.cover_url }}");
+        });
+    </script>
 {% endblock %}
 
 {% block extra-js %}
