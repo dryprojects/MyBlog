@@ -53,7 +53,7 @@ class Post(MPTTModel):
     parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
     cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
-    cover_url = models.URLField(verbose_name="博文封面url", default="")
+    cover_url = models.URLField(verbose_name="博文封面url", default="", null=True, blank=True, help_text="不写默认为默认的封面url")
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
     author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, blank=True, null=True) # n ~ 1
@@ -171,7 +171,9 @@ class Post(MPTTModel):
         if self.category is None:
             self.category = Category(name="其他")
 
-        self.url_object_id = hashlib.md5(self.get_absolute_url().encode('utf-8')).hexdigest()
+        if self.url_object_id is None:
+            self.url_object_id = hashlib.md5(self.get_absolute_url().encode('utf-8')).hexdigest()
+
         super(Post, self).save()
 
 

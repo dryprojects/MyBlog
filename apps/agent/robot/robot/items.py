@@ -108,6 +108,10 @@ class JobboleItem(scrapy.Item):
         with atomic():
             try:
                 post = Post.objects.get(url_object_id=self['url_object_id'])
+                post.content = self['content']
+                post.cover_url = self['cover_url']
+                post.published_time = self['published_time']
+                post.save()
             except Post.DoesNotExist:
                 # 博文不存在创建一个
                 post = Post()
