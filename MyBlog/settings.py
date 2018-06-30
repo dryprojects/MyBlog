@@ -295,7 +295,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "post-crawler":{
         'task': 'agent.tasks.post_crawler',
-        'schedule': 60.0
+        'schedule': crontab(minute=0, hour=0)       # 每天凌晨十二点执行
     }
 }
 CELERY_BEAT_MAX_LOOP_INTERVAL = 1
