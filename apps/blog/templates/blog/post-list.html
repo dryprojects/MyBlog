@@ -59,12 +59,14 @@
             </div>
         </div>
     {% empty %}
-        <h1 style="color: #dedede">暂时没有相关博文</h1>
+        <h1 style="color: #dedede">暂时没有发布的博文</h1>
     {% endfor %}
 {% endblock %}
 
 {% block paginator-area %}
-    {% include 'blog/pagination.html' %}
+    {% if post_list %}
+        {% include 'blog/pagination.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block extra-css %}

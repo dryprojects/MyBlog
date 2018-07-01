@@ -81,7 +81,7 @@
 {% endblock %}
 
 {% block paginator-area %}
-    {% if query %}
+    {% if object_list %}
         {% include 'blog/pagination.html' %}
     {% endif %}
 {% endblock %}

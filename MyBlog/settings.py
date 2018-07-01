@@ -30,7 +30,7 @@ sys.path.append(os.path.join(BASE_DIR, 'apps', 'agent', 'robot'))
 SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
@@ -269,8 +269,8 @@ HAYSTACK_CONNECTIONS = {
         'INCLUDE_SPELLING': True,
     },
 }
-
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+#'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引
+HAYSTACK_SIGNAL_PROCESSOR = 'blog.signals.PostSignalProcessor' #在博文状态发生变化时更新索引
 
 PAGINATION_SETTINGS = {
     'PAGE_RANGE_DISPLAYED': 5,

@@ -391,7 +391,7 @@
         $('#search-input').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,
-            cache: true,
+            cache: false,
             combine: function (args) {
                 return {
                     'q': args.query,
@@ -402,7 +402,7 @@
         $('#search-input-meta').autocompleter({
             source: "{% url 'blog:post-autocomplete' %}",
             limit: 5,
-            cache: true,
+            cache: false,
             combine: function (args) {
                 return {
                     'q': args.query,

@@ -13,7 +13,7 @@ from mptt.utils import previous_current_next
 
 from comment.models import Comment
 
-# Create your models here.
+
 User = get_user_model()
 class Tag(models.Model):
     name = models.CharField(verbose_name='标签名称', max_length=20, unique=True)
@@ -156,6 +156,7 @@ class Post(MPTTModel):
         如果有本地封面则cover_url为本地封面， 否则使用爬虫获取的封面.
         如果博文category为None,则自动添加到默认分类其他
         用博文的文的url生成唯一博文索引
+        如果博文状态变为已经发表，则发送博文状态变更的信号
         :param args:
         :param kwargs:
         :return:
@@ -173,6 +174,10 @@ class Post(MPTTModel):
 
         if self.url_object_id is None:
             self.url_object_id = hashlib.md5(self.get_absolute_url().encode('utf-8')).hexdigest()
+
+        if self.status == "published":
+            from blog.signals import post_published   #这里导入是必要的，防止循环引入
+            post_published.send(sender=self.__class__, instance=self)
 
         super(Post, self).save()
 

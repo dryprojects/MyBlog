@@ -2,16 +2,42 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/3/27 13:32'
 
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver, Signal
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.html import mark_safe, format_html
 from django.template import loader
 
+from haystack.signals import BaseSignalProcessor
+
 from blog.models import Post
 from comment.models import Comment
 from comment.signals import post_comment, post_like
+
+
+post_published = Signal(providing_args=['instance'])
+
+
+class PostSignalProcessor(BaseSignalProcessor):
+    """
+    Allows for observing when post update status or post deletes fire & automatically updates the
+    search engine appropriately.
+    当博文状态改变为已发表时，建立对应博文索引。
+    """
+    def setup(self):
+        # Naive (listen to all post change status).
+        post_published.connect(self.handle_save)
+        post_delete.connect(self.handle_delete)
+        # Efficient would be going through all backends & collecting all models
+        # being used, then hooking up signals only for those.
+
+    def teardown(self):
+        # Naive (listen to all post change status).
+        post_published.disconnect(self.handle_save)
+        post_delete.disconnect(self.handle_delete)
+        # Efficient would be going through all backends & collecting all models
+        # being used, then disconnecting signals only for those.
 
 
 @receiver(pre_save, sender=Post)

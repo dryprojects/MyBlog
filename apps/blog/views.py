@@ -67,7 +67,7 @@ class PostAutoCompleteView(View):
         if q == "":
             return HttpResponse(json.dumps([]), content_type='application/json')
         sqs = SearchQuerySet().autocomplete(title_auto=q)[:int(count)]
-        suggestions = [result.object.title for result in sqs]
+        suggestions = [result.object.title for result in sqs if result.object is not None]
         return HttpResponse(self.get_sug_context(suggestions), content_type='application/json')
 
     def get_sug_context(self, suggestions):
