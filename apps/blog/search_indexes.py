@@ -20,4 +20,4 @@ class PostIndex(indexes.SearchIndex, indexes.Indexable):
         :param using:
         :return:
         """
-        return self.get_model().objects.filter(published_time__lte=datetime.now())
+        return self.get_model().objects.filter(published_time__lte=datetime.now(), status='published', type='post')
