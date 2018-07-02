@@ -1,0 +1,4 @@
+grant {
+  // required for simpleframework (XML deserialization)
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};

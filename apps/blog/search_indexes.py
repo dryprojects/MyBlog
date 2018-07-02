@@ -2,14 +2,16 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/4/7 14:03'
 
-from haystack import indexes
-from blog.models import Post
 from datetime import datetime
+
+from haystack import indexes
+
+from blog.models import Post
 
 
 class PostIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    title_auto = indexes.NgramField(model_attr='title')
+    title_auto = indexes.EdgeNgramField(model_attr='title')
 
     def get_model(self):
         return Post
