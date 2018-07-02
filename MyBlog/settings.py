@@ -272,9 +272,9 @@ HAYSTACK_CONNECTIONS = {
         'URL': 'http://127.0.0.1:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/blog/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
-        'DEFAULT_ANALYZER': 'ik',  # 自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
-        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik',
-        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'
+        'DEFAULT_ANALYZER': 'ik',  # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
+        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik_smart', # ES自定义设置
+        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'        # ES自定义设置
     },
 }
 # 'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引
