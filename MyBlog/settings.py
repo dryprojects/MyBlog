@@ -15,12 +15,12 @@ import sys
 
 from celery.schedules import crontab
 
-#这里使用gettext_lazy代替gettext，是为了防止循环引入
+# 这里使用gettext_lazy代替gettext，是为了防止循环引入
 # from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))                      #这里需要把项目根目录下的apps设置为包搜索目录
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))  # 这里需要把项目根目录下的apps设置为包搜索目录
 sys.path.append(os.path.join(BASE_DIR, 'apps', 'agent', 'robot'))
 
 # Quick-start development settings - unsuitable for production
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'social_django',
     'haystack',
+    'elasticstack2',
     'captcha',
     'kindeditor',
     'mdeditor',
@@ -178,7 +179,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-#线上回调地址 http://example.com/social/complete/github
+# 线上回调地址 http://example.com/social/complete/github
 SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
 SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
@@ -225,11 +226,11 @@ LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
-USE_I18N = True    #这里不做国际化与本地化翻译
+USE_I18N = True  # 这里不做国际化与本地化翻译
 
 USE_L10N = True
 
-USE_TZ = False     #这里使用本地时区
+USE_TZ = False  # 这里使用本地时区
 
 # LANGUAGES = [
 #     ('en', _('English')),
@@ -262,16 +263,24 @@ CACHES = {
     }
 }
 
+# see https://django-haystack.readthedocs.io/en/v2.8.1/tutorial.html#configuration
+# 这里改用elasticsearch搜索引擎，Whoosh实测性能较低。
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'blog.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(BASE_DIR, 'apps/blog/whoosh_index'),
+        'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
+        # 'blog.backends.whoosh_backend.WhooshEngine'
+        'URL': 'http://127.0.0.1:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/blog/whoosh_index'),
+        'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
+        'DEFAULT_ANALYZER': 'ik',  # 自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
+        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik',
+        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'
     },
 }
-#'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引
-HAYSTACK_SIGNAL_PROCESSOR = 'blog.signals.PostSignalProcessor' #在博文状态发生变化时更新索引
+# 'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引
+HAYSTACK_SIGNAL_PROCESSOR = 'blog.signals.PostSignalProcessor'  # 在博文状态发生变化时更新索引
 
+# 博文分页形式设置 1 2... 3 4 5 6 7 ... 8 9
 PAGINATION_SETTINGS = {
     'PAGE_RANGE_DISPLAYED': 5,
     'MARGIN_PAGES_DISPLAYED': 2,
@@ -293,9 +302,9 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'oper.tasks.sync_n_unread',
         'schedule': 60.0
     },
-    "post-crawler":{
+    "post-crawler": {
         'task': 'agent.tasks.post_crawler',
-        'schedule': crontab(minute=0, hour=0)       # 每天凌晨十二点执行
+        'schedule': crontab(minute=0, hour=0)  # 每天凌晨十二点执行
     }
 }
 CELERY_BEAT_MAX_LOOP_INTERVAL = 1
