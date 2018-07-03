@@ -22,6 +22,13 @@ from bloguser.tasks import send_mail
 from captcha.fields import CaptchaField
 
 
+class BlogUserAdminCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, help_text='填一个没有被用户占用的邮箱地址')
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'email', 'password1', 'password2']
+
+
 class BlogUserCreationForm(UserCreationForm):
     """
     for user register

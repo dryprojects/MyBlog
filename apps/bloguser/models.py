@@ -10,7 +10,7 @@ class UserProfile(AbstractUser):
     #image_url是社会帐号下用户的头像url,这个只在请求用户头像时判断用户头像是否已经请求过所使用，不做验证
     image_url = models.CharField(verbose_name='用户头像url', max_length=100, default='')
     #重写email字段
-    email = models.EmailField(_('email address'), blank=True, unique=True)
+    email = models.EmailField(_('邮箱'), blank=True, unique=True, null=True, help_text='邮箱是唯一的')
 
     class Meta:
         verbose_name = '用户信息'

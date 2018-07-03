@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext, gettext_lazy as _
 
 from bloguser.models import UserProfile
-from bloguser.forms import BlogUserChangeForm, BlogUserCreationForm
+from bloguser.forms import BlogUserChangeForm, BlogUserAdminCreationForm
 
 
 @admin.register(UserProfile)
@@ -17,7 +17,16 @@ class UserPrifileModelAdmin(UserAdmin):
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
+
+    add_form = BlogUserAdminCreationForm
 
     def get_image(self, instance):
         return format_html("<img src='{}' alt='' width='50' height='50' />", instance.image_url)
+
     get_image.short_description = '用户头像'
