@@ -24,7 +24,7 @@
 19. 支持Whoosh搜索后端
 
 #### 环境需要
-1. jdk8
+1. jdk8           # Elasticsearch需要
 2. python3
 3. Redis        #根据配置修改其他缓存
 4. MySQL        #根据配置修改其他数据库
