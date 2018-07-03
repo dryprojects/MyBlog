@@ -166,7 +166,7 @@ class Post(MPTTModel):
 
         default_cover_url = MEDIA_PREFIX + 'blog/blog_cover/default.jpg'
 
-        if self.cover.url != default_cover_url or self.cover_url == "":
+        if self.cover.url != default_cover_url or self.cover_url is None:
             self.cover_url = self.cover.url
 
         if self.category is None:
