@@ -64,7 +64,7 @@
                         <div class="post-tags">
                             {% for tag in post.object.tags.all %}
                                 <span class="fas fa-tag"> <a
-                                        href="{% url 'blog:post-tag' tag.id %}">{{ tag.name }}</a></span>
+                                        href="{% url 'blog:post-tag' tag.id %}">{% highlight tag.name with query html_tag "i" %}</a></span>
                             {% empty %}
                                 <span>该文章没有标签</span>
                             {% endfor %}
