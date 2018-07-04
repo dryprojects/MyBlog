@@ -162,6 +162,8 @@ class Post(MPTTModel):
         :return:
         """
         super(Post, self).save()
+        self.refresh_from_db() #这是必要的， 因为F表达式
+
         MEDIA_PREFIX = settings.MEDIA_URL
 
         default_cover_url = MEDIA_PREFIX + 'blog/blog_cover/default.jpg'
