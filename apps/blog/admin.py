@@ -12,6 +12,11 @@ from mdeditor.widgets import MdTextWidget
 
 from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
 
+from import_export import resources
+from import_export.admin import ImportExportMixin, ImportExportActionModelAdmin
+from import_export.fields import Field
+
+
 USE_ADMIN_SITE = True
 ADD_PASSWORD_FORGET = False
 if not USE_ADMIN_SITE:
@@ -35,6 +40,29 @@ if not USE_ADMIN_SITE:
         site_title = "我的博客"
 
 
+class PostResource(resources.ModelResource):
+    """
+    博文导入导出资源定义
+    see https://django-import-export.readthedocs.io/en/latest/getting_started.html#customize-resource-options
+    """
+    tags = Field()
+    class Meta:
+        model = Post
+        fields = ('id', 'parent__title', 'title', 'cover_url', 'category__name',
+                  'tags', 'author__username', 'content', 'status', 'n_praise',
+                  'n_browsers', 'published_time', 'type', 'is_banner',
+                  'origin_post_url', 'origin_post_from', 'url_object_id')
+        import_id_fields = ('id',)
+        export_order = fields
+        skip_unchanged = True
+        report_skipped = False
+
+    def dehydrate_tags(self, post):
+        ts = post.tags.all()
+        r = [tag.name for tag in ts]
+        return ",".join(r)
+
+
 class PostTagRelationShipInline(admin.TabularInline):
     model = Post.tags.rel.through
     extra = 1
@@ -48,11 +76,13 @@ class ResourcesInline(admin.TabularInline):
     extra = 1
 
 
-class PostModalAdmin(DraggableMPTTAdmin):
+class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
     """
     see detail:
         https://docs.djangoproject.com/en/2.0/intro/tutorial07/
     """
+    resource_class = PostResource
+
     fieldsets = [
         ('博文基本信息',
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'), 'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
@@ -86,7 +116,7 @@ class PostModalAdmin(DraggableMPTTAdmin):
             'widget': MdTextWidget
         }
     }
-    actions = ['export_selected_post']
+    # actions = ['export_selected_post']
 
     def get_cover(self, object):
         return format_html("<a href='{}'><img src='{}' alt='' width='150' height='100'/></a>",
@@ -103,13 +133,13 @@ class PostModalAdmin(DraggableMPTTAdmin):
 
     get_posts.short_description = '博文'
 
-    def export_selected_post(self, request, queryset):
-        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-        ct = ContentType.objects.get_for_model(queryset.model)
-        redirect_url = reverse('blog:export-post')+"?ct=%s&ids=%s"%(ct.pk, ",".join(selected))
-        return HttpResponseRedirect(redirect_url)
-
-    export_selected_post.short_description = '导出选中博文'
+    # def export_selected_post(self, request, queryset):
+    #     selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    #     ct = ContentType.objects.get_for_model(queryset.model)
+    #     redirect_url = reverse('blog:export-post')+"?ct=%s&ids=%s"%(ct.pk, ",".join(selected))
+    #     return HttpResponseRedirect(redirect_url)
+    #
+    # export_selected_post.short_description = '导出选中博文'
 
 
 class CategoryModelAdmin(DraggableMPTTAdmin):

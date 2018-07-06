@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'blog',
     'comment',
     'oper',
-    'agent'
+    'agent',
+    'import_export'
 ]
 
 MIDDLEWARE = [
