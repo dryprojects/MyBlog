@@ -51,7 +51,7 @@ def gen_excerpt(sender, instance, **kwargs):
     """
 
     if instance.excerpt is '':
-        instance.excerpt = instance.content[:400]
+        instance.excerpt = instance.content[:223]
 
 
 @receiver(post_comment, sender=Comment)
