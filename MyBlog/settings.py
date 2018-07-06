@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'social_django',
     'haystack',
     'elasticstack2',
+    'whooshstack',
     'captcha',
     'kindeditor',
     'mdeditor',
@@ -268,8 +269,8 @@ CACHES = {
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
-        # 'blog.backends.whoosh_backend.WhooshEngine'
-        'URL': 'http://127.0.0.1:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/blog/whoosh_index'),
+        # 'whooshstack.backends.WhooshEngine'
+        'URL': 'http://127.0.0.1:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
         'DEFAULT_ANALYZER': 'ik',  # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
