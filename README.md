@@ -35,6 +35,16 @@
 
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
 
+#### 部分截图
+![](static/images/d1.png)
+![](static/images/d2.png)
+![](static/images/d3.png)
+![](static/images/d4.png)
+![](static/images/d5.png)
+![](static/images/d6.png)
+![](static/images/d7.png)
+![](static/images/d8.png)
+
 #### 联系我
 ###### QQ ：303288346
 ###### Email :rk19931211@hotmail.com
