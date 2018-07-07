@@ -17,7 +17,7 @@
 12. 社会化集成，支持第三方用户帐号登陆
 13. 自定义admin后台
 14. 树形无限分类（前后端）
-15. 博文后端导出
+15. 博文后端支持选定格式批量导入，导出。(csv, xls, xlsx, tsv, ods, json, yml, html)
 16. 服务出错后，邮件通知
 17. 博文爬虫定时抓取， 集成Scrapy， Celery调度。
 18. 自定义django-Haystack搜索框架下Elasticsearch后端，支持Elasticsearch中文检索。
@@ -34,6 +34,17 @@
 8. Supervisor        #非必要
 
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
+
+#### 部分截图
+![](static/images/d1.png)
+![](static/images/d2.png)
+![](static/images/d3.png)
+![](static/images/d4.png)
+![](static/images/d5.png)
+![](static/images/d6.png)
+![](static/images/d7.png)
+![](static/images/d8.png)
+![](static/images/d9.png)
 
 #### 联系我
 ###### QQ ：303288346
