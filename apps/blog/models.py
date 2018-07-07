@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.sites.models import Site
 from django.db import transaction
 from django.conf import settings
 
@@ -163,13 +164,15 @@ class Post(MPTTModel):
         """
         super(Post, self).save()
         self.refresh_from_db() #这是必要的， 因为F表达式
+        current_site = Site.objects.get_current()
+        domain = current_site.domain
 
         MEDIA_PREFIX = settings.MEDIA_URL
 
         default_cover_url = MEDIA_PREFIX + 'blog/blog_cover/default.jpg'
 
         if self.cover.url != default_cover_url or self.cover_url is None:
-            self.cover_url = self.cover.url
+            self.cover_url = 'http://%s'%domain + self.cover.url
 
         if self.category is None:
             self.category = Category(name="其他")
