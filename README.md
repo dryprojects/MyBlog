@@ -17,7 +17,7 @@
 12. 社会化集成，支持第三方用户帐号登陆
 13. 自定义admin后台
 14. 树形无限分类（前后端）
-15. 博文后端导出
+15. 博文后端支持选定格式批量导入，导出。(csv, xls, xlsx, tsv, ods, json, yml, html)
 16. 服务出错后，邮件通知
 17. 博文爬虫定时抓取， 集成Scrapy， Celery调度。
 18. 自定义django-Haystack搜索框架下Elasticsearch后端，支持Elasticsearch中文检索。
