@@ -1,0 +1,80 @@
+version: '3.2'
+services:
+  mysql:
+    image: mysql:5.7
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --init-connect='SET NAMES utf8mb4;' --innodb-flush-log-at-trx-commit=0
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=myblog
+      - MYSQL_ROOT_PASSWORD=Jennei0122?
+    networks:
+      - webnet
+  redis:
+    image: redis
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    command: redis-server --appendonly yes
+    networks:
+      - webnet
+  elasticsearch:
+    image: libac/elasticsearch-rtf
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    networks:
+      - webnet
+  myblog:
+    image: renkang/myblog:base
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    volumes:
+      - myblog_static:/MyBlog/static
+      - myblog_media:/MyBlog/media
+    networks:
+      - webnet
+    depends_on:
+      - mysql
+      - redis
+      - elasticsearch
+  nginx:
+    image: nginx
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    volumes:
+      - type: bind
+        source: ./tools/nginx/conf.d
+        target: /etc/nginx/conf.d
+      - type: volume
+        source: myblog_static
+        target: /MyBlog/static
+      - type: volume
+        source: myblog_media
+        target: /MyBlog/media
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+    depends_on:
+      - myblog
+networks:
+  webnet:
+volumes:
+  myblog_static:
+  myblog_media:

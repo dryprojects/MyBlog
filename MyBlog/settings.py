@@ -117,7 +117,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'myblog',
-            'HOST': '127.0.0.1',
+            'HOST': 'mysql',
             'PASSWORD': 'Jennei0122?',
             'USER': 'root',
         }
@@ -257,7 +257,7 @@ SITE_ID = 1
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": "redis://redis:6379",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -271,7 +271,7 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
         # 'whooshstack.backends.WhooshEngine'
-        'URL': 'http://127.0.0.1:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
+        'URL': 'http://elasticsearch:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
         'DEFAULT_ANALYZER': 'ik',  # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
@@ -289,8 +289,8 @@ PAGINATION_SETTINGS = {
     'SHOW_FIRST_PAGE_WHEN_INVALID': True,
 }
 
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
 # 这里写1保持celery工作线程只有一个， why?
