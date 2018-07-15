@@ -39,6 +39,11 @@
 ###### 拉取镜像
 $ docker pull renkang/myblog:base
 
+###### 修改MyBlog配置，把你自己的， 数据库密码， 第三方放密钥等写好后打包镜像
+$ docker build -t 镜像名 .
+
+###### 镜像打包好后，修改docker-compose.yml里renkang/myblog:base为你打包好的镜像
+
 ###### 进入项目根目录执行以下命令完成部署
 $ docker swarm init
 
