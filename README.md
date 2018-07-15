@@ -44,7 +44,7 @@ $ docker swarm init
 
 $ docker stack deploy -c docker-compose.yml myblog
 
-###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
+###### 登陆博客镜像的容器终端，执行数据迁移，和创建对应管理员
 $ docker exec -it <容器id> bash
 
 $ python manage.py migrate
