@@ -40,10 +40,10 @@
 $ docker pull renkang/myblog:base
 
 ###### 进入项目根目录执行以下命令完成部署
+$ docker swarm init
 $ docker stack deploy -c docker-compose.yml myblog
 
 ###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
-
 $ docker exec -it <容器id> bash
 $ python manage.py migrate
 $ python manage.py createsuperuser
