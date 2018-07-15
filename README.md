@@ -43,7 +43,8 @@ $ docker pull renkang/myblog:base
 $ docker stack deploy -c docker-compose.yml myblog
 
 ###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
-$ docker exec -it <镜像id> bash
+
+$ docker exec -it <容器id> bash
 $ python manage.py migrate
 $ python manage.py createsuperuser
 
