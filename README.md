@@ -46,7 +46,9 @@ $ docker stack deploy -c docker-compose.yml myblog
 
 ###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
 $ docker exec -it <容器id> bash
+
 $ python manage.py migrate
+
 $ python manage.py createsuperuser
 
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
