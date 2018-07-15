@@ -35,17 +35,17 @@
 
 #### 部署（以Docker为例）
 本项目docker镜像地址 https://hub.docker.com/r/renkang/myblog/
+
 ###### 拉取镜像
 $ docker pull renkang/myblog:base
+
 ###### 进入项目根目录执行以下命令完成部署
 $ docker stack deploy -c docker-compose.yml myblog
-###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
 
+###### 登陆博客镜像终端，执行数据迁移，和创建对应管理员
 $ docker exec -it <镜像id> bash
 $ python manage.py migrate
 $ python manage.py createsuperuser
-
-
 
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
 
