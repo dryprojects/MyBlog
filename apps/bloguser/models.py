@@ -62,7 +62,7 @@ class MessageAuthCode(models.Model):
     code = models.CharField(verbose_name='短信验证码', max_length=6)
     phone_num = models.CharField(verbose_name='接收手机号', max_length=14)
     add_time = models.DateTimeField(verbose_name='手机验证码产生时间', default=datetime.datetime.now)
-    expiration = models.DateTimeField(verbose_name='过期时间', blank=False)
+    expiration = models.DateTimeField(verbose_name='过期时间', blank=True, null=True)
 
     def __str__(self):
         return "%s/%s/%s/%s"%(self.phone_num, self.code, self.add_time, self.expiration)
