@@ -31,6 +31,9 @@ SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+API_MODE = True
+
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
@@ -181,7 +184,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-#线上回调地址 http://example.com/social/complete/github
+# 线上回调地址 http://example.com/social/complete/github
 SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
 SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
@@ -274,9 +277,10 @@ HAYSTACK_CONNECTIONS = {
         'URL': 'http://elasticsearch:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
-        'DEFAULT_ANALYZER': 'ik',  # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
-        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik_smart', # ES自定义设置
-        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'        # ES自定义设置
+        'DEFAULT_ANALYZER': 'ik',
+    # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
+        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik_smart',  # ES自定义设置
+        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'  # ES自定义设置
     },
 }
 # 'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引

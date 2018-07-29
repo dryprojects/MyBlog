@@ -12,7 +12,17 @@ from bloguser.models import UserProfile
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserProfile
-        fields = "__all__"
+        exclude = (
+            'password',
+            'is_superuser',
+            'is_staff',
+            'is_active',
+            'groups',
+            'user_permissions'
+        )
+        extra_kwargs = {
+            'url':{'view_name':'bloguser:user-detail'}
+        }

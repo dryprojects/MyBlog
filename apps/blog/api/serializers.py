@@ -1,11 +1,11 @@
 #!usr/bin/env python  
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 """ 
 @author:    nico 
 @file:      serializers.py 
 @time:      2018/05/03 
-""" 
+"""
 
 from rest_framework import serializers
 
@@ -43,7 +43,39 @@ class PostTreeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = '__all__'
+        exclude = (
+            'lft',
+            'rght',
+            'tree_id',
+            'level'
+        )
+
+
+class PostLinkedSerializer(serializers.HyperlinkedModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    def get_children(self, parent):
+        queryset = parent.get_children()
+        serializer = PostLinkedSerializer(queryset, many=True, read_only=True, context=self.context)
+
+        return serializer.data
+
+    class Meta:
+        model = Post
+        exclude = (
+            'lft',
+            'rght',
+            'tree_id',
+            'level'
+        )
+        extra_kwargs = {
+            'url':{'view_name':"blog:post-detail"},
+            'parent':{'view_name':"blog:post-detail"},
+            'children':{'view_name':"blog:post-detail"},
+            'category':{'view_name':"blog:category-detail"},
+            'tags':{'view_name':"blog:tag-detail"},
+            'author':{'view_name':'bloguser:user-detail'}
+        }
 
 
 class ResourceSerializer(serializers.ModelSerializer):
