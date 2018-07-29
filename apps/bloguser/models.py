@@ -1,8 +1,14 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.db import models
 
 from bloguser.tasks import send_mail
+
+
+MESSAGE_TIMEOUT = 1 #minutes 短信验证码过期时间
 
 
 class UserProfile(AbstractUser):
@@ -47,3 +53,29 @@ class UserProfile(AbstractUser):
             self.image_url = self.image.url
 
         super().save(*args, **kwargs)
+
+
+class MessageAuthCode(models.Model):
+    """
+    手机短信验证码
+    """
+    code = models.CharField(verbose_name='短信验证码', max_length=6)
+    phone_num = models.CharField(verbose_name='接收手机号', max_length=14)
+    add_time = models.DateTimeField(verbose_name='手机验证码产生时间', default=datetime.datetime.now)
+    expiration = models.DateTimeField(verbose_name='过期时间', blank=False)
+
+    def __str__(self):
+        return "%s/%s/%s/%s"%(self.phone_num, self.code, self.add_time, self.expiration)
+
+    class Meta:
+        verbose_name = '手机短信验证码'
+        verbose_name_plural = verbose_name
+
+    def save(self, *args, **kwargs):
+        if not self.expiration:
+            self.expiration = timezone.now() + datetime.timedelta(minutes=int(MESSAGE_TIMEOUT))
+        super(MessageAuthCode, self).save(*args, **kwargs)
+
+    @classmethod
+    def remove_expired(cls):
+        cls.objects.filter(expiration__lte=timezone.now()).delete()
