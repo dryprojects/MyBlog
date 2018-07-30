@@ -2,7 +2,7 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/3/27 13:32'
 
-from django.db.models.signals import pre_save, post_delete
+from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver, Signal
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
@@ -10,6 +10,7 @@ from django.utils.html import mark_safe, format_html
 from django.template import loader
 
 from haystack.signals import BaseSignalProcessor
+from guardian.shortcuts import assign_perm
 
 from blog.models import Post
 from comment.models import Comment
@@ -110,3 +111,13 @@ def handler_post_comment(sender, comment_obj, content_type, object_id, request, 
 
             comment.author.notify_user(noti_text)
             comment.author.email_user(subject, message, html_msg=message)
+
+
+@receiver(post_save, sender=Post)
+def user_post_save(sender, **kwargs):
+    """
+    给博文作者分配可读权限 (对象权限控制)
+    """
+    post, created = kwargs["instance"], kwargs["created"]
+    if created:
+        assign_perm("view_post", post.author, post)

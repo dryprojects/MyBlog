@@ -74,6 +74,10 @@ class Post(MPTTModel):
     class Meta:
         verbose_name = '博文'
         verbose_name_plural = verbose_name
+        #需要对象权限支持
+        permissions = (
+            ('view_post', "可以读取对应的博文实例"),
+        )
 
     class MPTTMeta:
         order_insertion_by = ['title']

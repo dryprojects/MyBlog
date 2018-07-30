@@ -33,7 +33,7 @@ if not API_MODE:
     ]
 else:
     router = DefaultRouter()
-    router.register('posts', api_views.PostReadOnlyViewset, base_name='post')
+    router.register('posts', api_views.PostViewset, base_name='post')
     router.register('categories', api_views.CategoryViewset, base_name='category')
     router.register('tags', api_views.TagViewset, base_name='tag')
     router.register('resources', api_views.ResourceViewset, base_name='resource')

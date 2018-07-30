@@ -16,10 +16,10 @@ class PostFilter(filters.FilterSet):
     class Meta:
         model = Post
         fields = {
-            'parent': ['exact'],
+            'parent__title': ['icontains'],
             'id': ['exact'],
-            'title': ['iexact'],
-            'tags': ['iexact'],
-            'status': ['exact'],
+            'title': ['icontains'],
+            'tags': ['icontains'],
+            'status': ['icontains'],
             'published_time': ['year__lte', 'year__gte', 'month__gte', 'month__lte', 'day__lte', 'day__gte']
         }

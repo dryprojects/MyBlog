@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import  format_html
 
-from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks
+from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks, Blacklist
 # Register your models here.
 
 @admin.register(Notification)
@@ -54,3 +54,14 @@ class BlogOwnerModelAdmin(admin.ModelAdmin):
 @admin.register(FriendshipLinks)
 class FriendshipLinksModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']
+
+
+@admin.register(Blacklist)
+class BlacklistModelAdmin(admin.ModelAdmin):
+    list_display = ['ip_addr', 'desc', 'add_time', 'expiration']
+    fieldsets = (
+        (
+            "基本信息",
+            {"fields": [('ip_addr', 'desc'), ('add_time', 'expiration')], 'classes': ('wide', 'extrapretty')}
+        ),
+    )
