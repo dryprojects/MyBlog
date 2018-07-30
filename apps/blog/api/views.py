@@ -11,6 +11,10 @@ from blog import models
 from blog.api import serializers
 
 from rest_framework import viewsets
+from django_filters import rest_framework as filters
+
+from blog.api import paginators
+from blog.api import filters as blog_filters
 
 
 class PostReadOnlyViewset(viewsets.ReadOnlyModelViewSet):
@@ -19,6 +23,9 @@ class PostReadOnlyViewset(viewsets.ReadOnlyModelViewSet):
     """
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostLinkedSerializer
+    pagination_class = paginators.PostPaginator
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性
 
 
 class PostViewset(viewsets.ModelViewSet):
