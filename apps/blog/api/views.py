@@ -19,21 +19,6 @@ from blog.api import filters as blog_filters
 from blog.api import permissions
 
 
-class PostReadOnlyViewset(viewsets.ReadOnlyModelViewSet):
-    """
-    # 只读博文接口, 不可删除，增加/更新博文
-    """
-    queryset = models.Post.objects.all()
-    serializer_class = serializers.PostListSerializer
-    pagination_class = paginators.PostPaginator
-    filter_backends = (filters.DjangoFilterBackend, rest_filters.SearchFilter, rest_filters.OrderingFilter,) #rest_filters.DjangoObjectPermissionsFilter
-    filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性
-    search_fields = ('title', 'category__name')
-    ordering_fields = ('published_time', 'n_praise', 'n_browsers')
-    ordering = ('-published_time', ) #默认排序规则
-    permission_classes = (permissions.IsOwnerOrReadOnly,)
-
-
 class PostViewset(viewsets.ModelViewSet):
     """
     博文读写接口
@@ -58,6 +43,8 @@ class PostViewset(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ["retrieve"]:
             return serializers.PostDetailSerializer
+        elif self.action in ["update", "partial_update"]:
+            return serializers.PostSerializer
         else:
             return serializers.PostListSerializer
 

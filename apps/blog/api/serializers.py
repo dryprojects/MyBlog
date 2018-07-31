@@ -57,43 +57,9 @@ class PostTreeSerializer(serializers.ModelSerializer):
         )
 
 
-class PostListSerializer(serializers.HyperlinkedModelSerializer):
+class BasePostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
-        fields = (
-            'url',
-            'title',
-            'published_time'
-        )
-        extra_kwargs = {
-            'url':{'view_name':"blog:post-detail"},
-            'parent':{'view_name':"blog:post-detail"},
-            'children':{'view_name':"blog:post-detail"},
-            'category':{'view_name':"blog:category-detail"},
-            'tags':{'view_name':"blog:tag-detail"},
-            'author':{'view_name':'bloguser:user-detail'}
-        }
-
-
-class PostDetailSerializer(serializers.HyperlinkedModelSerializer):
-    children = serializers.SerializerMethodField()
-    category = CategorySerializer()
-    tags = TagSerializer(many=True)
-
-    def get_children(self, parent):
-        queryset = parent.get_children()
-        serializer = PostListSerializer(queryset, many=True, read_only=True, context=self.context)
-
-        return serializer.data
-
-    class Meta:
-        model = Post
-        exclude = (
-            'lft',
-            'rght',
-            'tree_id',
-            'level'
-        )
         extra_kwargs = {
             'url': {'view_name': "blog:post-detail"},
             'parent': {'view_name': "blog:post-detail"},
@@ -102,6 +68,41 @@ class PostDetailSerializer(serializers.HyperlinkedModelSerializer):
             'tags': {'view_name': "blog:tag-detail"},
             'author': {'view_name': 'bloguser:user-detail'}
         }
+
+
+class PostListSerializer(BasePostSerializer):
+    class Meta(BasePostSerializer.Meta):
+        fields = (
+            'url',
+            'title',
+            'published_time'
+        )
+
+
+class PostSerializer(BasePostSerializer):
+    children = serializers.SerializerMethodField()
+    category = CategorySerializer()
+
+    def get_children(self, parent):
+        queryset = parent.get_children()
+        serializer = PostListSerializer(queryset, many=True, read_only=True, context=self.context)
+
+        return serializer.data
+
+    class Meta(BasePostSerializer.Meta):
+        exclude = (
+            'lft',
+            'rght',
+            'tree_id',
+            'level'
+        )
+
+
+class PostDetailSerializer(PostSerializer):
+    tags = TagSerializer(many=True)
+
+    class Meta(PostSerializer.Meta):
+        pass
 
 
 class ResourceSerializer(serializers.ModelSerializer):

@@ -8,16 +8,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse
 
+from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
+from import_export import resources
+from import_export.admin import ImportExportMixin, ImportExportActionModelAdmin
+from import_export.fields import Field, NOT_PROVIDED
+from guardian.admin import GuardedModelAdminMixin
+
 from blog.models import Post, Category, Tag, Resources
 from kindeditor.widgets import KindTextareaWidget
 from mdeditor.widgets import MdTextWidget
 from bloguser.models import UserProfile
-
-from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
-
-from import_export import resources
-from import_export.admin import ImportExportMixin, ImportExportActionModelAdmin
-from import_export.fields import Field, NOT_PROVIDED
 
 
 USE_ADMIN_SITE = True
@@ -254,7 +254,7 @@ class ResourcesInline(admin.TabularInline):
     extra = 1
 
 
-class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
+class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, DraggableMPTTAdmin):
     """
     see detail:
         https://docs.djangoproject.com/en/2.0/intro/tutorial07/
@@ -284,6 +284,7 @@ class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
     autocomplete_fields = ['author', 'category', 'parent']  # django 2.0新增
     search_fields = ['title']
     date_hierarchy = 'published_time'
+    ordering = ('-published_time',)
 
     # formfield_overrides = {
     #     models.TextField:{

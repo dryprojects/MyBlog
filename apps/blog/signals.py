@@ -6,6 +6,9 @@ from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver, Signal
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.utils.html import mark_safe, format_html
 from django.template import loader
 
@@ -18,6 +21,7 @@ from comment.signals import post_comment, post_like
 
 
 post_published = Signal(providing_args=['instance'])
+User = get_user_model()
 
 
 class PostSignalProcessor(BaseSignalProcessor):
@@ -53,7 +57,6 @@ def gen_excerpt(sender, instance, **kwargs):
 
     if instance.excerpt is '':
         instance.excerpt = instance.content[:223]
-
 
 @receiver(post_comment, sender=Comment)
 def handler_post_comment(sender, comment_obj, content_type, object_id, request, **kwargs):
@@ -112,12 +115,20 @@ def handler_post_comment(sender, comment_obj, content_type, object_id, request, 
             comment.author.notify_user(noti_text)
             comment.author.email_user(subject, message, html_msg=message)
 
-
 @receiver(post_save, sender=Post)
-def user_post_save(sender, **kwargs):
+def assign_post_view_perm(sender, **kwargs):
     """
-    给博文作者分配可读权限 (对象权限控制)
+    创建或者获取readers组赋予该组对所有博文实例的读取权限
     """
     post, created = kwargs["instance"], kwargs["created"]
+    readers, _= Group.objects.get_or_create(name='readers')
     if created:
-        assign_perm("view_post", post.author, post)
+        assign_perm("view_post", readers, post)
+
+@receiver(post_save, sender=User)
+def user_post_save(sender, **kwargs):
+    user, created = kwargs['instance'], kwargs['created']
+
+    if created and not user.is_anonymous:
+        readers, _ = Group.objects.get_or_create(name='readers')
+        user.groups.add(readers)

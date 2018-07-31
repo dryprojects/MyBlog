@@ -28,11 +28,15 @@ import django
 
 django.setup()
 
+
+from django.contrib.auth import get_user_model
+
 from blog.models import Post
-from blog.api.serializers import PostLinkedSerializer
-from rest_framework.renderers import JSONRenderer
 
 
-qs = Post.objects.all()
-s = PostLinkedSerializer(qs, many=True, context={'request':None})
-print(JSONRenderer().render(s.data))
+User = get_user_model()
+
+p = User.objects.get(username__icontains="debug")
+b = Post.objects.get(title__icontains='FFF')
+
+print(p.has_perm('blog.view_post', b))

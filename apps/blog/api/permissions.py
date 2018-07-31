@@ -7,6 +7,8 @@
 @time:      2018/07/30 
 """
 
+from django.conf import settings
+
 from rest_framework import permissions
 from ipware import get_client_ip
 
@@ -17,6 +19,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
+
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        return True
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
@@ -54,12 +62,45 @@ class BlacklistPermission(permissions.BasePermission):
 
 
 class ReadPermission(permissions.DjangoObjectPermissions):
+    """
+    对象读取权限控制
+    """
+    message = '你没有权限访问， 请向管理员申请'
     perms_map = {
         'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
         'HEAD': ['%(app_label)s.view_%(model_name)s'],
-        'POST': ['%(app_label)s.add_%(model_name)s'],
-        'PUT': ['%(app_label)s.change_%(model_name)s'],
-        'PATCH': ['%(app_label)s.change_%(model_name)s'],
-        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
+
+    def has_permission(self, request, view):
+        """
+        全局权限检测
+        这里不做模型权限检测，默认具有访问对应模型的权限
+        :param request:
+        :param view:
+        :return:
+        """
+
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        """
+        检查用户是否对访问的博文实例具有读取权限 view_post
+        :param request:
+        :param view:
+        :param obj:
+        :return:
+        """
+        queryset = self._queryset(view)
+        model_cls = queryset.model
+        user = request.user
+
+        perms = self.get_required_object_permissions(request.method, model_cls)
+
+        if not user.has_perms(perms, obj):
+            return False
+
+        return True

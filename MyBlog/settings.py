@@ -136,6 +136,8 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = 'bloguser.UserProfile'
 
+#ANONYMOUS_USER_NAME = 'guest'
+
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple
     # format to create the user instance later. On some cases the details are
