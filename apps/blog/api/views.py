@@ -25,25 +25,17 @@ class PostViewset(viewsets.ModelViewSet):
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
+    permission_classes = (permissions.IsOwnerOrNeedAccess, permissions.BlacklistPermission)
     filter_backends = (filters.DjangoFilterBackend, rest_filters.SearchFilter, rest_filters.OrderingFilter)
     filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性
     search_fields = ('title', 'category__name')
     ordering_fields = ('published_time', 'n_praise', 'n_browsers')
     ordering = ('-published_time', ) #默认排序规则
 
-    def get_permissions(self):
-        if self.action in ['destroy', 'update', 'partial_update']:
-            permission_classes = [permissions.IsOwnerOrReadOnly]
-        else:
-            # 需要客户不在黑名单，且具有对应博文实例的读取权限
-            permission_classes = [permissions.BlacklistPermission, permissions.ReadPermission]
-
-        return [permission() for permission in permission_classes]
-
     def get_serializer_class(self):
         if self.action in ["retrieve"]:
             return serializers.PostDetailSerializer
-        elif self.action in ["update", "partial_update"]:
+        elif self.action in ["update", "partial_update", "create"]:
             return serializers.PostSerializer
         else:
             return serializers.PostListSerializer

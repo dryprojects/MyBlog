@@ -20,12 +20,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     Custom permission to only allow owners of an object to edit it.
     """
 
-    def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-
-        return True
-
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
@@ -35,6 +29,44 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Write permissions are only allowed to the owner of the snippet.
         return obj.author == request.user
+
+
+class IsOwnerOrNeedAccess(permissions.DjangoObjectPermissions):
+    """
+        让实例所有者具有实例的所有权限，
+        而访问者，只有在实例上具有可访问权限时才能访问对应实例
+    """
+    message = '你无权访问，请向所有者申请访问权限。'
+    perms_map = {
+        'GET': ['%(app_label)s.view_%(model_name)s'],
+        'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
+        'HEAD': ['%(app_label)s.view_%(model_name)s'],
+    }
+
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False  # 匿名用户不可访问
+
+        if request.method not in ["DELETE", "PUT", "PATCH"]:
+            return True
+
+        return view.get_object().author == request.user #删除，更新，只有所有者才可以操作
+
+    def has_object_permission(self, request, view, obj):
+        if obj.author == request.user:
+            return True
+
+        queryset = self._queryset(view)
+        model_cls = queryset.model
+        user = request.user
+
+        perms = self.get_required_object_permissions(request.method, model_cls)
+        if request.method in permissions.SAFE_METHODS:
+            if not user.has_perms(perms, obj):
+                return False
+            return True  # 不是所有者的只有具有访问权限才可以访问
+
+        return False
 
 
 class BlacklistPermission(permissions.BasePermission):
@@ -59,48 +91,3 @@ class BlacklistPermission(permissions.BasePermission):
 
         # Order of precedence is (Public, Private, Loopback, None)
         return not blacklisted
-
-
-class ReadPermission(permissions.DjangoObjectPermissions):
-    """
-    对象读取权限控制
-    """
-    message = '你没有权限访问， 请向管理员申请'
-    perms_map = {
-        'GET': ['%(app_label)s.view_%(model_name)s'],
-        'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
-        'HEAD': ['%(app_label)s.view_%(model_name)s'],
-    }
-
-    def has_permission(self, request, view):
-        """
-        全局权限检测
-        这里不做模型权限检测，默认具有访问对应模型的权限
-        :param request:
-        :param view:
-        :return:
-        """
-
-        if not request.user or not request.user.is_authenticated:
-            return False
-
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        """
-        检查用户是否对访问的博文实例具有读取权限 view_post
-        :param request:
-        :param view:
-        :param obj:
-        :return:
-        """
-        queryset = self._queryset(view)
-        model_cls = queryset.model
-        user = request.user
-
-        perms = self.get_required_object_permissions(request.method, model_cls)
-
-        if not user.has_perms(perms, obj):
-            return False
-
-        return True
