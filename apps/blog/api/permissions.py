@@ -28,7 +28,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         # Write permissions are only allowed to the owner of the snippet.
-        return obj.author == request.user
+        return (obj.author == request.user) or request.user.is_superuser
 
 
 class IsOwnerOrNeedAccess(permissions.DjangoObjectPermissions):
@@ -47,26 +47,26 @@ class IsOwnerOrNeedAccess(permissions.DjangoObjectPermissions):
         if not request.user or not request.user.is_authenticated:
             return False  # 匿名用户不可访问
 
-        if request.method not in ["DELETE", "PUT", "PATCH"]:
-            return True
-
-        return view.get_object().author == request.user #删除，更新，只有所有者才可以操作
+        return True #非所有者可以创建实例
 
     def has_object_permission(self, request, view, obj):
-        if obj.author == request.user:
-            return True
+        is_owner_or_root = (obj.author == request.user) or request.user.is_superuser
+
+        return True if is_owner_or_root else self.check_view_perm(request, view, obj)
+
+    def check_view_perm(self, request, view, obj):
+        has_view_perm = False # 不是所有者的只有具有访问权限才可以访问
 
         queryset = self._queryset(view)
         model_cls = queryset.model
         user = request.user
 
         perms = self.get_required_object_permissions(request.method, model_cls)
-        if request.method in permissions.SAFE_METHODS:
-            if not user.has_perms(perms, obj):
-                return False
-            return True  # 不是所有者的只有具有访问权限才可以访问
+        if user.has_perms(perms, obj):
+            has_view_perm = True
 
-        return False
+        return has_view_perm
+
 
 
 class BlacklistPermission(permissions.BasePermission):
