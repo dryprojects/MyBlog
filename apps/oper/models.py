@@ -82,7 +82,7 @@ class Blacklist(models.Model):
     def save(self, *args, **kwargs):
         if not self.expiration:
             self.expiration = timezone.now() + datetime.timedelta(minutes=int(BLACKLIST_TIMEOUT))
-            super(Blacklist, self).save(*args, **kwargs)
+        super(Blacklist, self).save(*args, **kwargs)
 
     @classmethod
     def remove_expired(cls):

@@ -75,19 +75,33 @@ class BlacklistPermission(permissions.BasePermission):
     run against all incoming requests
     """
 
+    message = "你被暂时列入访问黑名单了。"
+
     def has_permission(self, request, view):
         client_ip, is_routable = get_client_ip(request)
         if client_ip is None:
             # Unable to get the client's IP address
-            return True
+            return False
         else:
             # We got the client's IP address
             if is_routable:
                 # The client's IP address is publicly routable on the Internet
-                blacklisted = Blacklist.objects.filter(ip_addr=client_ip).exists()
+                blacklisted = self.check_blacklist(client_ip)
             else:
                 # The client's IP address is private
-                return True
+                blacklisted = self.check_blacklist(client_ip)
 
         # Order of precedence is (Public, Private, Loopback, None)
         return not blacklisted
+
+    def check_blacklist(self, ip_addr):
+        #首先删除过期的ip
+        Blacklist.remove_expired()
+
+        blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
+        if blacklisted:
+            client = Blacklist.objects.filter(ip_addr=ip_addr).first()
+            if client.desc:
+                self.message = client.desc
+
+        return blacklisted
