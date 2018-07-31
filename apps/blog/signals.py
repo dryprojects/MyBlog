@@ -124,6 +124,7 @@ def assign_post_view_perm(sender, **kwargs):
     readers, _= Group.objects.get_or_create(name='readers')
     if _:
         assign_perm('blog.view_post', readers) # 给readers组赋予可以访问所有博文实例的模型权限
+        assign_perm('blog.add_post', readers)
     if created:
         assign_perm("view_post", readers, post) #给readers组赋予可访问指定的博文的对象权限
 
@@ -135,4 +136,5 @@ def user_as_reader(sender, **kwargs):
         readers, _ = Group.objects.get_or_create(name='readers')
         if _:
             assign_perm('blog.view_post', readers)
+            assign_perm('blog.add_post', readers)
         user.groups.add(readers)
