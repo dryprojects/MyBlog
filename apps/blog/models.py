@@ -76,7 +76,7 @@ class Post(MPTTModel):
         verbose_name_plural = verbose_name
         #需要对象权限支持
         permissions = (
-            ('view_post', "可以读取对应的博文实例"),
+            ('view_post', "可以查看博文"),
         )
 
     class MPTTMeta:

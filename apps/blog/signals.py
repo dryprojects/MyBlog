@@ -122,13 +122,17 @@ def assign_post_view_perm(sender, **kwargs):
     """
     post, created = kwargs["instance"], kwargs["created"]
     readers, _= Group.objects.get_or_create(name='readers')
+    if _:
+        assign_perm('blog.view_post', readers) # 给readers组赋予可以访问所有博文实例的模型权限
     if created:
-        assign_perm("view_post", readers, post)
+        assign_perm("view_post", readers, post) #给readers组赋予可访问指定的博文的对象权限
 
 @receiver(post_save, sender=User)
-def user_post_save(sender, **kwargs):
+def user_as_reader(sender, **kwargs):
     user, created = kwargs['instance'], kwargs['created']
 
     if created and not user.is_anonymous:
         readers, _ = Group.objects.get_or_create(name='readers')
+        if _:
+            assign_perm('blog.view_post', readers)
         user.groups.add(readers)

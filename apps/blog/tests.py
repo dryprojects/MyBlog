@@ -31,12 +31,16 @@ django.setup()
 
 from django.contrib.auth import get_user_model
 
+from guardian.shortcuts import assign_perm
+
 from blog.models import Post
 
 
 User = get_user_model()
 
 p = User.objects.get(username__icontains="debug")
-b = Post.objects.get(title__icontains='FFF')
+b = Post.objects.get(title__icontains='分布式之延时任务方案解析')
 
-print(p.has_perm('blog.view_post', b))
+assign_perm('blog.delete_post', p)
+
+print(p.has_perm('blog.add_post'))

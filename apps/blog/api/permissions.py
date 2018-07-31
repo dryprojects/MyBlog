@@ -41,15 +41,16 @@ class IsOwnerOrNeedAccess(permissions.DjangoObjectPermissions):
         'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
         'HEAD': ['%(app_label)s.view_%(model_name)s'],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'PUT': ['%(app_label)s.change_%(model_name)s'],
+        'PATCH': ['%(app_label)s.change_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
 
-    def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False  # 匿名用户不可访问
-
-        return True #非所有者可以创建实例
-
     def has_object_permission(self, request, view, obj):
+        if request.user.is_anonymous:
+            return False
+
         is_owner_or_root = (obj.author == request.user) or request.user.is_superuser
 
         return True if is_owner_or_root else self.check_view_perm(request, view, obj)
