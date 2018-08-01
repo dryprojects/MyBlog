@@ -13,6 +13,7 @@ from blog.api import serializers
 from rest_framework import viewsets
 from rest_framework import filters as rest_filters
 from django_filters import rest_framework as filters
+from dry_rest_permissions.generics import DRYPermissions
 
 from blog.api import paginators
 from blog.api import filters as blog_filters
@@ -25,7 +26,7 @@ class PostViewset(viewsets.ModelViewSet):
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
-    permission_classes = (permissions.IsOwnerOrNeedAccess, permissions.BlacklistPermission)
+    permission_classes = (permissions.BlacklistPermission, DRYPermissions)
     filter_backends = (filters.DjangoFilterBackend, rest_filters.SearchFilter, rest_filters.OrderingFilter)
     filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性
     search_fields = ('title', 'category__name')

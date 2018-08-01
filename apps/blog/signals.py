@@ -127,6 +127,8 @@ def assign_post_view_perm(sender, **kwargs):
         assign_perm('blog.add_post', readers)
     if created:
         assign_perm("view_post", readers, post) #给readers组赋予可访问指定的博文的对象权限
+        assign_perm('blog.change_post', post.author, post) #给博文作者分配修改和删除博文的模型权限
+        assign_perm('blog.delete_post', post.author, post)
 
 @receiver(post_save, sender=User)
 def user_as_reader(sender, **kwargs):

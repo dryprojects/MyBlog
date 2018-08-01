@@ -38,9 +38,9 @@ from blog.models import Post
 
 User = get_user_model()
 
-p = User.objects.get(username__icontains="debug")
-b = Post.objects.get(title__icontains='分布式之延时任务方案解析')
+p = User.objects.get(username__icontains="scrapy")
+b = Post.objects.get(title__icontains='在Linux上如何得到一个段错误的核心转储')
 
 assign_perm('blog.delete_post', p)
 
-print(p.has_perm('blog.add_post'))
+print(p.has_perm('blog.change_post'))

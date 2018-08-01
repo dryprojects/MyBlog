@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'bloguser',
     'django_filters',
     'rest_framework',
+    'dry_rest_permissions',
     'social_django',
     'haystack',
     'elasticstack2',
