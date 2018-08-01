@@ -50,6 +50,10 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = ["*"]
 
+# see https://github.com/ottoyiu/django-cors-headers
+if API_MODE:
+    CORS_ORIGIN_ALLOW_ALL = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,6 +70,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'dry_rest_permissions',
+    'corsheaders',
     'social_django',
     'haystack',
     'elasticstack2',
@@ -79,10 +84,12 @@ INSTALLED_APPS = [
     'comment',
     'oper',
     'agent',
+    'trade',
     'import_export'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.locale.LocaleMiddleware', #这里不做国际化与本地化支持

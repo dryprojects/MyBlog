@@ -18,7 +18,10 @@ from blog.api import serializers, paginators, permissions, throttling, filters a
 
 class PostViewset(viewsets.ModelViewSet):
     """
-    博文读写接口
+    ### list:
+        返回用户所有公开发表的博文，当前用户返回所有的博文
+    ### retrieve:
+        返回的博文如果是私有的则需要对应权限才可访问
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
@@ -41,7 +44,8 @@ class PostViewset(viewsets.ModelViewSet):
     @action(detail=False)
     def notifications(self, request):
         """
-        返回属于公告的博文
+        ### list:
+            返回属于公告的博文
         :return:
         """
         queryset = self.get_queryset()

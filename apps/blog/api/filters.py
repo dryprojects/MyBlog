@@ -18,9 +18,10 @@ class PostFilter(filters.FilterSet):
     class Meta:
         model = Post
         fields = {
-            'parent__title': ['icontains'],
+            'parent': ['exact'],
             'title': ['icontains'],
             'tags': ['icontains'],
+            'category':['exact'],
             'published_time': ['year__lte', 'year__gte', 'month__gte', 'month__lte', 'day__lte', 'day__gte']
         }
 
