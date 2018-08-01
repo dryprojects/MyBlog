@@ -11,7 +11,6 @@ from rest_framework import viewsets, filters as rest_filters, throttling as rest
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters import rest_framework as filters
-from dry_rest_permissions.generics import DRYPermissions
 
 from blog import models
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
@@ -23,7 +22,7 @@ class PostViewset(viewsets.ModelViewSet):
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
-    permission_classes = (permissions.BlacklistPermission, DRYPermissions)
+    permission_classes = (permissions.BlacklistPermission, permissions.DRYPostPermissions)
     throttle_classes = (throttling.PostUserRateThrottle, rest_throttling.AnonRateThrottle)
     filter_backends = (filters.DjangoFilterBackend, blog_filters.PostFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter)
     filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性

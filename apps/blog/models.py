@@ -215,7 +215,9 @@ class Post(MPTTModel):
         if request.user == self.author:
             return True
 
-        return True if self.status == enums.POST_STATUS_PUBLIC else False
+        checked = (self.status == enums.POST_STATUS_PUBLIC) and self.is_free
+
+        return True if checked else False
 
     @staticmethod
     def has_write_permission(request):

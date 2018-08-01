@@ -11,8 +11,13 @@ from django.conf import settings
 
 from rest_framework import permissions
 from ipware import get_client_ip
+from dry_rest_permissions.generics import DRYPermissions
 
 from oper.models import Blacklist
+
+
+class DRYPostPermissions(DRYPermissions):
+    message = "你无权访问，请向作者申请访问权限"
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):

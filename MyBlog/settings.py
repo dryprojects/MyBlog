@@ -331,12 +331,12 @@ CELERY_BEAT_MAX_LOOP_INTERVAL = 1
 # CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 # there was a bug in django-celery-beat may be caused periodic tasks be run in microseconds.
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_RENDERER_CLASSES': (
-#         'rest_framework.renderers.JSONRenderer',
-#     ),
-# }
+if not DEBUG:
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        ),
+    }
 
 LOGGING = {
     'version': 1,
