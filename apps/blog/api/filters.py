@@ -41,7 +41,7 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         """
         query = {
             'status': enums.POST_STATUS_PUBLIC,
-            'type': enums.POST_TYPE_POST
+            'post_type': enums.POST_TYPE_POST
         }
         return queryset.filter(**query)
 
@@ -55,6 +55,6 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         """
         query = {
             'status': enums.POST_STATUS_PUBLIC,
-            'type': enums.POST_TYPE_NOTIFICATION
+            'post_type': enums.POST_TYPE_NOTIFICATION
         }
         return queryset.filter(**query)

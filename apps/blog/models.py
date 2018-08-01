@@ -67,8 +67,9 @@ class Post(MPTTModel):
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
-    type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
-    is_banner = models.BooleanField(verbose_name='是否是轮播图', default=False)
+    post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
+    is_banner = models.BooleanField(verbose_name='是否轮播', default=False)
+    is_free = models.BooleanField(verbose_name='是否免费', default=True)
     origin_post_url = models.URLField(verbose_name='原博文URL链接', default="", null=True, blank=True)
     origin_post_from = models.CharField(verbose_name="原博文出处名称", max_length=255, default="", null=True, blank=True)
     url_object_id = models.CharField(verbose_name="源博文唯一标识", unique=True, max_length=255, null=True, blank=True, help_text="不写默认为博文url摘要")
@@ -92,7 +93,7 @@ class Post(MPTTModel):
         return now - datetime.timedelta(days=1) <= self.published_time <= now
     was_published_recently.admin_order_field = 'published_time'
     was_published_recently.boolean = True
-    was_published_recently.short_description = '是否是最近发表?'
+    was_published_recently.short_description = '是否最近发表'
 
     def get_absolute_url(self):
         return reverse('blog:post-detail', kwargs={'pk':self.pk})

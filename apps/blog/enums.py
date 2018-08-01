@@ -18,4 +18,4 @@ POST_TYPE_NOTIFICATION = 'notification'
 
 #站点常量
 ADMIN_SITE_HEADER_TITLE = '我的博客后台'
-ADMIN_SITE_TITLE = '管理面板'
+ADMIN_SITE_TITLE = '我的博客'
