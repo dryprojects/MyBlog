@@ -11,6 +11,7 @@ from django.contrib.syndication.views import Feed
 from django.urls import reverse
 
 from blog.models import Post
+from blog import enums
 
 
 class LatestPostFeed(Feed):
@@ -23,7 +24,7 @@ class LatestPostFeed(Feed):
     description = 'MyBlog 最近更新的博文.'
 
     def items(self):
-        return Post.objects.filter(status='published').order_by('-published_time')[:5]
+        return Post.objects.filter(status=enums.POST_STATUS_PUBLIC).order_by('-published_time')[:5]
 
     def item_title(self, item):
         return item.title

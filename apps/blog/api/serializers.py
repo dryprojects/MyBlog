@@ -75,6 +75,11 @@ class PostListSerializer(BasePostSerializer):
         fields = (
             'url',
             'title',
+            'excerpt',
+            'cover_url',
+            'n_praise',
+            'n_comments',
+            'n_browsers',
             'published_time'
         )
 

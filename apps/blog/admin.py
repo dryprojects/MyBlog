@@ -15,6 +15,7 @@ from import_export.fields import Field, NOT_PROVIDED
 from guardian.admin import GuardedModelAdminMixin
 
 from blog.models import Post, Category, Tag, Resources
+from blog import enums
 from kindeditor.widgets import KindTextareaWidget
 from mdeditor.widgets import MdTextWidget
 from bloguser.models import UserProfile
@@ -28,8 +29,8 @@ if not USE_ADMIN_SITE:
     admin.site.unregister(User)
     admin.site.unregister(Group)
 else:
-    admin.site.site_header = "我的博客后台"
-    admin.site.site_title = '我的博客'
+    admin.site.site_header = enums.ADMIN_SITE_HEADER_TITLE
+    admin.site.site_title = enums.ADMIN_SITE_TITLE
 
 # Register your models here.
 if not USE_ADMIN_SITE:
@@ -79,12 +80,12 @@ class MyField(Field):
                 '否': False,
             },
             '编辑状态':{
-                '已发表': 'published',
-                '草稿': 'draft',
+                '已发表': enums.POST_STATUS_PUBLIC,
+                '草稿': enums.POST_STATUS_PRIVATE,
             },
             '博文类型':{
-                '博文': 'post',
-                '公告': 'notification',
+                '博文': enums.POST_TYPE_POST,
+                '公告': enums.POST_TYPE_NOTIFICATION,
             }
         }
         m_v = m_c.get(column_name, None)
@@ -196,17 +197,17 @@ class PostResource(resources.ModelResource):
             return post.is_banner
 
     def dehydrate_status(self, post):
-        if post.status == 'published':
+        if post.status == enums.POST_STATUS_PUBLIC:
             return '已发表'
-        elif post.status == 'draft':
+        elif post.status == enums.POST_STATUS_PRIVATE:
             return '草稿'
         else:
             return post.status
 
     def dehydrate_type(self, post):
-        if post.type == 'post':
+        if post.type == enums.POST_TYPE_POST:
             return '博文'
-        elif post.type == 'notification':
+        elif post.type == enums.POST_TYPE_NOTIFICATION:
             return '公告'
         else:
             return post.type

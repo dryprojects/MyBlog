@@ -11,8 +11,10 @@ from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
+from dry_rest_permissions.generics import allow_staff_or_superuser
 
 from comment.models import Comment
+from blog import enums
 
 
 User = get_user_model()
@@ -44,12 +46,12 @@ class Category(MPTTModel):
 
 class Post(MPTTModel):
     STATUS = (
-        ('draft', "草稿"),
-        ('published', "已发表")
+        (enums.POST_STATUS_PRIVATE, "私有"),
+        (enums.POST_STATUS_PUBLIC, "公开")
     )
     TYPES = (
-        ('post', '博文'),
-        ('notification', '公告')
+        (enums.POST_TYPE_POST, '博文'),
+        (enums.POST_TYPE_NOTIFICATION, '公告')
     )
     parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
@@ -189,6 +191,52 @@ class Post(MPTTModel):
             post_published.send(sender=self.__class__, instance=self)
 
         super(Post, self).save()
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        表级权限控制(模型权限/全局权限),对指定操作开放读取权限
+            list
+            retrieve
+        :param request:
+        :return:
+        """
+        return True
+
+    @allow_staff_or_superuser
+    def has_object_read_permission(self, request):
+        """
+        行级权限控制（对象权限），该权限需要在全局权限检测通过后检测
+        指定当前博文对象的读取权限
+        :param request:
+        :return:
+        """
+        if request.user == self.author:
+            return True
+
+        return True if self.status == enums.POST_STATUS_PUBLIC else False
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        对指定操作开放写权限
+            create
+            update
+            partial_update
+            destroy
+        :param request:
+        :return:
+        """
+        return False if request.user.is_anonymous else True
+
+    @allow_staff_or_superuser
+    def has_object_write_permission(self, request):
+        """
+        对当前对象开放指定的操作权限
+        :param request:
+        :return:
+        """
+        return self.author == request.user
 
 
 class Resources(models.Model):

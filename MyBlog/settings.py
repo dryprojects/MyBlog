@@ -34,6 +34,17 @@ DEBUG = True
 
 API_MODE = True
 
+REDIS_DEPLOY_HOST = 'redis://redis:6379'
+REDIS_DEBUG_HOST = 'redis://127.0.0.1:6379'
+
+MYSQL_DEPLOY_HOST = 'mysql'
+MYSQL_DEBUG_HOST = '127.0.0.1'
+MYSQL_DEPLOY_PORT = '3306'
+MYSQL_DEBUG_PORT = '3306'
+
+ELASTICSEARCH_DEPLOY_HOST = 'http://elasticsearch:9200/'
+ELASTICSEARCH_DEBUG_HOST = 'http://127.0.0.1:9200/'
+
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
@@ -121,7 +132,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'myblog',
-            'HOST': 'mysql',
+            'HOST': MYSQL_DEPLOY_HOST,
             'PASSWORD': 'Jennei0122?',
             'USER': 'root',
         }
@@ -263,7 +274,7 @@ SITE_ID = 1
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379",
+        "LOCATION": REDIS_DEBUG_HOST if DEBUG else REDIS_DEPLOY_HOST,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -277,7 +288,7 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
         # 'whooshstack.backends.WhooshEngine'
-        'URL': 'http://elasticsearch:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
+        'URL': ELASTICSEARCH_DEBUG_HOST if DEBUG else ELASTICSEARCH_DEPLOY_HOST,  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
         'DEFAULT_ANALYZER': 'ik',
@@ -296,8 +307,8 @@ PAGINATION_SETTINGS = {
     'SHOW_FIRST_PAGE_WHEN_INVALID': True,
 }
 
-CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_BROKER_URL = REDIS_DEBUG_HOST if DEBUG else REDIS_DEPLOY_HOST
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
 # 这里写1保持celery工作线程只有一个， why?

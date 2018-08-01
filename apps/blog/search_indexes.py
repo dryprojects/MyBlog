@@ -7,6 +7,7 @@ from datetime import datetime
 from haystack import indexes
 
 from blog.models import Post
+from blog import enums
 
 
 class PostIndex(indexes.SearchIndex, indexes.Indexable):
@@ -22,4 +23,4 @@ class PostIndex(indexes.SearchIndex, indexes.Indexable):
         :param using:
         :return:
         """
-        return self.get_model().objects.filter(published_time__lte=datetime.now(), status='published', type='post')
+        return self.get_model().objects.filter(published_time__lte=datetime.now(), status=enums.POST_STATUS_PUBLIC, type=enums.POST_TYPE_POST)
