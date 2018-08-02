@@ -30,13 +30,13 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = ('name', )
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('name', )
 
 
 class BasePostSerializer(serializers.HyperlinkedModelSerializer):

@@ -283,7 +283,7 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'),
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
-                               ('status', 'post_type', 'parent', 'is_free'),
+                               ('status', 'post_type', 'parent', 'is_free', 'hasbe_indexed'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]

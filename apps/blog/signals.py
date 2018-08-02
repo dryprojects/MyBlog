@@ -124,6 +124,10 @@ def on_post_pre_save(sender, **kwargs):
             change_post_public.send(sender=post.__class__, instance=post)
             post.hasbe_indexed = True
 
+    if post.hasbe_indexed and post.status == enums.POST_STATUS_PRIVATE:
+        change_post_private.send(sender=post.__class__, instance=post)
+        post.hasbe_indexed = False
+
     gen_default_excerpt(post)
 
 @receiver(post_save, sender=Post)
