@@ -58,7 +58,7 @@ class PostListSerializer(BasePostSerializer):
             'url',
             'title',
             'excerpt',
-            'cover_url',
+            'cover',
             'n_praise',
             'n_comments',
             'n_browsers',
@@ -99,7 +99,8 @@ class PostDetailSerializer(BasePostSerializer):
             'lft',
             'rght',
             'tree_id',
-            'level'
+            'level',
+            'cover_url'
         )
 
 
