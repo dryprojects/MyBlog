@@ -289,7 +289,7 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
-    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn']
+    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url']
     list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'post_type', 'published_time',
                     'status', 'is_banner', 'is_free', 'was_published_recently']
     list_editable = ['status', 'post_type', 'is_banner', 'is_free']
@@ -302,7 +302,7 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
     autocomplete_fields = ['author', 'category', 'parent']  # django 2.0新增
     search_fields = ['title']
     date_hierarchy = 'published_time'
-    ordering = ('-published_time',)
+    #ordering = ('-published_time',) 启用排序，会扰乱mptt在admin的显示
 
     # formfield_overrides = {
     #     models.TextField:{

@@ -154,8 +154,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_USER_MODEL = 'bloguser.UserProfile'
-
-#ANONYMOUS_USER_NAME = 'guest'
+ANONYMOUS_USER_NAME = None #guardin 会默认生成匿名用户，这里设置None取消此操作
 
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple

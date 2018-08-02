@@ -18,8 +18,9 @@ from comment.models import Comment
 from blog import enums
 from trade.models import GoodsOrder
 
-
 User = get_user_model()
+
+
 class Tag(models.Model):
     name = models.CharField(verbose_name='标签名称', max_length=20, unique=True)
 
@@ -33,7 +34,8 @@ class Tag(models.Model):
 
 class Category(MPTTModel):
     name = models.CharField(verbose_name='类目名称', max_length=20, unique=True)
-    parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
+    parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.CASCADE, null=True,
+                            blank=True)
 
     class Meta:
         verbose_name = "博文类目"
@@ -55,26 +57,31 @@ class Post(MPTTModel):
         (enums.POST_TYPE_POST, '博文'),
         (enums.POST_TYPE_NOTIFICATION, '公告')
     )
-    parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True, on_delete=models.CASCADE, null=True, blank=True)
+    parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True,
+                            on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
-    cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/%Y/%m', max_length=200, default='blog/blog_cover/default.jpg')
-    cover_url = models.URLField(verbose_name="博文封面url", default="", null=True, blank=True, help_text="不写默认为默认的封面url")
-    category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE) # n ~ 1
-    tags = models.ManyToManyField(Tag, verbose_name="博文标签") # m ~ n
-    author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, blank=True, null=True) # n ~ 1
+    cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/', max_length=200,
+                              default='blog/blog_cover/default.jpg')
+    cover_url = models.CharField(verbose_name="博文封面url", max_length=255, null=True, blank=True,
+                                 help_text="不写默认为默认封面url")
+    category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE, null=True)  # n ~ 1
+    tags = models.ManyToManyField(Tag, verbose_name="博文标签")  # m ~ n
+    author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, null=True)  # n ~ 1
     excerpt = models.TextField(verbose_name="博文摘要", blank=True)
     content = models.TextField(verbose_name='博文内容')
-    status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default='draft')
+    status = models.CharField(verbose_name="编辑状态", choices=STATUS, max_length=10, default=enums.POST_STATUS_PRIVATE)
     n_praise = models.PositiveIntegerField(verbose_name="点赞数量", default=0)
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
-    post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default='post')
+    post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default=enums.POST_TYPE_POST)
     is_banner = models.BooleanField(verbose_name='是否轮播', default=False)
     is_free = models.BooleanField(verbose_name='是否免费', default=True)
+    hasbe_indexed = models.BooleanField(verbose_name="已被索引", default=False)
     origin_post_url = models.URLField(verbose_name='原博文URL链接', default="", null=True, blank=True)
     origin_post_from = models.CharField(verbose_name="原博文出处名称", max_length=255, default="", null=True, blank=True)
-    url_object_id = models.CharField(verbose_name="源博文唯一标识", unique=True, max_length=255, null=True, blank=True, help_text="不写默认为博文url摘要")
+    url_object_id = models.CharField(verbose_name="源博文唯一标识", unique=True, max_length=255, null=True, blank=True,
+                                     help_text="不写默认为博文url摘要")
     post_sn = models.CharField(verbose_name="博文序列号", max_length=50, unique=True)
 
     class Meta:
@@ -94,12 +101,13 @@ class Post(MPTTModel):
     def was_published_recently(self):
         now = datetime.datetime.now()
         return now - datetime.timedelta(days=1) <= self.published_time <= now
+
     was_published_recently.admin_order_field = 'published_time'
     was_published_recently.boolean = True
     was_published_recently.short_description = '是否最近发表'
 
     def get_absolute_url(self):
-        return reverse('blog:post-detail', kwargs={'pk':self.pk})
+        return reverse('blog:post-detail', kwargs={'pk': self.pk})
 
     @property
     def n_comments(self):
@@ -111,7 +119,7 @@ class Post(MPTTModel):
         sub_count = 0
 
         with transaction.atomic():
-            #这里的comments都是content_type为Post的评论，（根评论）
+            # 这里的comments都是content_type为Post的评论，（根评论）
             for comment in self.comments.all():
                 if comment:
                     root_count += 1
@@ -162,40 +170,6 @@ class Post(MPTTModel):
         """
         return self.prev_this_next[2]
 
-    def save(self, *args, **kwargs):
-        """
-        如果有本地封面则cover_url为本地封面， 否则使用爬虫获取的封面.
-        如果博文category为None,则自动添加到默认分类其他
-        用博文的文的url生成唯一博文索引
-        如果博文状态变为已经发表，则发送博文状态变更的信号
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        super(Post, self).save()
-        self.refresh_from_db() #这是必要的， 因为F表达式
-        current_site = Site.objects.get_current()
-        domain = current_site.domain
-
-        MEDIA_PREFIX = settings.MEDIA_URL
-
-        default_cover_url = MEDIA_PREFIX + 'blog/blog_cover/default.jpg'
-
-        if self.cover.url != default_cover_url or self.cover_url is None:
-            self.cover_url = 'http://%s'%domain + self.cover.url
-
-        if self.category is None:
-            self.category = Category(name="其他")
-
-        if self.url_object_id is None:
-            self.url_object_id = hashlib.md5(self.get_absolute_url().encode('utf-8')).hexdigest()
-
-        if self.status == "published":
-            from blog.signals import post_published   #这里导入是必要的，防止循环引入
-            post_published.send(sender=self.__class__, instance=self)
-
-        super(Post, self).save()
-
     @staticmethod
     def has_read_permission(request):
         """
@@ -220,7 +194,8 @@ class Post(MPTTModel):
         if request.user.is_anonymous:
             return True if self.is_free and (self.status == enums.POST_STATUS_PUBLIC) else False
 
-        checked = (self.status == enums.POST_STATUS_PUBLIC) and (self.is_free or request.user.check_payment_status(self.post_sn))
+        checked = (self.status == enums.POST_STATUS_PUBLIC) and (
+                    self.is_free or request.user.check_payment_status(self.post_sn))
 
         return True if checked else False
 
@@ -246,9 +221,22 @@ class Post(MPTTModel):
         """
         return self.author == request.user
 
+    def on_cover_changed(self):
+        if not self.cover_url:
+            return
+        cover_changed = (self.cover != 'blog/blog_cover/default.jpg') and not self.cover_url.endswith(str(self.cover))
+        if cover_changed:
+            cover_url = '%sblog/blog_cover/%s' % (settings.MEDIA_URL, self.cover) if not str(self.cover).startswith('blog/blog_cover') else '%s%s' % (settings.MEDIA_URL, self.cover)
+            self.cover_url = cover_url
+
+    def save(self, *args, **kwargs):
+        self.on_cover_changed()
+        return super(Post, self).save(*args, **kwargs)
+
 
 class Resources(models.Model):
-    post = models.ForeignKey(Post, verbose_name='所属博文', on_delete=models.CASCADE, blank=True, null=True, related_name='resources')
+    post = models.ForeignKey(Post, verbose_name='所属博文', on_delete=models.CASCADE, blank=True, null=True,
+                             related_name='resources')
     name = models.CharField(verbose_name='资源名称', max_length=50)
     resource = models.FileField(verbose_name='资源文件', max_length=200, upload_to='blog/resources/%Y/%m/')
     add_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)
