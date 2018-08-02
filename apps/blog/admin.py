@@ -140,7 +140,8 @@ class PostResource(resources.ModelResource):
             'is_free': '是否免费',
             'origin_post_url': '原博文地址',
             'origin_post_from': '原博文出处',
-            'url_object_id': '博文唯一标识'
+            'url_object_id': '博文唯一标识',
+            'post_sn': "博文序列号"
         }
         fields = fields_column_mapping.keys()
         import_id_fields = ('url_object_id',)
@@ -283,12 +284,12 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
                                ('status', 'post_type', 'parent', 'is_free'),
-                               ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')],
+                               ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
-    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users']
+    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn']
     list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'post_type', 'published_time',
                     'status', 'is_banner', 'is_free', 'was_published_recently']
     list_editable = ['status', 'post_type', 'is_banner', 'is_free']

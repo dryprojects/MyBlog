@@ -2,6 +2,8 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/3/27 13:32'
 
+import uuid
+
 from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver, Signal
 from django.contrib.contenttypes.models import ContentType
@@ -57,6 +59,20 @@ def gen_excerpt(sender, instance, **kwargs):
 
     if instance.excerpt is '':
         instance.excerpt = instance.content[:223]
+
+@receiver(post_save, sender=Post)
+def gen_post_sn(sender, **kwargs):
+    """
+    生成博文序列号
+    :param sender:
+    :param kwargs:
+    :return:
+    """
+    post, created = kwargs['instance'], kwargs['created']
+
+    if created:
+        post.post_sn = str(uuid.uuid1())
+        post.save()
 
 @receiver(post_comment, sender=Comment)
 def handler_post_comment(sender, comment_obj, content_type, object_id, request, **kwargs):

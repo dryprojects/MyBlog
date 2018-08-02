@@ -54,6 +54,16 @@ class UserProfile(AbstractUser):
 
         super().save(*args, **kwargs)
 
+    def check_payment_status(self, goods_sn):
+        """
+        检测商品支付状态
+        :param goods_sn: 商品序列号
+        :return: True 已支付, False 未支付
+        """
+        from trade.models import PaymentLogs
+
+        return PaymentLogs.objects.filter(user=self, goods_sn=goods_sn).exists()
+
 
 class MessageAuthCode(models.Model):
     """

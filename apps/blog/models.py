@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import transaction
 from django.conf import settings
@@ -15,6 +16,7 @@ from dry_rest_permissions.generics import allow_staff_or_superuser
 
 from comment.models import Comment
 from blog import enums
+from trade.models import GoodsOrder
 
 
 User = get_user_model()
@@ -73,11 +75,12 @@ class Post(MPTTModel):
     origin_post_url = models.URLField(verbose_name='原博文URL链接', default="", null=True, blank=True)
     origin_post_from = models.CharField(verbose_name="原博文出处名称", max_length=255, default="", null=True, blank=True)
     url_object_id = models.CharField(verbose_name="源博文唯一标识", unique=True, max_length=255, null=True, blank=True, help_text="不写默认为博文url摘要")
+    post_sn = models.CharField(verbose_name="博文序列号", max_length=50, unique=True)
 
     class Meta:
         verbose_name = '博文'
         verbose_name_plural = verbose_name
-        #需要对象权限支持
+
         permissions = (
             ('view_post', "可以查看博文"),
         )
@@ -214,8 +217,10 @@ class Post(MPTTModel):
         """
         if request.user == self.author:
             return True
+        if request.user.is_anonymous:
+            return True if self.is_free and (self.status == enums.POST_STATUS_PUBLIC) else False
 
-        checked = (self.status == enums.POST_STATUS_PUBLIC) and self.is_free
+        checked = (self.status == enums.POST_STATUS_PUBLIC) and (self.is_free or request.user.check_payment_status(self.post_sn))
 
         return True if checked else False
 
