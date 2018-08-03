@@ -16,6 +16,7 @@ from dry_rest_permissions.generics import DRYPermissions
 
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
+from oper.models import FriendshipLinks
 
 
 class PostViewset(viewsets.ModelViewSet):
@@ -43,11 +44,7 @@ class PostViewset(viewsets.ModelViewSet):
         else:
             return serializers.PostListSerializer
 
-    @action(detail=False)
-    def notifications(self, request):
-        """
-        ### list: 返回站点公告
-        """
+    def get_stander_list_response(self, request):
         queryset = self.get_queryset()
         queryset = self.filter_queryset(queryset)
 
@@ -59,7 +56,14 @@ class PostViewset(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False)
-    def archives(self, request):
+    def get_notifications(self, request):
+        """
+        ### list: 返回站点公告
+        """
+        return self.get_stander_list_response(request)
+
+    @action(detail=False)
+    def get_archives(self, request):
         """### list: 返回博文按照月份的归档"""
         queryset = self.get_queryset()
         query = {
@@ -76,6 +80,35 @@ class PostViewset(viewsets.ModelViewSet):
         serializer = serializers.PostArchiveSerializer(date_queryset, many=True, context={'request': self.request, 'queryset':queryset})
         return Response(serializer.data)
 
+    @action(detail=False)
+    def get_hot_posts(self, request):
+        """###list: 返回热门博文"""
+        return self.get_stander_list_response(request)
+
+    @action(detail=False)
+    def get_max_praise_posts(self, request):
+        """###list: 返回点赞最多的博文"""
+        return self.get_stander_list_response(request)
+
+    @action(detail=False)
+    def get_banners(self, request):
+        """###list: 返回需要在轮播展示的博文"""
+        return self.get_stander_list_response(request)
+
+    @action(detail=False)
+    def get_friendship_links(self, request):
+        """
+        ###list: 返回站点友情链接
+        """
+        queryset = FriendshipLinks.objects.all()
+
+        page = self.paginate_queryset(queryset)
+        if page:
+            serializer = self.get_serializer(page, many=True, context={'request': self.request})
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True, context={'request': self.request})
+        return Response(serializer.data)
+
 
 class CategoryViewset(viewsets.ModelViewSet):
     """
@@ -85,6 +118,10 @@ class CategoryViewset(viewsets.ModelViewSet):
         返回指定的分类
     create:
         为登陆用户开放
+    destroy:
+        只有作者可以删除
+    update:
+        只有作者可以更新
     """
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
@@ -95,7 +132,10 @@ class CategoryViewset(viewsets.ModelViewSet):
 
 class TagViewset(viewsets.ModelViewSet):
     queryset = models.Tag.objects.all()
-    serializer_class = serializers.TagSerializer
+    serializer_class = serializers.TagDetailSerializer
+    permission_classes = (DRYPermissions, )
+    filter_backends = (blog_filters.TagFilterBackend, filters.DjangoFilterBackend)
+    filter_class = blog_filters.TagFilter
 
 
 class ResourceViewset(viewsets.ModelViewSet):

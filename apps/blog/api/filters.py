@@ -7,7 +7,7 @@
 @time:      2018/07/30 
 """
 
-from blog.models import Post, Category
+from blog.models import Post, Category, Tag
 from blog import enums
 
 from django_filters import rest_framework as filters
@@ -16,8 +16,6 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 
 def get_author_posts(request):
     #这里返回所有已经发表的博文，用于父级别过滤，不限于用户自身的
-    if request.user.is_anonymous:
-        return Post.objects.none()
     return Post.objects.filter(
         status=enums.POST_STATUS_PUBLIC,
         post_type=enums.POST_TYPE_POST,
@@ -54,7 +52,7 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         }
         return queryset.filter(**query)
 
-    def filter_notifications_queryset(self, request, queryset, view):
+    def filter_get_notifications_queryset(self, request, queryset, view):
         """
         返回属于公告的博文
         """
@@ -64,12 +62,30 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         }
         return queryset.filter(**query)
 
-    def filter_archives_queryset(self, request, queryset, view):
+    def filter_get_archives_queryset(self, request, queryset, view):
         """
         返回博文的归档列表
         """
         queryset = self.filter_list_queryset(request, queryset, view)
         return queryset.dates('published_time', 'month', order='DESC')
+
+    def filter_get_hot_posts_queryset(self, request, queryset, view):
+        """
+        按浏览量返回热门博文
+        """
+        queryset = self.filter_list_queryset(request, queryset, view)
+        return queryset.order_by('-n_browsers')
+
+    def filter_get_max_praise_posts_queryset(self, request, queryset, view):
+        queryset = self.filter_list_queryset(request, queryset, view)
+        return queryset.order_by('-n_praise')
+
+    def filter_get_banners_queryset(self, request, queryset, view):
+        queryset = self.filter_list_queryset(request, queryset, view)
+        query = {
+            'is_banner': True
+        }
+        return queryset.filter(**query)
 
 
 class CategoryFilterBackend(DRYPermissionFiltersBase):
@@ -95,4 +111,17 @@ class CategoryFilter(filters.FilterSet):
         fields = {
             'parent': ['isnull', 'exact'],
             'name': ['icontains'],
+        }
+
+
+class TagFilterBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(author=request.user)
+
+
+class TagFilter(filters.FilterSet):
+    class Meta:
+        model = Tag
+        fields = {
+            "name" : ['icontains'],
         }

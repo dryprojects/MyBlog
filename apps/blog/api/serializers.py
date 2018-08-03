@@ -47,18 +47,33 @@ class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.M
         return parent
 
 
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('name',)
 
 
+class TagDetailSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('url', 'name', 'author')
+        extra_kwargs = {
+            'url': {'view_name': "blog:tag-detail"},
+            'author': {'view_name': 'bloguser:user-detail', "read_only": True}
+        }
+
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        instance.author = self.context["request"].user
+        instance.save()
+        return instance
+
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('name',)
+        fields = ('name', )
 
 
 class PostArchiveSerializer(serializers.Serializer):
@@ -110,6 +125,7 @@ class PostSerializer(NestedCreateMixin, NestedUpdateMixin, BasePostSerializer):
         queryset=Post.objects.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST),
         view_name="blog:post-detail"
     )
+
     class Meta(BasePostSerializer.Meta):
         fields = (
             'url',
@@ -124,6 +140,7 @@ class PostSerializer(NestedCreateMixin, NestedUpdateMixin, BasePostSerializer):
             'is_free',
             'parent'
         )
+        read_only_fields = ("tags" ,)
 
     def validate_parent(self, parent):
         if parent.author != self.context["request"].user:
