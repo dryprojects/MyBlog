@@ -89,7 +89,7 @@ class CategoryViewset(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
     permission_classes = (DRYPermissions, )
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (blog_filters.CategoryFilterBackend, filters.DjangoFilterBackend)
     filter_class = blog_filters.CategoryFilter
 
 

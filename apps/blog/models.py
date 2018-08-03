@@ -67,6 +67,7 @@ class Category(MPTTModel):
         return self.name
 
     @staticmethod
+    @authenticated_users
     def has_read_permission(request):
         return True
 
@@ -236,6 +237,7 @@ class Post(MPTTModel):
         return True if checked else False
 
     @staticmethod
+    @authenticated_users
     def has_write_permission(request):
         """
         对指定操作开放写权限
@@ -246,7 +248,7 @@ class Post(MPTTModel):
         :param request:
         :return:
         """
-        return False if request.user.is_anonymous else True
+        return True
 
     @allow_staff_or_superuser
     def has_object_write_permission(self, request):

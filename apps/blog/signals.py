@@ -92,10 +92,13 @@ def assign_post_perms(post, created):
         if _:
             assign_perm('blog.view_post', readers)  # 给readers组赋予可以访问所有博文实例的模型权限
             assign_perm('blog.add_post', readers)
+        try:
+            assign_perm("view_post", readers, post)  # 给readers组赋予可访问指定的博文的对象权限
+            assign_perm('blog.change_post', post.author, post)  # 给博文作者分配修改和删除博文的模型权限
+            assign_perm('blog.delete_post', post.author, post)
+        except:
+            pass
 
-        assign_perm("view_post", readers, post)  # 给readers组赋予可访问指定的博文的对象权限
-        assign_perm('blog.change_post', post.author, post)  # 给博文作者分配修改和删除博文的模型权限
-        assign_perm('blog.delete_post', post.author, post)
     return post
 
 def user_as_reader(user, created):

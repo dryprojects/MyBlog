@@ -11,10 +11,22 @@ from rest_framework import serializers, reverse
 from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
 
 from blog.models import Category, Post, Tag, Resources
+from blog import enums
+from blog.api import fields
 
 
 class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
+    author = serializers.HyperlinkedRelatedField(view_name='bloguser:user-detail', read_only=True)
+    url = serializers.SerializerMethodField()
+    parent = fields.CategoryParentField(queryset=Category.objects.all())
+
+    class Meta:
+        model = Category
+        fields = ['id', 'url', 'name', 'author', 'parent', 'children']
+
+    def get_url(self, instance):
+        return reverse.reverse("blog:category-detail", request=self.context['request'], kwargs={"pk": instance.id})
 
     def get_children(self, parent):
         queryset = parent.get_children()
@@ -22,21 +34,31 @@ class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.M
 
         return serializer.data
 
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'parent', 'children']
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        instance.author = self.context["request"].user
+        instance.save()
+        return instance
+
+    def validate_parent(self, parent):
+        if parent.author != self.context["request"].user:
+            raise serializers.ValidationError('你只能使用自己的分类')
+
+        return parent
+
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', )
+        fields = ('name',)
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('name', )
+        fields = ('name',)
 
 
 class PostArchiveSerializer(serializers.Serializer):
@@ -46,7 +68,8 @@ class PostArchiveSerializer(serializers.Serializer):
     url = serializers.SerializerMethodField()
 
     def get_url(self, date):
-        return reverse.reverse('blog:post-list', request=self.context["request"]) + "?published_time__year="+str(date.year)+"&published_time__month="+str(date.month)
+        return reverse.reverse('blog:post-list', request=self.context["request"]) + "?published_time__year=" + str(
+            date.year) + "&published_time__month=" + str(date.month)
 
     def get_post_count(self, date):
         queryset = self.context['queryset']
@@ -63,7 +86,7 @@ class BasePostSerializer(serializers.HyperlinkedModelSerializer):
             'children': {'view_name': "blog:post-detail"},
             'category': {'view_name': "blog:category-detail"},
             'tags': {'view_name': "blog:tag-detail"},
-            'author': {'view_name': 'bloguser:user-detail'}
+            'author': {'view_name': 'bloguser:user-detail', "read_only": True}
         }
 
 
@@ -72,6 +95,7 @@ class PostListSerializer(BasePostSerializer):
         fields = (
             'url',
             'title',
+            'author',
             'excerpt',
             'cover',
             'n_praise',
@@ -82,7 +106,10 @@ class PostListSerializer(BasePostSerializer):
 
 
 class PostSerializer(NestedCreateMixin, NestedUpdateMixin, BasePostSerializer):
-
+    parent = fields.PostParentField(
+        queryset=Post.objects.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST),
+        view_name="blog:post-detail"
+    )
     class Meta(BasePostSerializer.Meta):
         fields = (
             'url',
@@ -97,6 +124,18 @@ class PostSerializer(NestedCreateMixin, NestedUpdateMixin, BasePostSerializer):
             'is_free',
             'parent'
         )
+
+    def validate_parent(self, parent):
+        if parent.author != self.context["request"].user:
+            raise serializers.ValidationError('你只能使用自己博文')
+
+        return parent
+
+    def create(self, validated_data):
+        post = super().create(validated_data)
+        post.author = self.context["request"].user
+        post.save()
+        return post
 
 
 class PostDetailSerializer(BasePostSerializer):

@@ -14,14 +14,26 @@ from django_filters import rest_framework as filters
 from dry_rest_permissions.generics import DRYPermissionFiltersBase
 
 
+def get_author_posts(request):
+    #这里返回所有已经发表的博文，用于父级别过滤，不限于用户自身的
+    if request.user.is_anonymous:
+        return Post.objects.none()
+    return Post.objects.filter(
+        status=enums.POST_STATUS_PUBLIC,
+        post_type=enums.POST_TYPE_POST,
+    )
+
 class PostFilter(filters.FilterSet):
+    parent = filters.ModelChoiceFilter(queryset=get_author_posts)
+
     class Meta:
         model = Post
         fields = {
             'parent': ['exact'],
+            'author': ['exact'],
             'title': ['icontains'],
             'tags': ['icontains'],
-            'category':['exact'],
+            'category': ['exact'],
             'published_time': ['year__exact', 'month__exact']
         }
 
@@ -60,10 +72,27 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         return queryset.dates('published_time', 'month', order='DESC')
 
 
+class CategoryFilterBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(author=request.user)
+
+
+def get_author_categories(request):
+    """
+    过滤器里只返回当前用户的分类
+    :param request:
+    :return:
+    """
+    if request.user.is_anonymous:
+        return Category.objects.none()
+    return Category.objects.filter(author=request.user)
+
 class CategoryFilter(filters.FilterSet):
+    parent = filters.ModelChoiceFilter(queryset=get_author_categories)
+
     class Meta:
         model = Category
         fields = {
             'parent': ['isnull', 'exact'],
-            'name':['icontains']
+            'name': ['icontains'],
         }
