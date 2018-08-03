@@ -30,11 +30,29 @@ sys.path.append(os.path.join(BASE_DIR, 'apps', 'agent', 'robot'))
 SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
+API_MODE = True
+
+REDIS_DEPLOY_HOST = 'redis://redis:6379'
+REDIS_DEBUG_HOST = 'redis://127.0.0.1:6379'
+
+MYSQL_DEPLOY_HOST = 'mysql'
+MYSQL_DEBUG_HOST = '127.0.0.1'
+MYSQL_DEPLOY_PORT = '3306'
+MYSQL_DEBUG_PORT = '3306'
+
+ELASTICSEARCH_DEPLOY_HOST = 'http://elasticsearch:9200/'
+ELASTICSEARCH_DEBUG_HOST = 'http://127.0.0.1:9200/'
+
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
     ALLOWED_HOSTS = ["*"]
+
+# see https://github.com/ottoyiu/django-cors-headers
+if API_MODE:
+    CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -51,6 +69,8 @@ INSTALLED_APPS = [
     'bloguser',
     'django_filters',
     'rest_framework',
+    'dry_rest_permissions',
+    'corsheaders',
     'social_django',
     'haystack',
     'elasticstack2',
@@ -64,10 +84,12 @@ INSTALLED_APPS = [
     'comment',
     'oper',
     'agent',
+    'trade',
     'import_export'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.locale.LocaleMiddleware', #这里不做国际化与本地化支持
@@ -117,7 +139,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'myblog',
-            'HOST': 'mysql',
+            'HOST': MYSQL_DEPLOY_HOST,
             'PASSWORD': 'Jennei0122?',
             'USER': 'root',
         }
@@ -132,6 +154,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_USER_MODEL = 'bloguser.UserProfile'
+ANONYMOUS_USER_NAME = None #guardin 会默认生成匿名用户，这里设置None取消此操作
 
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple
@@ -181,7 +204,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-#线上回调地址 http://example.com/social/complete/github
+# 线上回调地址 http://example.com/social/complete/github
 SOCIAL_AUTH_GITHUB_KEY = '39e547f05b01a85f217f'
 SOCIAL_AUTH_GITHUB_SECRET = '71be9131fb2461555c8ebfcd08783833ab0d02ad'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
@@ -257,7 +280,7 @@ SITE_ID = 1
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379",
+        "LOCATION": REDIS_DEBUG_HOST if DEBUG else REDIS_DEPLOY_HOST,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -271,12 +294,13 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
         # 'whooshstack.backends.WhooshEngine'
-        'URL': 'http://elasticsearch:9200/',  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
+        'URL': ELASTICSEARCH_DEBUG_HOST if DEBUG else ELASTICSEARCH_DEPLOY_HOST,  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
-        'DEFAULT_ANALYZER': 'ik',  # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
-        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik_smart', # ES自定义设置
-        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'        # ES自定义设置
+        'DEFAULT_ANALYZER': 'ik',
+        # ES自定义设置 see http://elasticstack.readthedocs.io/en/latest/mappings.html#chaning-the-default-analyzer
+        'DEFAULT_NGRAM_SEARCH_ANALYZER': 'ik_smart',  # ES自定义设置
+        'DEFAULT_NGRAM_INDEX_ANALYZER': 'ik'  # ES自定义设置
     },
 }
 # 'haystack.signals.RealtimeSignalProcessor' 在博文保存，删除时自动更新索引
@@ -289,8 +313,8 @@ PAGINATION_SETTINGS = {
     'SHOW_FIRST_PAGE_WHEN_INVALID': True,
 }
 
-CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_BROKER_URL = REDIS_DEBUG_HOST if DEBUG else REDIS_DEPLOY_HOST
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = USE_TZ
 # 这里写1保持celery工作线程只有一个， why?
@@ -313,6 +337,12 @@ CELERY_BEAT_MAX_LOOP_INTERVAL = 1
 # CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 # there was a bug in django-celery-beat may be caused periodic tasks be run in microseconds.
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+if not DEBUG:
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        ),
+    }
 
 LOGGING = {
     'version': 1,

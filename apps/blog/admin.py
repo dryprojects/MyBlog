@@ -8,17 +8,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse
 
-from blog.models import Post, Category, Tag, Resources
-from kindeditor.widgets import KindTextareaWidget
-from mdeditor.widgets import MdTextWidget
-from bloguser.models import UserProfile
-
 from mptt.admin import DraggableMPTTAdmin, TreeRelatedFieldListFilter
-
 from import_export import resources
 from import_export.admin import ImportExportMixin, ImportExportActionModelAdmin
 from import_export.fields import Field, NOT_PROVIDED
+from guardian.admin import GuardedModelAdminMixin
 
+from blog.models import Post, Category, Tag, Resources
+from blog import enums
+from kindeditor.widgets import KindTextareaWidget
+from mdeditor.widgets import MdTextWidget
+from bloguser.models import UserProfile
 
 USE_ADMIN_SITE = True
 ADD_PASSWORD_FORGET = False
@@ -28,8 +28,8 @@ if not USE_ADMIN_SITE:
     admin.site.unregister(User)
     admin.site.unregister(Group)
 else:
-    admin.site.site_header = "我的博客后台"
-    admin.site.site_title = '我的博客'
+    admin.site.site_header = enums.ADMIN_SITE_HEADER_TITLE
+    admin.site.site_title = enums.ADMIN_SITE_TITLE
 
 # Register your models here.
 if not USE_ADMIN_SITE:
@@ -48,6 +48,7 @@ class MyField(Field):
     自定义博文资源字段类型
     方便做数据转换，清理
     """
+
     def clean(self, data):
         try:
             value = data[self.column_name]
@@ -73,23 +74,27 @@ class MyField(Field):
         :return:
         """
         m_c = {
-            '博文标签':self.get_tags_m2m_ids,
-            '是否是轮播':{
+            '博文标签': self.get_tags_m2m_ids,
+            '是否轮播': {
                 '是': True,
                 '否': False,
             },
-            '编辑状态':{
-                '已发表': 'published',
-                '草稿': 'draft',
+            '是否免费': {
+                '是': True,
+                '否': False,
             },
-            '博文类型':{
-                '博文': 'post',
-                '公告': 'notification',
+            '编辑状态': {
+                '公开': enums.POST_STATUS_PUBLIC,
+                '私有': enums.POST_STATUS_PRIVATE,
+            },
+            '博文类型': {
+                '博文': enums.POST_TYPE_POST,
+                '公告': enums.POST_TYPE_NOTIFICATION,
             }
         }
         m_v = m_c.get(column_name, None)
         if m_v is None:
-            return value #使用默认
+            return value  # 使用默认
 
         if callable(m_v):
             return m_v(value)
@@ -97,7 +102,7 @@ class MyField(Field):
         return m_v[value]
 
     def get_tags_m2m_ids(self, value):
-        #博文标签
+        # 博文标签
         tag_names = value
         tag_list = []
         if tag_names != "":
@@ -114,6 +119,7 @@ class PostResource(resources.ModelResource):
     see https://django-import-export.readthedocs.io/en/latest/getting_started.html#customize-resource-options
     """
     DEFAULT_RESOURCE_FIELD = MyField
+
     class Meta:
         model = Post
         fields_column_mapping = {
@@ -129,11 +135,13 @@ class PostResource(resources.ModelResource):
             'n_praise': '点赞数',
             'n_browsers': '浏览数',
             'published_time': '发表时间',
-            'type': '博文类型',
-            'is_banner': '是否是轮播',
+            'post_type': '博文类型',
+            'is_banner': '是否轮播',
+            'is_free': '是否免费',
             'origin_post_url': '原博文地址',
             'origin_post_from': '原博文出处',
-            'url_object_id': '博文唯一标识'
+            'url_object_id': '博文唯一标识',
+            'post_sn': "博文序列号"
         }
         fields = fields_column_mapping.keys()
         import_id_fields = ('url_object_id',)
@@ -181,9 +189,9 @@ class PostResource(resources.ModelResource):
         try:
             ts = post.tags.all()
             r = [tag.name for tag in ts]
-            #这里抓异常是因为，当需要新建一个博文实例时候，调用到这里还不会被保存。这时m2m是不可用的
+            # 这里抓异常是因为，当需要新建一个博文实例时候，调用到这里还不会被保存。这时m2m是不可用的
         except Exception as e:
-            #这里新建的对象不给标签也可以，文件里有的话，会最终补丁到数据库
+            # 这里新建的对象不给标签也可以，文件里有的话，会最终补丁到数据库
             return ''
         return ",".join(r)
 
@@ -192,24 +200,32 @@ class PostResource(resources.ModelResource):
             return "是"
         elif post.is_banner is False:
             return "否"
-        else: #当计算文件（右边）内容时会调用
+        else:  # 当计算文件（右边）内容时会调用
             return post.is_banner
 
+    def dehydrate_is_free(self, post):
+        if post.is_free is True:
+            return "是"
+        elif post.is_free is False:
+            return "否"
+        else:  # 当计算文件（右边）内容时会调用
+            return post.is_free
+
     def dehydrate_status(self, post):
-        if post.status == 'published':
-            return '已发表'
-        elif post.status == 'draft':
-            return '草稿'
+        if post.status == enums.POST_STATUS_PUBLIC:
+            return '公开'
+        elif post.status == enums.POST_STATUS_PRIVATE:
+            return '私有'
         else:
             return post.status
 
-    def dehydrate_type(self, post):
-        if post.type == 'post':
+    def dehydrate_post_type(self, post):
+        if post.post_type == enums.POST_TYPE_POST:
             return '博文'
-        elif post.type == 'notification':
+        elif post.post_type == enums.POST_TYPE_NOTIFICATION:
             return '公告'
         else:
-            return post.type
+            return post.post_type
 
     def init_instance(self, row=None):
         """
@@ -241,6 +257,7 @@ class PostResource(resources.ModelResource):
         )
         return post
 
+
 class PostTagRelationShipInline(admin.TabularInline):
     model = Post.tags.rel.through
     extra = 1
@@ -254,7 +271,7 @@ class ResourcesInline(admin.TabularInline):
     extra = 1
 
 
-class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
+class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, DraggableMPTTAdmin):
     """
     see detail:
         https://docs.djangoproject.com/en/2.0/intro/tutorial07/
@@ -265,16 +282,17 @@ class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
         ('博文基本信息',
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'),
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
-        ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'), ('status', 'type', 'parent'),
-                               ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers')],
+        ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
+                               ('status', 'post_type', 'parent', 'is_free', 'hasbe_indexed'),
+                               ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
-    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users']
-    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'type', 'published_time',
-                    'status', 'is_banner', 'was_published_recently']
-    list_editable = ['status', 'type', 'is_banner']
+    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url']
+    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'post_type', 'published_time',
+                    'status', 'is_banner', 'is_free', 'was_published_recently']
+    list_editable = ['status', 'post_type', 'is_banner', 'is_free']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
                    )
@@ -284,6 +302,7 @@ class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
     autocomplete_fields = ['author', 'category', 'parent']  # django 2.0新增
     search_fields = ['title']
     date_hierarchy = 'published_time'
+    #ordering = ('-published_time',) 启用排序，会扰乱mptt在admin的显示
 
     # formfield_overrides = {
     #     models.TextField:{
@@ -323,13 +342,14 @@ class PostModalAdmin(ImportExportActionModelAdmin, DraggableMPTTAdmin):
 
 
 class CategoryModelAdmin(DraggableMPTTAdmin):
-    list_display = ['tree_actions', 'get_categories']
-    fields = ['name', 'parent']
+    list_display = ['tree_actions', 'get_categories', 'author']
+    fields = ['name', 'parent', 'author']
     search_fields = ['name']
-    autocomplete_fields = ['parent']
+    autocomplete_fields = ['parent', "author"]
     list_display_links = ['get_categories']
     list_filter = (
         ('parent', TreeRelatedFieldListFilter),
+        'author'
     )
 
     def get_categories(self, instance):
@@ -343,7 +363,8 @@ class CategoryModelAdmin(DraggableMPTTAdmin):
 
 
 class TagModelAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', 'author']
+    list_display = ['name', 'author']
     search_fields = ['name']
 
 
