@@ -22,7 +22,7 @@ class PostFilter(filters.FilterSet):
             'title': ['icontains'],
             'tags': ['icontains'],
             'category':['exact'],
-            'published_time': ['year__lte', 'year__gte', 'month__gte', 'month__lte', 'day__lte', 'day__gte']
+            'published_time': ['year__exact', 'month__exact']
         }
 
 
@@ -35,10 +35,6 @@ class PostFilterBackend(DRYPermissionFiltersBase):
     def filter_list_queryset(self, request, queryset, view):
         """
         返回所有用户已公开（发表）的博文，返回当前用户所有的博文（匿名用户只可查看公开博文）
-        :param request:
-        :param queryset:
-        :param view:
-        :return:
         """
         query = {
             'status': enums.POST_STATUS_PUBLIC,
@@ -49,13 +45,16 @@ class PostFilterBackend(DRYPermissionFiltersBase):
     def filter_notifications_queryset(self, request, queryset, view):
         """
         返回属于公告的博文
-        :param request:
-        :param queryset:
-        :param view:
-        :return:
         """
         query = {
             'status': enums.POST_STATUS_PUBLIC,
             'post_type': enums.POST_TYPE_NOTIFICATION
         }
         return queryset.filter(**query)
+
+    def filter_archives_queryset(self, request, queryset, view):
+        """
+        返回博文的归档列表
+        """
+        queryset = self.filter_list_queryset(request, queryset, view)
+        return queryset.dates('published_time', 'month', order='DESC')

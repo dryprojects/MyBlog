@@ -189,7 +189,7 @@ class Post(MPTTModel):
         :param request:
         :return:
         """
-        if request.user == self.author:
+        if request.user == self.author or self.post_type == enums.POST_TYPE_NOTIFICATION:
             return True
         if request.user.is_anonymous:
             return True if self.is_free and (self.status == enums.POST_STATUS_PUBLIC) else False

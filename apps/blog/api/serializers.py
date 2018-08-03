@@ -7,7 +7,7 @@
 @time:      2018/05/03 
 """
 
-from rest_framework import serializers
+from rest_framework import serializers, reverse
 from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
 
 from blog.models import Category, Post, Tag, Resources
@@ -37,6 +37,21 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('name', )
+
+
+class PostArchiveSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    month = serializers.IntegerField()
+    post_count = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, date):
+        return reverse.reverse('blog:post-list', request=self.context["request"]) + "?published_time__year="+str(date.year)+"&published_time__month="+str(date.month)
+
+    def get_post_count(self, date):
+        queryset = self.context['queryset']
+        ar_list = queryset.filter(published_time__year=date.year, published_time__month=date.month)
+        return ar_list.count()
 
 
 class BasePostSerializer(serializers.HyperlinkedModelSerializer):
