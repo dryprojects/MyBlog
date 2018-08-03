@@ -7,7 +7,7 @@
 @time:      2018/07/30 
 """
 
-from blog.models import Post
+from blog.models import Post, Category
 from blog import enums
 
 from django_filters import rest_framework as filters
@@ -58,3 +58,12 @@ class PostFilterBackend(DRYPermissionFiltersBase):
         """
         queryset = self.filter_list_queryset(request, queryset, view)
         return queryset.dates('published_time', 'month', order='DESC')
+
+
+class CategoryFilter(filters.FilterSet):
+    class Meta:
+        model = Category
+        fields = {
+            'parent': ['isnull', 'exact'],
+            'name':['icontains']
+        }

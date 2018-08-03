@@ -12,7 +12,7 @@ from django.conf import settings
 
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
-from dry_rest_permissions.generics import allow_staff_or_superuser
+from dry_rest_permissions.generics import allow_staff_or_superuser, authenticated_users
 
 from comment.models import Comment
 from blog import enums
@@ -34,7 +34,7 @@ class Tag(models.Model):
 
 class Category(MPTTModel):
     name = models.CharField(verbose_name='类目名称', max_length=20, unique=True)
-    parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.CASCADE, null=True,
+    parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.SET_NULL, null=True,
                             blank=True)
 
     class Meta:
@@ -46,6 +46,22 @@ class Category(MPTTModel):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    @staticmethod
+    @authenticated_users
+    def has_write_permission(request):
+        return True
+
+    @authenticated_users
+    def has_object_write_permission(self, request):
+        return True
 
 
 class Post(MPTTModel):

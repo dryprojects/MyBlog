@@ -10,7 +10,9 @@
 from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
 from django_filters import rest_framework as filters
+from dry_rest_permissions.generics import DRYPermissions
 
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
@@ -76,8 +78,17 @@ class PostViewset(viewsets.ModelViewSet):
 
 
 class CategoryViewset(viewsets.ModelViewSet):
+    """
+    list:
+        返回所有博文分类
+    retrieve:
+        返回指定的分类
+    """
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
+    permission_classes = (DRYPermissions, )
+    filter_backends = (filters.DjangoFilterBackend, )
+    filter_class = blog_filters.CategoryFilter
 
 
 class TagViewset(viewsets.ModelViewSet):

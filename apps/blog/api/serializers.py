@@ -13,7 +13,7 @@ from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
 from blog.models import Category, Post, Tag, Resources
 
 
-class CategoryTreeSerializer(serializers.ModelSerializer):
+class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
 
     def get_children(self, parent):
