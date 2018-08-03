@@ -19,31 +19,32 @@ from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps import views as sitemap_views
 
-from blog.sitemaps import BlogSitemap
-
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     from django.conf.urls.static import static
+
+import social_django.urls
+from rest_framework.documentation import include_docs_urls
 
 from blog.admin import USE_ADMIN_SITE, ADD_PASSWORD_FORGET
 
 if not USE_ADMIN_SITE:
     from blog.admin import admin_site
 
-import social_django.urls
-from rest_framework.documentation import include_docs_urls
+from blog.sitemaps import BlogSitemap
+
 
 urlpatterns = [
-    path('', include('blog.urls', namespace='blog')),
-    path('comment/', include('comment.urls', namespace='comment')),
-    path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
-    path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
-    path('account/', include('bloguser.urls', namespace='bloguser')),
-    path('social/', include('social_django.urls', namespace='social')),
-    path('captcha/', include('captcha.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
-]
+        path('', include('blog.urls', namespace='blog')),
+        path('comment/', include('comment.urls', namespace='comment')),
+        path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
+        path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
+        path('account/', include('bloguser.urls', namespace='bloguser')),
+        path('social/', include('social_django.urls', namespace='social')),
+        path('captcha/', include('captcha.urls')),
+        path('api-auth/', include('rest_framework.urls')),
+        path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
+    ]
 
 sitemaps = {
     'blog': BlogSitemap

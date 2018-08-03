@@ -1,8 +1,14 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.db import models
 
 from bloguser.tasks import send_mail
+
+
+MESSAGE_TIMEOUT = 1 #minutes 短信验证码过期时间
 
 
 class UserProfile(AbstractUser):
@@ -10,7 +16,7 @@ class UserProfile(AbstractUser):
     #image_url是社会帐号下用户的头像url,这个只在请求用户头像时判断用户头像是否已经请求过所使用，不做验证
     image_url = models.CharField(verbose_name='用户头像url', max_length=100, default='')
     #重写email字段
-    email = models.EmailField(_('邮箱'), blank=True, unique=True, null=True, help_text='邮箱是唯一的')
+    email = models.EmailField(_('邮箱'), blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = '用户信息'
@@ -47,3 +53,39 @@ class UserProfile(AbstractUser):
             self.image_url = self.image.url
 
         super().save(*args, **kwargs)
+
+    def check_payment_status(self, goods_sn):
+        """
+        检测商品支付状态
+        :param goods_sn: 商品序列号
+        :return: True 已支付, False 未支付
+        """
+        from trade.models import PaymentLogs
+
+        return PaymentLogs.objects.filter(user=self, goods_sn=goods_sn).exists()
+
+
+class MessageAuthCode(models.Model):
+    """
+    手机短信验证码
+    """
+    code = models.CharField(verbose_name='短信验证码', max_length=6)
+    phone_num = models.CharField(verbose_name='接收手机号', max_length=14)
+    add_time = models.DateTimeField(verbose_name='手机验证码产生时间', default=datetime.datetime.now)
+    expiration = models.DateTimeField(verbose_name='过期时间', blank=True, null=True)
+
+    def __str__(self):
+        return "%s/%s/%s/%s"%(self.phone_num, self.code, self.add_time, self.expiration)
+
+    class Meta:
+        verbose_name = '手机短信验证码'
+        verbose_name_plural = verbose_name
+
+    def save(self, *args, **kwargs):
+        if not self.expiration:
+            self.expiration = timezone.now() + datetime.timedelta(minutes=int(MESSAGE_TIMEOUT))
+        super(MessageAuthCode, self).save(*args, **kwargs)
+
+    @classmethod
+    def remove_expired(cls):
+        cls.objects.filter(expiration__lte=timezone.now()).delete()

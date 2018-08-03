@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F
 
 from blog.models import Post, Tag, Category
+from blog import enums
 from comment.models import Comment
 
 from pure_pagination.mixins import PaginationMixin
@@ -26,7 +27,7 @@ class PostListView(PaginationMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(status='published', type='post')
+        return queryset.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST)
 
 
 class PostDetailView(DetailView):
@@ -99,7 +100,7 @@ class PostArchiveListView(PaginationMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         ar_list = queryset.filter(published_time__year=self.kwargs['year'], published_time__month=self.kwargs['month'])
-        return ar_list.filter(status='published', type='post')
+        return ar_list.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST)
 
 
 class PostTagListView(PaginationMixin, ListView):
@@ -112,7 +113,7 @@ class PostTagListView(PaginationMixin, ListView):
         queryset = super().get_queryset()
         tag = get_object_or_404(Tag, pk=self.kwargs['pk'])
         tag_post_list = queryset.filter(tags=tag)
-        return tag_post_list.filter(status='published', type='post')
+        return tag_post_list.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST)
 
 
 class PostCategoryListView(PaginationMixin, ListView):
@@ -131,7 +132,7 @@ class PostCategoryListView(PaginationMixin, ListView):
         cg = get_object_or_404(Category, pk=self.kwargs['pk'])
         # 获取该分类的所有子分类
         cg_list = cg.get_descendants(include_self=True)
-        queryset = Post.objects.filter(category__in=cg_list, status='published', type='post')
+        queryset = Post.objects.filter(category__in=cg_list, status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST)
         return queryset
 
 
@@ -184,7 +185,7 @@ class BlogAbout(TemplateView):
 #         queryset = Post.objects.filter(id__in=ids.split(','))
 #         writer.writerow(['id', 'parent_id', 'title', 'cover', 'category_id',
 #                          'author_id', 'excerpt', 'content', 'status', 'n_praise',
-#                          'n_browsers', 'published_time', 'type', 'is_banner',
+#                          'n_browsers', 'published_time', 'post_type', 'is_banner',
 #                          'lft', 'rght', 'tree_id', 'level'
 #                          ])
 #         for p in queryset.values_list():

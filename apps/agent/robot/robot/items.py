@@ -6,6 +6,9 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import re
+import os
+import requests
+import uuid
 
 import scrapy
 from scrapy import loader
@@ -19,6 +22,7 @@ from bloguser.models import UserProfile
 
 from django.db.transaction import atomic
 from django.db.utils import IntegrityError
+from django.core.files.base import ContentFile
 
 from robot import processors as proc
 
@@ -79,7 +83,8 @@ class JobboleItem(scrapy.Item):
         except UserProfile.DoesNotExist:
             author = UserProfile()
             author.username = "ScrapyCrawler"
-            author.email = "1045114396@qq.com"
+            author.email = "scrapy@scrapycrawler.com"
+            author.set_password("ScrapyCrawler")
             author.save()
 
         if len(tags) > 0:
@@ -88,6 +93,7 @@ class JobboleItem(scrapy.Item):
             except Category.DoesNotExist:
                 category = Category()
                 category.name = tags[0]
+                category.author = author
                 category.save()
 
             for tag_name in tags:
@@ -98,24 +104,43 @@ class JobboleItem(scrapy.Item):
                     except Tag.DoesNotExist:
                         tag = Tag()
                         tag.name = tag_name
+                        tag.author = author
                         tag.save()
                         tag_list.append(tag)
 
         return (author, category, tag_list)
 
+    def get_image_from_url(self, url):
+        """
+        这里把博文图片保存到本地数据库
+        :param url:
+        :return:
+        """
+        response = requests.get(url)
+        if response.status_code == 200:
+            img_file = ContentFile(response.content)
+            return img_file
+
+        return None
+
+    def get_cover_name(self, url):
+        if url:
+            ext = os.path.splitext(url)[1]
+            if ext:
+                return uuid.uuid4().hex + ext
+        return uuid.uuid4().hex
 
     def save(self, commit=True):
         with atomic():
             try:
                 post = Post.objects.get(url_object_id=self['url_object_id'])
                 post.content = self['content']
-                post.cover_url = self['cover_url']
                 post.published_time = self['published_time']
                 post.save()
+                post.cover.save(self.get_cover_name(self['cover_url']), self.get_image_from_url(self['cover_url']))
             except Post.DoesNotExist:
                 # 博文不存在创建一个
                 post = Post()
-                post.cover_url = self['cover_url']
                 post.origin_post_url = self.get('origin_post_url', "")
                 post.origin_post_from = self['origin_post_from']
                 post.url_object_id = self['url_object_id']
@@ -127,6 +152,7 @@ class JobboleItem(scrapy.Item):
                 post.author = author
                 post.category = category
                 post.save()
+                post.cover.save(self.get_cover_name(self['cover_url']), self.get_image_from_url(self['cover_url']))
                 #在设置多对多之前需要先保存
                 post.tags.set(tag_list)
 
