@@ -83,7 +83,8 @@ class JobboleItem(scrapy.Item):
         except UserProfile.DoesNotExist:
             author = UserProfile()
             author.username = "ScrapyCrawler"
-            author.email = "1045114396@qq.com"
+            author.email = "scrapy@scrapycrawler.com"
+            author.set_password("ScrapyCrawler")
             author.save()
 
         if len(tags) > 0:
@@ -92,6 +93,7 @@ class JobboleItem(scrapy.Item):
             except Category.DoesNotExist:
                 category = Category()
                 category.name = tags[0]
+                category.author = author
                 category.save()
 
             for tag_name in tags:
@@ -102,6 +104,7 @@ class JobboleItem(scrapy.Item):
                     except Tag.DoesNotExist:
                         tag = Tag()
                         tag.name = tag_name
+                        tag.author = author
                         tag.save()
                         tag_list.append(tag)
 

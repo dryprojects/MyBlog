@@ -342,13 +342,14 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
 
 
 class CategoryModelAdmin(DraggableMPTTAdmin):
-    list_display = ['tree_actions', 'get_categories']
-    fields = ['name', 'parent']
+    list_display = ['tree_actions', 'get_categories', 'author']
+    fields = ['name', 'parent', 'author']
     search_fields = ['name']
-    autocomplete_fields = ['parent']
+    autocomplete_fields = ['parent', "author"]
     list_display_links = ['get_categories']
     list_filter = (
         ('parent', TreeRelatedFieldListFilter),
+        'author'
     )
 
     def get_categories(self, instance):
@@ -362,7 +363,8 @@ class CategoryModelAdmin(DraggableMPTTAdmin):
 
 
 class TagModelAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', 'author']
+    list_display = ['name', 'author']
     search_fields = ['name']
 
 

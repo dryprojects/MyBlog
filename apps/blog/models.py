@@ -23,6 +23,7 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(verbose_name='标签名称', max_length=20, unique=True)
+    author = models.ForeignKey(User, verbose_name="作者", on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = '博文标签'
@@ -31,11 +32,29 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    @staticmethod
+    @authenticated_users
+    def has_write_permission(request):
+        return True
+
+    @authenticated_users
+    def has_object_write_permission(self, request):
+        """只有作者才能更新和删除对应标签"""
+        return request.user == self.author
+
 
 class Category(MPTTModel):
     name = models.CharField(verbose_name='类目名称', max_length=20, unique=True)
     parent = TreeForeignKey('self', related_name='children', db_index=True, on_delete=models.SET_NULL, null=True,
                             blank=True)
+    author = models.ForeignKey(User, verbose_name="作者", on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "博文类目"
@@ -59,9 +78,10 @@ class Category(MPTTModel):
     def has_write_permission(request):
         return True
 
-    @authenticated_users
+    @allow_staff_or_superuser
     def has_object_write_permission(self, request):
-        return True
+        """只有作者才能更新和删除对应分类"""
+        return request.user == self.author
 
 
 class Post(MPTTModel):

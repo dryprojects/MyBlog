@@ -83,6 +83,8 @@ class CategoryViewset(viewsets.ModelViewSet):
         返回所有博文分类
     retrieve:
         返回指定的分类
+    create:
+        为登陆用户开放
     """
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
