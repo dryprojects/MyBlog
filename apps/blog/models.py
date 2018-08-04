@@ -208,6 +208,10 @@ class Post(MPTTModel):
         """
         return self.prev_this_next[2]
 
+    @property
+    def allow_post_comment(self):
+        return self.allow_comment
+
     @staticmethod
     def has_read_permission(request):
         """
