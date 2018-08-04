@@ -21,12 +21,14 @@ from oper.models import FriendshipLinks
 
 class PostViewset(viewsets.ModelViewSet):
     """
-    ### list:
+    list:
         返回用户所有公开发表的博文，当前用户返回所有的博文
-    ### retrieve:
-        返回的博文如果是私有的则需要对应权限才可访问
-    ### delete:
-        只有博文作者才可以，更新修改博文
+    retrieve:
+        返回的博文如果是收费的则需要对应权限才可访问
+    delete:
+        只有博文作者才可以
+    update:
+        只有博文作者才可以
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
