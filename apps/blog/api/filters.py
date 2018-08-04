@@ -28,7 +28,7 @@ class PostFilter(filters.FilterSet):
     class Meta:
         model = Post
         fields = {
-            'parent': ['exact'],
+            'parent': ['exact', 'isnull'],
             'author': ['exact'],
             'title': ['icontains'],
             'tags': ['icontains'],

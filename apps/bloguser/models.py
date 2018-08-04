@@ -4,6 +4,9 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db import models
+from django.conf import settings
+
+from dry_rest_permissions.generics import allow_staff_or_superuser
 
 from bloguser.tasks import send_mail
 
@@ -12,11 +15,12 @@ MESSAGE_TIMEOUT = 1 #minutes 短信验证码过期时间
 
 
 class UserProfile(AbstractUser):
-    image = models.ImageField(verbose_name='用户头像', max_length=100, upload_to='bloguser/images/%Y/%m', default='bloguser/avatar.png', blank=True)
+    image = models.ImageField(verbose_name='用户头像', max_length=100, upload_to='bloguser/images/', default='bloguser/avatar.png', blank=True)
     #image_url是社会帐号下用户的头像url,这个只在请求用户头像时判断用户头像是否已经请求过所使用，不做验证
     image_url = models.CharField(verbose_name='用户头像url', max_length=100, default='')
     #重写email字段
-    email = models.EmailField(_('邮箱'), blank=True, null=True, unique=True)
+    email = models.EmailField(_('邮箱'), unique=True)
+    mobile_phone = models.CharField(verbose_name="手机号码", max_length=14, default="", null=True, blank=True)
 
     class Meta:
         verbose_name = '用户信息'
@@ -66,19 +70,17 @@ class UserProfile(AbstractUser):
         from oper.tasks import get_n_unread
         return get_n_unread(self.pk)
 
+    def on_avatar_changed(self):
+        if not self.image_url:
+            return
+        avatar_changed = (self.image != 'bloguser/avatar.png') and not self.image_url.endswith(str(self.image))
+        if avatar_changed:
+            image_url = '%sbloguser/images/%s' % (settings.MEDIA_URL, self.image) if not str(self.image).startswith(
+                'blog/images') else '%s%s' % (settings.MEDIA_URL, self.image)
+            self.image_url = image_url
+
     def save(self, *args, **kwargs):
-        """
-        如果是本地用户，则把本地头像url存在image_url
-        如果是第三方用户，则不做处理，直接使用获取的第三方的image_url
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        super().save(*args, **kwargs)
-
-        if self.image.url is not None:
-            self.image_url = self.image.url
-
+        self.on_avatar_changed()
         super().save(*args, **kwargs)
 
     def check_payment_status(self, goods_sn):
@@ -90,6 +92,21 @@ class UserProfile(AbstractUser):
         from trade.models import PaymentLogs
 
         return PaymentLogs.objects.filter(user=self, goods_sn=goods_sn).exists()
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @allow_staff_or_superuser
+    def has_object_write_permission(self, request):
+        return request.user == self
 
 
 class MessageAuthCode(models.Model):
