@@ -141,3 +141,6 @@ class TagViewset(viewsets.ModelViewSet):
 class ResourceViewset(viewsets.ModelViewSet):
     queryset = models.Resources.objects.all()
     serializer_class = serializers.ResourceSerializer
+    permission_classes = (DRYPermissions, )
+    filter_backends = (blog_filters.PostResourceBackend, filters.DjangoFilterBackend)
+    filter_class = blog_filters.PostResourceFilter

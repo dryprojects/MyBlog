@@ -271,6 +271,21 @@ class ResourcesInline(admin.TabularInline):
     extra = 1
 
 
+class PostResourceModelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'post_link', "resource", 'add_time']
+    list_editable = ['resource']
+    autocomplete_fields = ['post']
+    fieldsets = [
+        ('基本信息', {"fields": [('name', 'resource'), ('post', 'add_time')], 'classes': ('wide', 'extrapretty')}),
+    ]
+    list_filter = ('name', 'post')
+    def post_link(self, instance):
+        url = "/admin/%s/%s/%s"%(instance.post._meta.app_label, instance.post._meta.model_name, instance.post.pk)
+        return format_html("<a href='{}'>{}<a>", url, instance.post.title)
+
+    post_link.short_description = '所属博文'
+
+
 class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, DraggableMPTTAdmin):
     """
     see detail:
@@ -375,5 +390,5 @@ if not USE_ADMIN_SITE:
         admin_site.register(model, model_admin)
 else:
     for model, model_admin in [(Post, PostModalAdmin), (Category, CategoryModelAdmin), \
-                               (Tag, TagModelAdmin)]:
+                               (Tag, TagModelAdmin), (Resources, PostResourceModelAdmin)]:
         admin.site.register(model, model_admin)

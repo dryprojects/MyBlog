@@ -285,3 +285,21 @@ class Resources(models.Model):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    @authenticated_users
+    def has_read_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    @staticmethod
+    @authenticated_users
+    def has_write_permission(request):
+        return True
+
+    @allow_staff_or_superuser
+    def has_object_write_permission(self, request):
+        """只有作者才能更新和删除对应资源"""
+        return request.user == self.post.author
