@@ -62,7 +62,6 @@ class TagDetailSerializer(serializers.HyperlinkedModelSerializer):
             'author': {'view_name': 'bloguser:user-detail', "read_only": True}
         }
 
-
     def create(self, validated_data):
         instance = super().create(validated_data)
         instance.author = self.context["request"].user
@@ -73,7 +72,7 @@ class TagDetailSerializer(serializers.HyperlinkedModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('name', )
+        fields = ('name',)
 
 
 class PostArchiveSerializer(serializers.Serializer):
@@ -140,7 +139,7 @@ class PostSerializer(NestedCreateMixin, NestedUpdateMixin, BasePostSerializer):
             'is_free',
             'parent'
         )
-        read_only_fields = ("tags" ,)
+        read_only_fields = ("tags",)
 
     def validate_parent(self, parent):
         if parent.author != self.context["request"].user:
@@ -175,7 +174,29 @@ class PostDetailSerializer(BasePostSerializer):
         )
 
 
-class ResourceSerializer(serializers.ModelSerializer):
+class ResourceSerializer(serializers.HyperlinkedModelSerializer):
+    post = fields.ResourcePostField(
+        queryset=Post.objects.filter(status=enums.POST_STATUS_PUBLIC, post_type=enums.POST_TYPE_POST),
+        view_name='blog:post-detail'
+    )
+
     class Meta:
         model = Resources
-        fields = "__all__"
+        fields = (
+            'url',
+            'name',
+            'resource',
+            'post'
+        )
+
+        extra_kwargs = {
+            'url': {'view_name': 'blog:resource-detail'}
+        }
+
+
+class PostPraiseSerializer(serializers.Serializer):
+    detail = serializers.IntegerField()
+
+class PostFavoriteSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    status = serializers.CharField()

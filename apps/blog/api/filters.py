@@ -7,7 +7,7 @@
 @time:      2018/07/30 
 """
 
-from blog.models import Post, Category, Tag
+from blog.models import Post, Category, Tag, Resources
 from blog import enums
 
 from django_filters import rest_framework as filters
@@ -15,11 +15,12 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 
 
 def get_author_posts(request):
-    #这里返回所有已经发表的博文，用于父级别过滤，不限于用户自身的
+    # 这里返回所有已经发表的博文，用于父级别过滤，不限于用户自身的
     return Post.objects.filter(
         status=enums.POST_STATUS_PUBLIC,
         post_type=enums.POST_TYPE_POST,
     )
+
 
 class PostFilter(filters.FilterSet):
     parent = filters.ModelChoiceFilter(queryset=get_author_posts)
@@ -103,6 +104,7 @@ def get_author_categories(request):
         return Category.objects.none()
     return Category.objects.filter(author=request.user)
 
+
 class CategoryFilter(filters.FilterSet):
     parent = filters.ModelChoiceFilter(queryset=get_author_categories)
 
@@ -123,5 +125,19 @@ class TagFilter(filters.FilterSet):
     class Meta:
         model = Tag
         fields = {
-            "name" : ['icontains'],
+            "name": ['icontains'],
+        }
+
+
+class PostResourceBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(post__author=request.user)
+
+
+class PostResourceFilter(filters.FilterSet):
+    class Meta:
+        model = Resources
+        fields = {
+            "post": ['exact'],
+            "name": ['icontains']
         }
