@@ -20,6 +20,7 @@ from dry_rest_permissions.generics import DRYPermissions
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
 from oper.models import FriendshipLinks
+from comment.models import Comment
 
 
 class PostViewset(viewsets.ModelViewSet):
@@ -52,6 +53,15 @@ class PostViewset(viewsets.ModelViewSet):
             return serializers.PostSerializer
         else:
             return serializers.PostListSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        统计博文浏览次数
+        """
+        p = self.get_object()
+        p.n_browsers = F('n_browsers') + 1
+        p.save()
+        return super().retrieve(request, *args, **kwargs)
 
     def get_standard_list_response(self, request):
         queryset = self.get_queryset()
@@ -149,14 +159,12 @@ class PostViewset(viewsets.ModelViewSet):
         serializer = serializers.PostFavoriteSerializer(res)
         return Response(serializer.data)
 
-    def retrieve(self, request, *args, **kwargs):
-        """
-        统计博文浏览次数
-        """
-        p = self.get_object()
-        p.n_browsers = F('n_browsers') + 1
-        p.save()
-        return super().retrieve(request, *args, **kwargs)
+    @action(detail=False, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
+    def get_content_type(self, request):
+        """list: 返回博文的内容类型id"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        serializer = serializers.ContentTypeSerializer(content_type)
+        return Response(serializer.data)
 
 
 class CategoryViewset(viewsets.ModelViewSet):
