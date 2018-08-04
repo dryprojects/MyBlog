@@ -271,6 +271,21 @@ class ResourcesInline(admin.TabularInline):
     extra = 1
 
 
+class PostResourceModelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'post_link', "resource", 'add_time']
+    list_editable = ['resource']
+    autocomplete_fields = ['post']
+    fieldsets = [
+        ('基本信息', {"fields": [('name', 'resource'), ('post', 'add_time')], 'classes': ('wide', 'extrapretty')}),
+    ]
+    list_filter = ('name', 'post')
+    def post_link(self, instance):
+        url = "/admin/%s/%s/%s"%(instance.post._meta.app_label, instance.post._meta.model_name, instance.post.pk)
+        return format_html("<a href='{}'>{}<a>", url, instance.post.title)
+
+    post_link.short_description = '所属博文'
+
+
 class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, DraggableMPTTAdmin):
     """
     see detail:
@@ -283,16 +298,16 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'),
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
-                               ('status', 'post_type', 'parent', 'is_free', 'hasbe_indexed'),
+                               ('status', 'post_type', 'parent', 'is_free', "allow_comment", 'hasbe_indexed'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url']
-    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'post_type', 'published_time',
+    list_display = ['tree_actions', 'get_posts', 'category', 'author', 'get_cover', 'post_type', 'allow_comment', 'published_time',
                     'status', 'is_banner', 'is_free', 'was_published_recently']
-    list_editable = ['status', 'post_type', 'is_banner', 'is_free']
+    list_editable = ['status', 'post_type', 'is_banner', 'is_free', 'allow_comment']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
                    )
@@ -375,5 +390,5 @@ if not USE_ADMIN_SITE:
         admin_site.register(model, model_admin)
 else:
     for model, model_admin in [(Post, PostModalAdmin), (Category, CategoryModelAdmin), \
-                               (Tag, TagModelAdmin)]:
+                               (Tag, TagModelAdmin), (Resources, PostResourceModelAdmin)]:
         admin.site.register(model, model_admin)

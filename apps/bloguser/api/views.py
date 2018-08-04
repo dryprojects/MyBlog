@@ -15,4 +15,4 @@ from rest_framework import viewsets
 
 class UserViewset(viewsets.ModelViewSet):
     queryset = models.UserProfile.objects.all()
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.UserDetailSerializer

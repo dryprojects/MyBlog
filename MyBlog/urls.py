@@ -33,18 +33,21 @@ if not USE_ADMIN_SITE:
 
 from blog.sitemaps import BlogSitemap
 
+if not settings.API_MODE:
+    urlpatterns = [path('', include('blog.urls', namespace='blog'))]
+else:
+    urlpatterns = [path('blog/', include('blog.urls', namespace='blog'))]
 
-urlpatterns = [
-        path('', include('blog.urls', namespace='blog')),
-        path('comment/', include('comment.urls', namespace='comment')),
-        path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
-        path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
-        path('account/', include('bloguser.urls', namespace='bloguser')),
-        path('social/', include('social_django.urls', namespace='social')),
-        path('captcha/', include('captcha.urls')),
-        path('api-auth/', include('rest_framework.urls')),
-        path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
-    ]
+urlpatterns.extend([
+    path('comment/', include('comment.urls', namespace='comment')),
+    path('kindeditor/', include('kindeditor.urls', namespace='kindeditor')),
+    path('mdeditor/', include('mdeditor.urls', namespace='mdeditor')),
+    path('account/', include('bloguser.urls', namespace='bloguser')),
+    path('social/', include('social_django.urls', namespace='social')),
+    path('captcha/', include('captcha.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
+])
 
 sitemaps = {
     'blog': BlogSitemap

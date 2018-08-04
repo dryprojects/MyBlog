@@ -100,8 +100,7 @@ class Post(MPTTModel):
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
     cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/', max_length=200,
                               default='blog/blog_cover/default.jpg')
-    cover_url = models.CharField(verbose_name="博文封面url", max_length=255, null=True, blank=True,
-                                 help_text="不写默认为默认封面url")
+    cover_url = models.CharField(verbose_name="博文封面url", max_length=255, null=True, blank=True)
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE, null=True)  # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签")  # m ~ n
     author = models.ForeignKey(User, verbose_name="博文作者", on_delete=models.CASCADE, null=True)  # n ~ 1
@@ -112,6 +111,7 @@ class Post(MPTTModel):
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
+    allow_comment = models.BooleanField(verbose_name='允许发表评论', default=True)
     post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default=enums.POST_TYPE_POST)
     is_banner = models.BooleanField(verbose_name='是否轮播', default=False)
     is_free = models.BooleanField(verbose_name='是否免费', default=True)
@@ -208,6 +208,10 @@ class Post(MPTTModel):
         """
         return self.prev_this_next[2]
 
+    @property
+    def allow_post_comment(self):
+        return self.allow_comment
+
     @staticmethod
     def has_read_permission(request):
         """
@@ -286,3 +290,21 @@ class Resources(models.Model):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    @authenticated_users
+    def has_read_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    @staticmethod
+    @authenticated_users
+    def has_write_permission(request):
+        return True
+
+    @allow_staff_or_superuser
+    def has_object_write_permission(self, request):
+        """只有作者才能更新和删除对应资源"""
+        return request.user == self.post.author

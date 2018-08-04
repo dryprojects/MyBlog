@@ -34,6 +34,33 @@ class UserProfile(AbstractUser):
         from oper.models import Notification
         Notification.objects.create(user=self, content=content)
 
+    def favorite(self, content_type, object_id):
+        """
+        用户收藏某类型对象
+        :param content_type: 收藏类型
+        :param object_id: 收藏对象id
+        :return:
+        """
+        from oper.models import UserFavorite
+        if UserFavorite.objects.filter(content_type=content_type, object_id=object_id).exists():
+            return False
+        UserFavorite.objects.create(user=self, content_type=content_type, object_id=object_id)
+        return True
+
+    def cancel_favorite(self, content_type, object_id):
+        """
+        取消收藏某类型对象
+        :param content_type:
+        :param object_id:
+        :return:
+        """
+        from oper.models import UserFavorite
+        queryset = UserFavorite.objects.filter(content_type=content_type, object_id=object_id)
+        if queryset.exists():
+            queryset.delete()
+            return True
+        return False
+
     def get_n_unread(self):
         """获取用户未读消息数"""
         from oper.tasks import get_n_unread

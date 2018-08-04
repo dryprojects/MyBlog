@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import  format_html
 
-from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks, Blacklist
+from oper.models import Notification, NotificationUnReadCounter, BlogOwner, FriendshipLinks, Blacklist, UserFavorite
 # Register your models here.
 
 @admin.register(Notification)
@@ -65,3 +65,20 @@ class BlacklistModelAdmin(admin.ModelAdmin):
             {"fields": [('ip_addr', 'desc'), ('add_time', 'expiration')], 'classes': ('wide', 'extrapretty')}
         ),
     )
+
+
+@admin.register(UserFavorite)
+class UserFavorite(admin.ModelAdmin):
+    list_display = ['user', 'content_type', 'content_object', 'add_time']
+    fieldsets = (
+        (
+            "基本信息",
+            {"fields": [('user', 'content_type', 'object_id'), 'add_time'], 'classes': ('wide', 'extrapretty')}
+        ),
+    )
+
+    def content_object(self, instance):
+        if hasattr(instance.content_object, 'get_absolute_url'):
+            return format_html("<a href='{}'>{}</a>", instance.content_object.get_absolute_url(), instance.content_object)
+        return instance.content_object
+    content_object.short_description = '收藏对象'
