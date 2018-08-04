@@ -7,9 +7,11 @@
 @time:      2018/07/29 
 """
 
-from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling
+from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling, permissions as rest_permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
+from django.db.models import F
 
 from django_filters import rest_framework as filters
 from dry_rest_permissions.generics import DRYPermissions
@@ -34,7 +36,9 @@ class PostViewset(viewsets.ModelViewSet):
     pagination_class = paginators.PostPaginator
     permission_classes = (permissions.BlacklistPermission, permissions.DRYPostPermissions)
     throttle_classes = (throttling.PostUserRateThrottle, rest_throttling.AnonRateThrottle)
-    filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter, blog_filters.PostFilterBackend)
+    filter_backends = (
+        filters.DjangoFilterBackend, rest_filters.OrderingFilter, rest_filters.SearchFilter,
+        blog_filters.PostFilterBackend)
     filter_class = blog_filters.PostFilter  # 注意这里不是重写 filterset_class 属性
     search_fields = ('title', 'category__name')
     ordering_fields = ('published_time', 'n_praise', 'n_browsers')
@@ -75,13 +79,15 @@ class PostViewset(viewsets.ModelViewSet):
             'post_type': enums.POST_TYPE_POST
         }
         queryset = queryset.filter(**query)
-        date_queryset= self.filter_queryset(queryset)
+        date_queryset = self.filter_queryset(queryset)
 
         page = self.paginate_queryset(date_queryset)
         if page:
-            serializer = serializers.PostArchiveSerializer(page, many=True, context={'request': self.request, 'queryset':queryset})
+            serializer = serializers.PostArchiveSerializer(page, many=True,
+                                                           context={'request': self.request, 'queryset': queryset})
             return self.get_paginated_response(serializer.data)
-        serializer = serializers.PostArchiveSerializer(date_queryset, many=True, context={'request': self.request, 'queryset':queryset})
+        serializer = serializers.PostArchiveSerializer(date_queryset, many=True,
+                                                       context={'request': self.request, 'queryset': queryset})
         return Response(serializer.data)
 
     @action(detail=False)
@@ -113,6 +119,27 @@ class PostViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True, context={'request': self.request})
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
+    def set_praise(self, request, pk):
+        """create: 点赞博文"""
+        self.object = self.get_object()
+        self.object.n_praise = F('n_praise') + 1
+        self.object.save()
+        self.object.refresh_from_db()
+
+        serializer = serializers.PostPraiseSerializer({'detail': self.object.n_praise})
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def set_favorite(self, request, pk):
+        """create: 收藏博文"""
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        统计博文浏览次数
+        """
+        return super().retrieve(request, *args, **kwargs)
+
 
 class CategoryViewset(viewsets.ModelViewSet):
     """
@@ -121,7 +148,7 @@ class CategoryViewset(viewsets.ModelViewSet):
     """
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
-    permission_classes = (DRYPermissions, )
+    permission_classes = (DRYPermissions,)
     filter_backends = (blog_filters.CategoryFilterBackend, filters.DjangoFilterBackend)
     filter_class = blog_filters.CategoryFilter
 
@@ -133,7 +160,7 @@ class TagViewset(viewsets.ModelViewSet):
     """
     queryset = models.Tag.objects.all()
     serializer_class = serializers.TagDetailSerializer
-    permission_classes = (DRYPermissions, )
+    permission_classes = (DRYPermissions,)
     filter_backends = (blog_filters.TagFilterBackend, filters.DjangoFilterBackend)
     filter_class = blog_filters.TagFilter
 
@@ -145,6 +172,6 @@ class ResourceViewset(viewsets.ModelViewSet):
     """
     queryset = models.Resources.objects.all()
     serializer_class = serializers.ResourceSerializer
-    permission_classes = (DRYPermissions, )
+    permission_classes = (DRYPermissions,)
     filter_backends = (blog_filters.PostResourceBackend, filters.DjangoFilterBackend)
     filter_class = blog_filters.PostResourceFilter

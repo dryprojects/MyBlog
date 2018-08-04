@@ -192,3 +192,10 @@ class ResourceSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'blog:resource-detail'}
         }
+
+
+class PostPraiseSerializer(serializers.Serializer):
+    detail = serializers.IntegerField()
+
+class PostFavoriteSerializer(serializers.Serializer):
+    detail = serializers.CharField()

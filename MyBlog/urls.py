@@ -36,7 +36,7 @@ from blog.sitemaps import BlogSitemap
 if not settings.API_MODE:
     urlpatterns = [path('', include('blog.urls', namespace='blog'))]
 else:
-    urlpatterns = [path('api/blog/', include('blog.urls', namespace='blog'))]
+    urlpatterns = [path('blog/', include('blog.urls', namespace='blog'))]
 
 urlpatterns.extend([
     path('comment/', include('comment.urls', namespace='comment')),
