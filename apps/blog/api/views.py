@@ -25,6 +25,8 @@ class PostViewset(viewsets.ModelViewSet):
         返回用户所有公开发表的博文，当前用户返回所有的博文
     ### retrieve:
         返回的博文如果是私有的则需要对应权限才可访问
+    ### delete:
+        只有博文作者才可以，更新修改博文
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
@@ -112,16 +114,8 @@ class PostViewset(viewsets.ModelViewSet):
 
 class CategoryViewset(viewsets.ModelViewSet):
     """
-    list:
-        返回所有博文分类
-    retrieve:
-        返回指定的分类
-    create:
-        为登陆用户开放
-    destroy:
-        只有作者可以删除
-    update:
-        只有作者可以更新
+    read : 返回当前登录用户的所有分类
+    write: 只有分类的作者可以删除分类
     """
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategoryTreeSerializer
@@ -131,6 +125,10 @@ class CategoryViewset(viewsets.ModelViewSet):
 
 
 class TagViewset(viewsets.ModelViewSet):
+    """
+    read: 返回当前登录用户的所有标签
+    write： 只有标签作者可以进行删除，更新
+    """
     queryset = models.Tag.objects.all()
     serializer_class = serializers.TagDetailSerializer
     permission_classes = (DRYPermissions, )
@@ -139,6 +137,10 @@ class TagViewset(viewsets.ModelViewSet):
 
 
 class ResourceViewset(viewsets.ModelViewSet):
+    """
+    read: 返回当前登录用户的所有博文资源
+    write： 只有标签作者可以进行删除，更新
+    """
     queryset = models.Resources.objects.all()
     serializer_class = serializers.ResourceSerializer
     permission_classes = (DRYPermissions, )
