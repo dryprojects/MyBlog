@@ -138,7 +138,7 @@ jQuery(document).ready(function ($) {
             //页面加载创建博文评论以及各个评论的评论
             var self = this;
             var query_param = {
-                parent: null,
+                parent__isnull: true,
                 content_type: self.ct,
                 object_id: self.object_id
             };
@@ -184,7 +184,7 @@ jQuery(document).ready(function ($) {
                 content: self.get_cmt_content(),
                 content_type: self.ct,
                 object_id: self.object_id,
-                parent: null,
+                parent__isnull: true,
                 author: $('#username').val(),
             }
         },

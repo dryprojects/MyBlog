@@ -111,6 +111,7 @@ class Post(MPTTModel):
     n_browsers = models.PositiveIntegerField(verbose_name="浏览次数", default=0)
     published_time = models.DateTimeField(verbose_name="发表时间", default=datetime.datetime.now)
     comments = GenericRelation(Comment, related_query_name='post')
+    allow_comment = models.BooleanField(verbose_name='允许发表评论', default=True)
     post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default=enums.POST_TYPE_POST)
     is_banner = models.BooleanField(verbose_name='是否轮播', default=False)
     is_free = models.BooleanField(verbose_name='是否免费', default=True)
@@ -206,6 +207,10 @@ class Post(MPTTModel):
         :return:
         """
         return self.prev_this_next[2]
+
+    @property
+    def allow_post_comment(self):
+        return self.allow_comment
 
     @staticmethod
     def has_read_permission(request):

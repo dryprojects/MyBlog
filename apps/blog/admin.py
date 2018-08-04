@@ -298,16 +298,16 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'),
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
-                               ('status', 'post_type', 'parent', 'is_free', 'hasbe_indexed'),
+                               ('status', 'post_type', 'parent', 'is_free', "allow_comment", 'hasbe_indexed'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
     readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url']
-    list_display = ['tree_actions', 'get_posts', 'id', 'category', 'author', 'get_cover', 'post_type', 'published_time',
+    list_display = ['tree_actions', 'get_posts', 'category', 'author', 'get_cover', 'post_type', 'allow_comment', 'published_time',
                     'status', 'is_banner', 'is_free', 'was_published_recently']
-    list_editable = ['status', 'post_type', 'is_banner', 'is_free']
+    list_editable = ['status', 'post_type', 'is_banner', 'is_free', 'allow_comment']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
                    )

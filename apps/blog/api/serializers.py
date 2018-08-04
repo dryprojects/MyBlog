@@ -10,6 +10,8 @@
 from rest_framework import serializers, reverse
 from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
 
+from django.contrib.contenttypes.models import ContentType
+
 from blog.models import Category, Post, Tag, Resources
 from blog import enums
 from blog.api import fields
@@ -200,3 +202,8 @@ class PostPraiseSerializer(serializers.Serializer):
 class PostFavoriteSerializer(serializers.Serializer):
     detail = serializers.CharField()
     status = serializers.CharField()
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentType
+        fields = ('id', )

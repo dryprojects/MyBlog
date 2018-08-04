@@ -44,6 +44,11 @@ class Comment(MPTTModel):
         """
         return self.get_descendant_count()
 
+    @property
+    def allow_post_comment(self):
+        """允许对此评论回复"""
+        return True
+
     def was_published_recently(self):
         now = datetime.datetime.now()
         return now - datetime.timedelta(days=1) <= self.published_time <= now

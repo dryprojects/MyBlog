@@ -12,7 +12,7 @@ from bloguser.models import UserProfile
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserProfile
         exclude = (
@@ -26,3 +26,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url':{'view_name':'bloguser:user-detail'}
         }
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'image']
