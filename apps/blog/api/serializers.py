@@ -199,3 +199,4 @@ class PostPraiseSerializer(serializers.Serializer):
 
 class PostFavoriteSerializer(serializers.Serializer):
     detail = serializers.CharField()
+    status = serializers.CharField()

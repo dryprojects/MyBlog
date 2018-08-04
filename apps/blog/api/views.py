@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from django.db.models import F
+from django.contrib.contenttypes.models import ContentType
 
 from django_filters import rest_framework as filters
 from dry_rest_permissions.generics import DRYPermissions
@@ -121,7 +122,7 @@ class PostViewset(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
     def set_praise(self, request, pk):
-        """create: 点赞博文"""
+        """GET: 点赞博文"""
         self.object = self.get_object()
         self.object.n_praise = F('n_praise') + 1
         self.object.save()
@@ -130,14 +131,31 @@ class PostViewset(viewsets.ModelViewSet):
         serializer = serializers.PostPraiseSerializer({'detail': self.object.n_praise})
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
     def set_favorite(self, request, pk):
-        """create: 收藏博文"""
+        """GET: 收藏博文"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        checked = request.user.favorite(content_type, pk)
+        res = {'status': 'success', "detail" : "收藏成功"} if checked else {'status': 'failed', "detail": '你已经收藏过这篇博文'}
+        serializer = serializers.PostFavoriteSerializer(res)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
+    def cancel_favorite(self, request, pk):
+        """GET: 取消收藏博文"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        checked = request.user.cancel_favorite(content_type, pk)
+        res = {'status': 'success', "detail": "取消收藏成功"} if checked else {'status': 'failed', "detail": '你还没有收藏此博文'}
+        serializer = serializers.PostFavoriteSerializer(res)
+        return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         """
         统计博文浏览次数
         """
+        p = self.get_object()
+        p.n_browsers = F('n_browsers') + 1
+        p.save()
         return super().retrieve(request, *args, **kwargs)
 
 
