@@ -44,7 +44,7 @@ class PostViewset(viewsets.ModelViewSet):
         else:
             return serializers.PostListSerializer
 
-    def get_stander_list_response(self, request):
+    def get_standard_list_response(self, request):
         queryset = self.get_queryset()
         queryset = self.filter_queryset(queryset)
 
@@ -60,7 +60,7 @@ class PostViewset(viewsets.ModelViewSet):
         """
         ### list: 返回站点公告
         """
-        return self.get_stander_list_response(request)
+        return self.get_standard_list_response(request)
 
     @action(detail=False)
     def get_archives(self, request):
@@ -83,17 +83,17 @@ class PostViewset(viewsets.ModelViewSet):
     @action(detail=False)
     def get_hot_posts(self, request):
         """###list: 返回热门博文"""
-        return self.get_stander_list_response(request)
+        return self.get_standard_list_response(request)
 
     @action(detail=False)
     def get_max_praise_posts(self, request):
         """###list: 返回点赞最多的博文"""
-        return self.get_stander_list_response(request)
+        return self.get_standard_list_response(request)
 
     @action(detail=False)
     def get_banners(self, request):
         """###list: 返回需要在轮播展示的博文"""
-        return self.get_stander_list_response(request)
+        return self.get_standard_list_response(request)
 
     @action(detail=False)
     def get_friendship_links(self, request):
