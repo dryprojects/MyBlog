@@ -10,9 +10,12 @@
 from bloguser.models import UserProfile
 
 from rest_framework import serializers
+from django.contrib.auth import password_validation
 
 
 class UserWriteSerializer(serializers.HyperlinkedModelSerializer):
+    password1 = serializers.CharField(help_text=password_validation.password_validators_help_text_html())
+    password2 = serializers.CharField(help_text="请再次输入密码")
     class Meta:
         model = UserProfile
         fields = (
@@ -20,7 +23,8 @@ class UserWriteSerializer(serializers.HyperlinkedModelSerializer):
             'email',
             'mobile_phone',
             'image',
-            'password'
+            'password1',
+            'password2'
         )
         extra_kwargs = {
             'url': {'view_name': 'bloguser:user-detail'}
@@ -28,13 +32,13 @@ class UserWriteSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         user = super().create(validated_data)
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data['password1'])
         user.save()
         return user
 
     def update(self, instance, validated_data):
         user = super().update(instance, validated_data)
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data['password1'])
         user.save()
         return user
 
