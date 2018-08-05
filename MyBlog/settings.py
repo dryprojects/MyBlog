@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'bloguser',
     'django_filters',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'dry_rest_permissions',
     'corsheaders',
     'social_django',
@@ -154,7 +156,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_USER_MODEL = 'bloguser.UserProfile'
-ANONYMOUS_USER_NAME = None #guardin 会默认生成匿名用户，这里设置None取消此操作
+ANONYMOUS_USER_NAME = None  # guardin 会默认生成匿名用户，这里设置None取消此操作
 
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple
@@ -294,7 +296,8 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack2.backends.ConfigurableElasticSearchEngine',
         # 'whooshstack.backends.WhooshEngine'
-        'URL': ELASTICSEARCH_DEBUG_HOST if DEBUG else ELASTICSEARCH_DEPLOY_HOST,  # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
+        'URL': ELASTICSEARCH_DEBUG_HOST if DEBUG else ELASTICSEARCH_DEPLOY_HOST,
+        # 'PATH': os.path.join(BASE_DIR, 'apps/whooshstack/whoosh_index'),
         'INDEX_NAME': 'haystack',
         'INCLUDE_SPELLING': True,
         'DEFAULT_ANALYZER': 'ik',
@@ -337,11 +340,16 @@ CELERY_BEAT_MAX_LOOP_INTERVAL = 1
 # CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 # there was a bug in django-celery-beat may be caused periodic tasks be run in microseconds.
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-if not DEBUG:
+if API_MODE:
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.JSONRenderer',
         ),
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.SessionAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
+            'rest_framework_jwt.authentication.JSONWebTokenAuthentication'
+        )
     }
 
 LOGGING = {
