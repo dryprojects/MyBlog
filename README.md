@@ -2,6 +2,13 @@
 一个主要由Django和DjangoRestframework开发的个人博客。
 后端集成Elasticsearch, Whoosh等搜索引擎。
 
+个人博客可将API_MODE设置为False
+
+在rest模式下，暂时不提供前端源码，可根据后端文档接口（调试模式下http://localhost:8000/docs查看）去写。
+rest模式需要在设置中将 API_MODE 设置为True, 在rest模式下，支持多用户博客。
+
+启用rest模式后，后端认证方式变成 session, token, 以及jwt的认证工作模式，同时社会化登录也变成接口的方式调用。
+
 #### 主要功能：
 1. 全文检索
 2. 搜索建议
