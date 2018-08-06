@@ -76,7 +76,7 @@ class UserProfile(AbstractUser):
         avatar_changed = (self.image != 'bloguser/avatar.png') and not self.image_url.endswith(str(self.image))
         if avatar_changed:
             image_url = '%sbloguser/images/%s' % (settings.MEDIA_URL, self.image) if not str(self.image).startswith(
-                'blog/images') else '%s%s' % (settings.MEDIA_URL, self.image)
+                'bloguser/images') else '%s%s' % (settings.MEDIA_URL, self.image)
             self.image_url = image_url
 
     def save(self, *args, **kwargs):
