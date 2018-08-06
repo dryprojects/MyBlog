@@ -342,13 +342,18 @@ CELERY_BEAT_MAX_LOOP_INTERVAL = 1
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 if API_MODE:
     REST_FRAMEWORK = {
-
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.SessionAuthentication',
             'rest_framework.authentication.TokenAuthentication',
             'rest_framework_jwt.authentication.JSONWebTokenAuthentication'
         )
     }
+
+    if not DEBUG:
+        REST_FRAMEWORK.update({
+            'DEFAULT_RENDERER_CLASSES': (
+                'rest_framework.renderers.JSONRenderer',
+            )})
 
     DJOSER = {
         #  see http://djoser.readthedocs.io/en/stable/settings.html
@@ -374,60 +379,60 @@ if API_MODE:
     }
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            },
+            'standard': {
+                'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
+            }
         },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        'filters': {
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue',
+            },
         },
-        'standard': {
-            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
+        'handlers': {
+            'console': {
+                'level': 'INFO',
+                'filters': ['require_debug_true'],
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+            },
+            'task': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'filters': ['require_debug_true'],
+                'formatter': 'standard'
+            },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler',
+                'include_html': True,
+            }
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'propagate': True,
+            },
+            'django.request': {
+                'handlers': ['console', 'mail_admins'],
+                'level': 'ERROR',
+                'propagate': False,
+            },
+            'oper.tasks': {
+                'handlers': ['console', 'task'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
         }
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'task': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'filters': ['require_debug_true'],
-            'formatter': 'standard'
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'oper.tasks': {
-            'handlers': ['console', 'task'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
     }
-}
 
 # 站点管理员， 当站点发生异常错误时，会自动发送错误邮件到以下管理员
 ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]
