@@ -19,7 +19,7 @@ from blog.api import fields
 
 class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
-    author = serializers.HyperlinkedRelatedField(view_name='bloguser:user-detail', read_only=True)
+    author = serializers.HyperlinkedRelatedField(view_name='userprofile-detail', read_only=True)
     url = serializers.SerializerMethodField()
     parent = fields.CategoryParentField(queryset=Category.objects.all())
 
@@ -61,7 +61,7 @@ class TagDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name', 'author')
         extra_kwargs = {
             'url': {'view_name': "blog:tag-detail"},
-            'author': {'view_name': 'bloguser:user-detail', "read_only": True}
+            'author': {'view_name': 'userprofile-detail', "read_only": True}
         }
 
     def create(self, validated_data):
@@ -102,7 +102,7 @@ class BasePostSerializer(serializers.HyperlinkedModelSerializer):
             'children': {'view_name': "blog:post-detail"},
             'category': {'view_name': "blog:category-detail"},
             'tags': {'view_name': "blog:tag-detail"},
-            'author': {'view_name': 'bloguser:user-detail', "read_only": True}
+            'author': {'view_name': 'userprofile-detail', "read_only": True}
         }
 
 
