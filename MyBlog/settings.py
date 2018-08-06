@@ -342,14 +342,35 @@ CELERY_BEAT_MAX_LOOP_INTERVAL = 1
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 if API_MODE:
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-        ),
+
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.SessionAuthentication',
             'rest_framework.authentication.TokenAuthentication',
             'rest_framework_jwt.authentication.JSONWebTokenAuthentication'
         )
+    }
+
+    DJOSER = {
+        #  see http://djoser.readthedocs.io/en/stable/settings.html
+        # 这里的密码重置和激活用户所设置的url为前端密码重置页面路由对应的url，
+        # 前端重置密码验证页面路由在得到uid和token后，然后向后端发起请求，
+        # 方法POST, 数据为获取到的uid和用户的验证token以及new_password和re_new_password用户设置的新密码
+        # http://localhost/social/complete/github
+        'PASSWORD_RESET_CONFIRM_URL': '/password/reset/confirm/{uid}/{token}',
+        'ACTIVATION_URL': '/activate/{uid}/{token}',
+        'SEND_ACTIVATION_EMAIL': True,
+        'SEND_CONFIRMATION_EMAIL': True,
+        'SERIALIZERS': {
+            'user': 'bloguser.api.serializers.UserDetailSerializer'
+        },
+        'SET_PASSWORD_RETYPE': True,  # 表示需要重复输入密码
+        'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+        'PASSWORD_RESET_CONFIRM_RETYPE': True,
+        'LOGOUT_ON_PASSWORD_CHANGE': True,
+        # 社会登陆，需要在查询参数redirect_uri提供你的回调地址(以github为例)
+        # http:localhost:8000/auth/o/github?redirect_uri=http://localhost:8000/social/complete/github
+        # 这里会和设置中的回调进行检测,如果正常的话，会反回github用户的授权地址，前端重定向到此地址，让用户完成授权登陆操作
+        'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/social/complete/github']
     }
 
 LOGGING = {
@@ -408,4 +429,5 @@ LOGGING = {
     }
 }
 
+# 站点管理员， 当站点发生异常错误时，会自动发送错误邮件到以下管理员
 ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]

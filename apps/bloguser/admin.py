@@ -11,7 +11,7 @@ from bloguser.forms import BlogUserChangeForm, BlogUserAdminCreationForm
 class UserPrifileModelAdmin(UserAdmin):
     list_display = ('get_image', 'username', 'email', 'is_staff')
     fieldsets = (
-        (None, {'fields': ('username', 'image', 'password')}),
+        (None, {'fields': ('username', 'image', 'image_url', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups', 'user_permissions')}),
@@ -23,7 +23,8 @@ class UserPrifileModelAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2'),
         }),
     )
-
+    readonly_fields = ['image_url']
+    list_display_links = ['username', 'get_image']
     add_form = BlogUserAdminCreationForm
 
     def get_image(self, instance):
