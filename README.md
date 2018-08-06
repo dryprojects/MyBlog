@@ -17,7 +17,7 @@
 12. 社会化集成，支持第三方用户帐号登陆
 13. 自定义admin后台
 14. 树形无限分类（前后端）
-15. 博文后端导出
+15. 博文后端支持选定格式批量导入，导出。(csv, xls, xlsx, tsv, ods, json, yml, html)
 16. 服务出错后，邮件通知
 17. 博文爬虫定时抓取， 集成Scrapy， Celery调度。
 18. 自定义django-Haystack搜索框架下Elasticsearch后端，支持Elasticsearch中文检索。
@@ -33,7 +33,41 @@
 7. Uwsgi            #非必要
 8. Supervisor        #非必要
 
+#### 部署（以Docker为例）
+本项目docker镜像地址 https://hub.docker.com/r/renkang/myblog/
+
+###### 拉取镜像
+$ docker pull renkang/myblog:base
+
+###### 修改MyBlog配置，把你自己的， 数据库密码， 第三方放密钥等写好后打包镜像
+$ docker build -t 镜像名 .
+
+###### 镜像打包好后，修改docker-compose.yml里renkang/myblog:base为你打包好的镜像
+
+###### 进入项目根目录执行以下命令完成部署
+$ docker swarm init
+
+$ docker stack deploy -c docker-compose.yml myblog
+
+###### 登陆博客镜像的容器终端，执行数据迁移，和创建对应管理员
+$ docker exec -it <容器id> bash
+
+$ python manage.py migrate
+
+$ python manage.py createsuperuser
+
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
+
+#### 部分截图
+![](static/images/d1.png)
+![](static/images/d2.png)
+![](static/images/d3.png)
+![](static/images/d4.png)
+![](static/images/d5.png)
+![](static/images/d6.png)
+![](static/images/d7.png)
+![](static/images/d8.png)
+![](static/images/d9.png)
 
 #### 联系我
 ###### QQ ：303288346
