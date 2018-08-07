@@ -37,6 +37,14 @@ class PostFilter(filters.FilterSet):
         }
 
 
+class ArchiveFilter(filters.FilterSet):
+    class Meta:
+        model = Post
+        fields = {
+            'published_time': ['year__exact', 'month__exact']
+        }
+
+
 class PostFilterBackend(DRYPermissionFiltersBase):
     """
     过滤博文列表

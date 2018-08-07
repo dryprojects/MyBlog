@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'bloguser',
     'django_filters',
     'rest_framework',
+    'rest_framework_swagger',
     'rest_framework.authtoken',
     'djoser',
     'dry_rest_permissions',

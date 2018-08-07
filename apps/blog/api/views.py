@@ -7,7 +7,8 @@
 @time:      2018/07/29 
 """
 
-from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling, permissions as rest_permissions
+from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling, \
+    permissions as rest_permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -17,23 +18,28 @@ from django.contrib.contenttypes.models import ContentType
 
 from django_filters import rest_framework as filters
 from dry_rest_permissions.generics import DRYPermissions
+from drf_haystack.viewsets import HaystackViewSet
+from drf_haystack import filters as haystack_filters
+from drf_haystack import mixins as haystack_mixins
 
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
 from oper.models import FriendshipLinks
-from comment.models import Comment
 
 
 class PostViewset(viewsets.ModelViewSet):
     """
     list:
-        返回用户所有公开发表的博文，当前用户返回所有的博文
+    返回用户所有公开发表的博文，当前用户返回所有的博文
+
     retrieve:
-        返回的博文如果是收费的则需要对应权限才可访问
+    返回的博文如果是收费的则需要对应权限才可访问
+
     delete:
-        只有博文作者才可以
+    只有博文作者才可以
+
     update:
-        只有博文作者才可以
+    只有博文作者才可以
     """
     queryset = models.Post.objects.all()
     pagination_class = paginators.PostPaginator
@@ -82,9 +88,21 @@ class PostViewset(viewsets.ModelViewSet):
         """
         return self.get_standard_list_response(request)
 
-    @action(detail=False)
+    @action(detail=False, filter_class=blog_filters.ArchiveFilter)
     def get_archives(self, request):
-        """### list: 返回博文按照月份的归档"""
+        """
+        list:
+        返回博文按照月份的归档
+
+        | 查询参数 | 描述 |
+
+        | ------ | ------ |
+
+        | published_time_year | 返回指定年份的归档 |
+
+        | published_time_month | 返回指定月份的归档 |
+
+        """
         queryset = self.get_queryset()
         query = {
             'status': enums.POST_STATUS_PUBLIC,
@@ -147,7 +165,7 @@ class PostViewset(viewsets.ModelViewSet):
         """GET: 收藏博文"""
         content_type = ContentType.objects.get_for_model(models.Post)
         checked = request.user.favorite(content_type, pk)
-        res = {'status': 'success', "detail" : "收藏成功"} if checked else {'status': 'failed', "detail": '你已经收藏过这篇博文'}
+        res = {'status': 'success', "detail": "收藏成功"} if checked else {'status': 'failed', "detail": '你已经收藏过这篇博文'}
         serializer = serializers.PostFavoriteSerializer(res)
         return Response(serializer.data)
 
@@ -166,6 +184,40 @@ class PostViewset(viewsets.ModelViewSet):
         content_type = ContentType.objects.get_for_model(models.Post)
         serializer = serializers.ContentTypeSerializer(content_type)
         return Response(serializer.data)
+
+
+class PostSearchViewSet(haystack_mixins.MoreLikeThisMixin, haystack_mixins.FacetMixin, HaystackViewSet):
+    """
+    list:
+    返回所有被索引的文档，可以通过查询参数进行全文搜索 例：?text=python 将会搜索出所有关于python的文档
+
+    more-like-this:
+    返回相似的文档
+
+    facets:
+    返回在作者和博文发表日期上分面搜索（垂直搜索，分片搜索）的结果， [相关概念][ref]
+    [ref]: https://django-haystack.readthedocs.io/en/latest/faceting.html
+    """
+    # 这里默认是id，但是文档(这个文档指的是搜索索引里的文档)里默认是django_id,酌情更改 ^_^
+    # 相关配置 HAYSTACK_DJANGO_ID_FIELD
+    # see https://django-haystack.readthedocs.io/en/latest/settings.html?highlight=HAYSTACK_DJANGO_ID_FIELD%20#haystack-django-id-field
+    document_uid_field = 'django_id'
+    index_models = [models.Post]
+    serializer_class = serializers.PostSearchSerializer
+    facet_serializer_class = serializers.PostFacetSerializer
+    filter_backends = [haystack_filters.HaystackHighlightFilter]
+
+
+class PostAutocompleteSearchViewSet(HaystackViewSet):
+    """
+    list:
+    返回所有可用的建议
+
+    查询参数： ?q=mysql 返回mysql的建议
+    """
+    index_models = [models.Post]
+    serializer_class = serializers.PostAutocompleteSerializer
+    filter_backends = [haystack_filters.HaystackAutocompleteFilter]
 
 
 class CategoryViewset(viewsets.ModelViewSet):

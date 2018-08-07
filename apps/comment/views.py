@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from django_filters import rest_framework as filters
 
-from comment.serializers import CommentTreeSerializer
+from comment.serializers import CommentTreeSerializer, ContentTypeSerializer
 from comment.models import Comment
 from comment.permissions import IsOwnerOrReadOnly
 from comment.signals import post_like
@@ -112,4 +112,11 @@ class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retr
 
         comment_obj = self.get_object()
         serializer = self.get_serializer(comment_obj)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def get_content_type(self, request):
+        """list: 返回评论的内容类型id"""
+        content_type = ContentType.objects.get_for_model(Comment)
+        serializer = ContentTypeSerializer(content_type)
         return Response(serializer.data)

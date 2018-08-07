@@ -37,6 +37,8 @@ else:
     router.register('categories', api_views.CategoryViewset, base_name='category')
     router.register('tags', api_views.TagViewset, base_name='tag')
     router.register('resources', api_views.ResourceViewset, base_name='resource')
+    router.register('search', api_views.PostSearchViewSet, base_name='search')
+    router.register('autocomplete', api_views.PostAutocompleteSearchViewSet, base_name='autocomplete')
 
     urlpatterns = [
         path('', include(router.urls))
