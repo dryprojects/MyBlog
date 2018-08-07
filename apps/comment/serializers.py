@@ -38,3 +38,9 @@ class CommentTreeSerializer(serializers.ModelSerializer):
         #发送信号
         post_comment.send(sender=Comment, comment_obj = comment, content_type = validated_data['content_type'], object_id = validated_data['object_id'], request=self.context['request'])
         return comment
+
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentType
+        fields = ('id', )
