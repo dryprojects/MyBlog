@@ -1,4 +1,3 @@
 {{ object.author.username }}
 {{ object.title }}
 {{ object.content }}
-{{ object.author }}

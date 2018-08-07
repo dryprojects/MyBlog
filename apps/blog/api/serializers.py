@@ -7,14 +7,19 @@
 @time:      2018/05/03 
 """
 
+import datetime
+
 from rest_framework import serializers, reverse
+
 from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
+from drf_haystack.serializers import HaystackSerializer, HaystackFacetSerializer, HaystackSerializerMixin
 
 from django.contrib.contenttypes.models import ContentType
 
 from blog.models import Category, Post, Tag, Resources
 from blog import enums
 from blog.api import fields
+from blog.search_indexes import PostIndex
 
 
 class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.ModelSerializer):
@@ -196,14 +201,50 @@ class ResourceSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class PostSearchSerializer(HaystackSerializerMixin, PostListSerializer):
+    more_like_this = serializers.HyperlinkedIdentityField(view_name="blog:search-more-like-this", read_only=True)
+
+    class Meta(PostListSerializer.Meta):
+        fields = PostListSerializer.Meta.fields + ('more_like_this', )
+        search_fields = ("text",)
+
+
+class PostAutocompleteSerializer(HaystackSerializer):
+    class Meta:
+        index_classes = [PostIndex]
+        fields = ('title_auto',)
+        # ignore_fields = ['title_auto']
+        field_aliases = {
+            "q": "title_auto"
+        }
+
+
+class PostFacetSerializer(HaystackFacetSerializer):
+    serialize_objects = True
+
+    # Setting this to True will serialize the
+    # queryset into an `objects` list. This
+    # is useful if you need to display the faceted
+    # results. Defaults to False.
+
+    class Meta:
+        index_classes = [PostIndex]
+        fields = ('author',)
+        field_options = {
+            'author': {},
+        }
+
+
 class PostPraiseSerializer(serializers.Serializer):
     detail = serializers.IntegerField()
+
 
 class PostFavoriteSerializer(serializers.Serializer):
     detail = serializers.CharField()
     status = serializers.CharField()
 
+
 class ContentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContentType
-        fields = ('id', )
+        fields = ('id',)

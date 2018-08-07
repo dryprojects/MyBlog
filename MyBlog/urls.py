@@ -25,6 +25,7 @@ if settings.DEBUG:
 
 import social_django.urls
 from rest_framework.documentation import include_docs_urls
+from rest_framework_swagger.views import get_swagger_view
 
 from blog.admin import USE_ADMIN_SITE, ADD_PASSWORD_FORGET
 
@@ -58,6 +59,7 @@ urlpatterns.extend([
 if settings.DEBUG:
     urlpatterns.extend([
         path('docs/', include_docs_urls(title='MyBlog Api Docs', public=False)),
+        #path('docs/', get_swagger_view(title='MyBlog Api Docs')),
         path('api-auth/', include('rest_framework.urls')),
     ])
 
