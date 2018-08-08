@@ -229,9 +229,10 @@ class PostFacetSerializer(HaystackFacetSerializer):
 
     class Meta:
         index_classes = [PostIndex]
-        fields = ('author',)
+        fields = ('author', 'category')
         field_options = {
             'author': {},
+            'category': {}
         }
 
 
