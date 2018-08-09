@@ -208,6 +208,19 @@ class PostSearchSerializer(HaystackSerializerMixin, PostListSerializer):
         fields = PostListSerializer.Meta.fields + ('more_like_this', )
         search_fields = ("text",)
 
+    def to_representation(self, instance):
+        """
+        在搜索结果中增加搜索高亮
+        :param instance:
+        :return:
+        """
+        ret = super().to_representation(instance)
+
+        if getattr(instance, "highlighted", None):
+            ret["highlighted"] = instance.highlighted[0]
+
+        return ret
+
 
 class PostAutocompleteSerializer(HaystackSerializer):
     class Meta:
@@ -229,9 +242,10 @@ class PostFacetSerializer(HaystackFacetSerializer):
 
     class Meta:
         index_classes = [PostIndex]
-        fields = ('author',)
+        fields = ('author', 'category')
         field_options = {
             'author': {},
+            'category': {}
         }
 
 
