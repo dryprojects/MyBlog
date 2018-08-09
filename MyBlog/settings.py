@@ -88,7 +88,8 @@ INSTALLED_APPS = [
     'oper',
     'agent',
     'trade',
-    'import_export'
+    'import_export',
+    'versatileimagefield'
 ]
 
 MIDDLEWARE = [

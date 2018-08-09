@@ -14,6 +14,7 @@ class PostIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)          # 全文检索字段
     title_auto = indexes.EdgeNgramField(model_attr='title')             # 该字段用与搜索建议
     author = indexes.CharField(model_attr='author', faceted=True)       # author 和 pub_date 用于额外对搜索集合过滤
+    category = indexes.CharField(model_attr='category', faceted=True)
     pub_date = indexes.DateTimeField(model_attr='published_time')
 
     def get_model(self):

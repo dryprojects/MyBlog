@@ -13,10 +13,13 @@ from django.conf import settings
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
 from dry_rest_permissions.generics import allow_staff_or_superuser, authenticated_users
+from versatileimagefield.fields import VersatileImageField, PPOIField
+from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
 from comment.models import Comment
 from blog import enums
 from trade.models import GoodsOrder
+
 
 User = get_user_model()
 
@@ -98,8 +101,13 @@ class Post(MPTTModel):
     parent = TreeForeignKey('self', verbose_name='上一篇博文', related_name='children', db_index=True,
                             on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(verbose_name='博文标题', max_length=50, help_text="少于50字符")
-    cover = models.ImageField(verbose_name='博文封面', upload_to='blog/blog_cover/', max_length=200,
-                              default='blog/blog_cover/default.jpg')
+    cover = VersatileImageField(verbose_name='博文封面', upload_to='blog/blog_cover/', max_length=200,
+                                default='blog/blog_cover/default.jpg', blank=True,
+                                placeholder_image=OnStoragePlaceholderImage(
+                                    path='blog/blog_cover/default.jpg'
+                                ),
+                                ppoi_field='ppoi')
+    ppoi = PPOIField('封面 PPOI')
     cover_url = models.CharField(verbose_name="博文封面url", max_length=255, null=True, blank=True)
     category = models.ForeignKey(Category, verbose_name="博文类目", on_delete=models.CASCADE, null=True)  # n ~ 1
     tags = models.ManyToManyField(Tag, verbose_name="博文标签")  # m ~ n
@@ -237,7 +245,7 @@ class Post(MPTTModel):
             return True if self.is_free and (self.status == enums.POST_STATUS_PUBLIC) else False
 
         checked = (self.status == enums.POST_STATUS_PUBLIC) and (
-                    self.is_free or request.user.check_payment_status(self.post_sn))
+                self.is_free or request.user.check_payment_status(self.post_sn))
 
         return True if checked else False
 
@@ -269,7 +277,8 @@ class Post(MPTTModel):
             return
         cover_changed = (self.cover != 'blog/blog_cover/default.jpg') and not self.cover_url.endswith(str(self.cover))
         if cover_changed:
-            cover_url = '%sblog/blog_cover/%s' % (settings.MEDIA_URL, self.cover) if not str(self.cover).startswith('blog/blog_cover') else '%s%s' % (settings.MEDIA_URL, self.cover)
+            cover_url = '%sblog/blog_cover/%s' % (settings.MEDIA_URL, self.cover) if not str(self.cover).startswith(
+                'blog/blog_cover') else '%s%s' % (settings.MEDIA_URL, self.cover)
             self.cover_url = cover_url
 
     def save(self, *args, **kwargs):

@@ -31,6 +31,7 @@ django-redis==4.9.0
 django-rest-swagger==2.1.2
 django-simple-captcha==0.5.6
 django-templated-mail==1.1.1
+django-versatileimagefield==1.9
 djangorestframework==3.8.2
 djangorestframework-jwt==1.11.0
 djoser==1.2.0

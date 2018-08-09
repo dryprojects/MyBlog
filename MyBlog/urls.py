@@ -109,6 +109,6 @@ if settings.DEBUG:
 # see more https://docs.djangoproject.com/en/2.0/topics/http/views/
 if not settings.DEBUG:
     handler404 = 'django.views.defaults.page_not_found'
-    handler500 = 'django.views.defaults.server_error'
+    handler500 = 'django.views.defaults.server_error' if not settings.API_MODE else 'rest_framework.exceptions.server_error'
     handler403 = 'django.views.defaults.permission_denied'
-    handler400 = 'django.views.defaults.bad_request'
+    handler400 = 'django.views.defaults.bad_request' if not settings.API_MODE else 'rest_framework.exceptions.bad_request'
