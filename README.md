@@ -68,7 +68,7 @@ $ python manage.py createsuperuser
 #### 部分截图
 ![](static/images/demo1.png)
 ![](static/images/demo2.png)
-![](static/images/d3mo3.png)
+![](static/images/demo3.png)
 ![](static/images/d1.png)
 ![](static/images/d2.png)
 ![](static/images/d3.png)
