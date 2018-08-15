@@ -42,12 +42,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class MessageAuthCodeSerializer(serializers.Serializer):
     phone_num = serializers.CharField(max_length=11)
 
-    def generate_message_auth_code(self):
+    def generate_message_auth_code(self, count=6):
         """
         生成6位数的随机短信验证码
         :return:
         """
-        return "".join([random.choice('1234567890') for i in range(6)])
+        return "".join([random.choice('1234567890') for i in range(count)])
 
     def validate_phone_num(self, phone_num):
         """
