@@ -1,16 +1,15 @@
 #!usr/bin/env python  
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 """ 
 @author:    nico 
 @file:      UserBackend.py 
 @time:      2018/05/04 
-""" 
+"""
 
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-
 
 User = get_user_model()
 
@@ -24,7 +23,7 @@ class UserBackend:
 
     def authenticate(self, request, username=None, password=None):
         try:
-            user = User.objects.get(Q(username=username)|Q(email=username))
+            user = User.objects.get(Q(username=username) | Q(email=username) | Q(mobile_phone=username))
             if user.check_password(password):
                 return user
             return None

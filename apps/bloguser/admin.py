@@ -35,8 +35,14 @@ class UserPrifileModelAdmin(UserAdmin):
 
 @admin.register(MessageAuthCode)
 class MessageAuthCodeModelAdmin(admin.ModelAdmin):
-    list_display = ('phone_num', 'code', 'add_time', 'expiration')
+    list_display = ('phone_num', 'code', 'add_time', 'expiration', 'is_expired')
     fieldsets = (
         ("基本信息",
          {"fields": [('phone_num', 'code'), ('add_time', 'expiration')], 'classes': ('wide', 'extrapretty')}),
     )
+
+    def is_expired(self, obj):
+        return obj.is_expired
+
+    is_expired.short_description = '是否过期'
+    is_expired.boolean = True
