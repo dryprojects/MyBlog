@@ -368,7 +368,8 @@ if API_MODE:
         'SEND_ACTIVATION_EMAIL': True,
         'SEND_CONFIRMATION_EMAIL': True,
         'SERIALIZERS': {
-            'user': 'bloguser.api.serializers.UserDetailSerializer'
+            'user': 'bloguser.api.serializers.UserDetailSerializer',
+            'user_create': 'bloguser.api.serializers.UserCreateSerializer',
         },
         'SET_PASSWORD_RETYPE': True,  # 表示需要重复输入密码
         'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
@@ -378,6 +379,13 @@ if API_MODE:
         # http:localhost:8000/auth/o/github?redirect_uri=http://localhost:8000/social/complete/github
         # 这里会和设置中的回调进行检测,如果正常的话，会反回github用户的授权地址，前端重定向到此地址，让用户完成授权登陆操作
         'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/social/complete/github']
+    }
+
+    import datetime
+
+    #see http://getblimp.github.io/django-rest-framework-jwt/
+    JWT_AUTH = {
+        'JWT_REFRESH_EXPIRATION_DELTA' : datetime.timedelta(days=3)
     }
 
 LOGGING = {

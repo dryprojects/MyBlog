@@ -37,7 +37,6 @@ from blog.sitemaps import BlogSitemap
 if not settings.API_MODE:
     urlpatterns = [
         path('', include('blog.urls', namespace='blog')),
-        path('account/', include('bloguser.urls', namespace='bloguser')),
     ]
 else:
     urlpatterns = [
@@ -46,6 +45,7 @@ else:
         path('auth/', include('djoser.social.urls')),
         path('auth/', include('djoser.urls.authtoken')),
         path('auth/', include('djoser.urls.jwt')),
+        path('account/', include('bloguser.urls', namespace='bloguser')),
     ]
 
 urlpatterns.extend([
