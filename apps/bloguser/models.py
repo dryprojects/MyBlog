@@ -1,4 +1,5 @@
 import datetime
+import collections
 
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -28,6 +29,18 @@ class UserProfile(AbstractUser):
 
     def email_user(self, subject, message=None, from_email=None, html_msg=None, **kwargs):
         send_mail.delay(subject, message, from_email, [self.email], html_msg, **kwargs)
+
+    def send_sms(self, **kwargs):
+        """
+        给用户发送短信
+            这里我不做实现，如果你需要的话，可以参考云片等第三方服务商提供的sdk实现
+            比较好的建议，新建立一个sms的app,对不同的服务商写不同的短信发送后端，通过一个统一的接口来调用
+            用户可以在配置中自定义短信后端，来实现短信发送。
+            如果对写这个app有兴趣，可以联系我。
+        :param kwargs:
+        :return: True 发送成功， False 发送失败 （这里最好返回一个 namedtuple 来提供更详细的信息）
+        """
+        return False
 
     def notify_user(self, content):
         """
@@ -131,5 +144,19 @@ class MessageAuthCode(models.Model):
         super(MessageAuthCode, self).save(*args, **kwargs)
 
     @classmethod
+    def send_message_auth_code(cls, message_code, mobile_phone, **kwargs):
+        """
+        发送短信验证码
+            这里不做实现， 请参考第三方服务商提供的sdk实现
+        """
+        Result = collections.namedtuple('Result', ['success', 'detail'])
+
+        return Result(False, '该方法未实现')
+
+    @classmethod
     def remove_expired(cls):
         cls.objects.filter(expiration__lte=timezone.now()).delete()
+
+    @property
+    def is_expired(self):
+        return self.expiration <= timezone.now()

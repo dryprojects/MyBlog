@@ -368,7 +368,8 @@ if API_MODE:
         'SEND_ACTIVATION_EMAIL': True,
         'SEND_CONFIRMATION_EMAIL': True,
         'SERIALIZERS': {
-            'user': 'bloguser.api.serializers.UserDetailSerializer'
+            'user': 'bloguser.api.serializers.UserDetailSerializer',
+            'user_create': 'bloguser.api.serializers.UserCreateSerializer',
         },
         'SET_PASSWORD_RETYPE': True,  # 表示需要重复输入密码
         'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
