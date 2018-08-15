@@ -66,9 +66,6 @@ $ python manage.py createsuperuser
 #### 第三方登陆，只做了Github的，其它可以在设置里自己修改，Oauth回调地址在配置文件里
 
 #### 部分截图
-![](static/images/demo1.png)
-![](static/images/demo2.png)
-![](static/images/demo3.png)
 ![](static/images/d1.png)
 ![](static/images/d2.png)
 ![](static/images/d3.png)
