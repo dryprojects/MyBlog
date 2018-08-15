@@ -47,7 +47,7 @@ class MessageAuthCodeSerializer(serializers.Serializer):
         生成6位数的随机短信验证码
         :return:
         """
-        return "".join([random.choice('1234567890') for i in range(count)])
+        return "".join([random.choice('1234567890') for i in range(int(count))])
 
     def validate_phone_num(self, phone_num):
         """
