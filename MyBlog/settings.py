@@ -380,6 +380,13 @@ if API_MODE:
         'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/social/complete/github']
     }
 
+    import datetime
+
+    #see http://getblimp.github.io/django-rest-framework-jwt/
+    JWT_AUTH = {
+        'JWT_REFRESH_EXPIRATION_DELTA' : datetime.timedelta(days=3)
+    }
+
 LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
