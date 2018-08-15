@@ -2,57 +2,151 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/3/27 13:32'
 
-from django.db.models.signals import pre_save, post_delete
+import uuid
+import hashlib
+
+from django.db.models.signals import pre_save, post_delete, post_save
 from django.dispatch import receiver, Signal
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.sites.models import Site
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.utils.html import mark_safe, format_html
 from django.template import loader
 
 from haystack.signals import BaseSignalProcessor
+from guardian.shortcuts import assign_perm
 
 from blog.models import Post
+from blog import enums
 from comment.models import Comment
 from comment.signals import post_comment, post_like
 
 
-post_published = Signal(providing_args=['instance'])
+change_post_public = Signal(providing_args=['instance'])
+change_post_private = Signal(providing_args=['instance'])
+
+User = get_user_model()
 
 
 class PostSignalProcessor(BaseSignalProcessor):
     """
     Allows for observing when post update status or post deletes fire & automatically updates the
     search engine appropriately.
-    当博文状态改变为已发表时，建立对应博文索引。
+    当博文公开时候建立索引,
+    当博文删除或者变成私有时候删除索引
     """
     def setup(self):
         # Naive (listen to all post change status).
-        post_published.connect(self.handle_save)
+        change_post_public.connect(self.handle_save)
         post_delete.connect(self.handle_delete)
+        change_post_private.connect(self.handle_delete)
         # Efficient would be going through all backends & collecting all models
         # being used, then hooking up signals only for those.
 
     def teardown(self):
         # Naive (listen to all post change status).
-        post_published.disconnect(self.handle_save)
+        change_post_public.disconnect(self.handle_save)
         post_delete.disconnect(self.handle_delete)
+        change_post_private.disconnect(self.handle_delete)
         # Efficient would be going through all backends & collecting all models
         # being used, then disconnecting signals only for those.
 
 
-@receiver(pre_save, sender=Post)
-def gen_excerpt(sender, instance, **kwargs):
+def gen_default_excerpt(post, length=223):
+    if post.excerpt is '':
+        post.excerpt = post.content[:length]
+
+def gen_default_post_sn(post, created):
     """
-    在保存前如果博文摘要为空， 则自动生成摘要
+    生成博文序列号
     :param sender:
-    :param instance:
     :param kwargs:
     :return:
     """
 
-    if instance.excerpt is '':
-        instance.excerpt = instance.content[:223]
+    if created:
+        post.post_sn = str(uuid.uuid1())
+    return post
 
+def gen_default_cover_url(post, created):
+    if created:
+        if not post.cover_url:
+            post.cover_url = post.cover.url
+    return post
+
+def gen_default_object_id(post, created):
+    if created:
+        if post.url_object_id is None:
+            post.url_object_id = hashlib.md5(post.get_absolute_url().encode('utf-8')).hexdigest()
+    return post
+
+def assign_post_perms(post, created):
+    """
+    创建或者获取readers组赋予该组对所有博文实例的读取权限
+    """
+    if created:
+        readers, _ = Group.objects.get_or_create(name='readers')
+        if _:
+            assign_perm('blog.view_post', readers)  # 给readers组赋予可以访问所有博文实例的模型权限
+            assign_perm('blog.add_post', readers)
+        try:
+            assign_perm("view_post", readers, post)  # 给readers组赋予可访问指定的博文的对象权限
+            assign_perm('blog.change_post', post.author, post)  # 给博文作者分配修改和删除博文的模型权限
+            assign_perm('blog.delete_post', post.author, post)
+        except:
+            pass
+
+    return post
+
+def user_as_reader(user, created):
+    if created and not user.is_anonymous:
+        readers, _ = Group.objects.get_or_create(name='readers')
+        if _:
+            try:
+                assign_perm('blog.view_post', readers)
+                assign_perm('blog.add_post', readers)
+            except:
+                pass
+        user.groups.add(readers)
+    return user
+
+@receiver(pre_save, sender=Post)
+def on_post_pre_save(sender, **kwargs):
+    """
+    博文保存前预处理
+    :param sender:
+    :param kwargs:
+    :return:
+    """
+    post = kwargs['instance']
+    if not post.hasbe_indexed:
+        if post.status == enums.POST_STATUS_PUBLIC:
+            change_post_public.send(sender=post.__class__, instance=post)
+            post.hasbe_indexed = True
+
+    if post.hasbe_indexed and post.status == enums.POST_STATUS_PRIVATE:
+        change_post_private.send(sender=post.__class__, instance=post)
+        post.hasbe_indexed = False
+
+    gen_default_excerpt(post)
+
+@receiver(post_save, sender=Post)
+def on_post_post_save(sender, **kwargs):
+    post, created = kwargs['instance'], kwargs['created']
+    if created:
+        post = gen_default_post_sn(post, created)
+        post = gen_default_object_id(post, created)
+        post = gen_default_cover_url(post, created)
+        post = assign_post_perms(post, created)
+        post.save()
+
+@receiver(post_save, sender=User)
+def on_user_post_save(sender, **kwargs):
+    user, created = kwargs['instance'], kwargs['created']
+    user_as_reader(user, created)
 
 @receiver(post_comment, sender=Comment)
 def handler_post_comment(sender, comment_obj, content_type, object_id, request, **kwargs):

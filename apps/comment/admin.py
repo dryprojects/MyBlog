@@ -9,7 +9,7 @@ from comment.models import Comment
 # Register your models here.
 @admin.register(Comment)
 class CommentModelAdmin(DraggableMPTTAdmin):
-    list_display = ['tree_actions', 'get_comment', 'id', 'parent', 'author', 'content_type', 'object_id', 'published_time', 'was_published_recently']
+    list_display = ['tree_actions', 'get_comment','parent', 'author', 'content_object', 'published_time', 'was_published_recently']
     list_display_links = ['get_comment']
     list_filter = (
         ('parent', TreeRelatedFieldListFilter),
@@ -27,6 +27,12 @@ class CommentModelAdmin(DraggableMPTTAdmin):
         })
     ]
     readonly_fields = ['n_like', 'n_dislike']
+
+    def content_object(self, instance):
+        if hasattr(instance.content_object, 'get_absolute_url'):
+            return format_html("<a href='{}'>{}</a>", instance.content_object.get_absolute_url(), instance.content_object)
+        return instance.content_object
+    content_object.short_description = '被评论对象'
 
     def get_comment(self, instance):
         return format_html(

@@ -4,11 +4,14 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.utils import timezone
 
 from blog.models import Post
+
 # Create your models here.
 
 User = get_user_model()
+BLACKLIST_TIMEOUT = 60  # //minutes
 
 
 class Notification(models.Model):
@@ -22,7 +25,7 @@ class Notification(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return "(%s):%s"%(self.id, self.content[:20])
+        return "(%s):%s" % (self.id, self.content[:20])
 
 
 class NotificationUnReadCounter(models.Model):
@@ -34,7 +37,7 @@ class NotificationUnReadCounter(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return "(%s):%s"%(self.id, self.n_unread)
+        return "(%s):%s" % (self.id, self.n_unread)
 
 
 class BlogOwner(models.Model):
@@ -62,3 +65,44 @@ class FriendshipLinks(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Blacklist(models.Model):
+    ip_addr = models.GenericIPAddressField(verbose_name='黑名单ip')
+    desc = models.CharField(verbose_name='原因', null=True, blank=True, max_length=300, help_text='300字以内')
+    add_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)
+    expiration = models.DateTimeField(verbose_name='过期时间', blank=True, null=True)
+
+    class Meta:
+        verbose_name = '黑名单用户'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return "%s" % self.ip_addr
+
+    def save(self, *args, **kwargs):
+        if not self.expiration:
+            self.expiration = timezone.now() + datetime.timedelta(minutes=int(BLACKLIST_TIMEOUT))
+        super(Blacklist, self).save(*args, **kwargs)
+
+    @classmethod
+    def remove_expired(cls):
+        cls.objects.filter(expiration__lte=timezone.now()).delete()
+
+
+class UserFavorite(models.Model):
+    """
+    用户收藏模型定义
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="用户")
+    content_type = models.ForeignKey(ContentType, verbose_name='收藏类型', on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(verbose_name='收藏对象id')
+    content_object = GenericForeignKey('content_type', 'object_id')  # 收藏的对象
+    add_time = models.DateTimeField(verbose_name='添加时间', default=datetime.datetime.now)
+
+    class Meta:
+        verbose_name = '用户收藏'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return "%s/%s" % (self.user, self.content_object)

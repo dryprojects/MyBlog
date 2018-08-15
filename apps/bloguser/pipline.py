@@ -33,10 +33,13 @@ def save_bloguser_extra_profile(backend, user, response, *args, **kwargs):
         #这里获取保存用户github的头像的url,顺便保存到本地
         image_url = response.get('avatar_url')
         image_file = get_image_from_url(image_url)
+
         if image_file is not None:
             # 给头像文件命名采用uuid
             avatar_name = 'avatar' + uuid4().hex[:16]
-            user.image.save(avatar_name, image_file)
+            if user.image == 'bloguser/avatar.png':
+                #如果是默认头像，则替换掉，如果不是则不作处理
+                user.image.save(avatar_name, image_file)
 
-        user.image_url = image_url
+        #user.image_url = image_url
         user.save()

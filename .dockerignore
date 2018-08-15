@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__
+**/*.pyc
+db.sqlite3
+# celery beat schedule file
+celerybeat-schedule
+.idea/
+.gitignore
+static/images/demo*
+**/whoosh_index
+*.pid
+*.md
+.dockerignore
+Dockerfile
+tools/elastic*
+tools/kibana*
+docker-compose.yml

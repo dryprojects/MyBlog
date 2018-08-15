@@ -2,35 +2,24 @@
 __author__ = 'Ren Kang'
 __date__ = '2018/4/22 11:12'
 
-
-from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import serializers
 
-from drf_writable_nested import WritableNestedModelSerializer
-
 from comment.models import Comment
 from comment.signals import post_comment
+from bloguser.api.serializers import UserSerializer
 
 
-User = get_user_model()
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'image']
-
-
-class CommentTreeSerializer(WritableNestedModelSerializer):
+class CommentTreeSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
-    author = UserSerializer(required=False)
+    author = UserSerializer(required=False, read_only=True)
 
     class Meta:
         model = Comment
         fields = ['parent', 'id', 'content', 'author', 'content_type', 'object_id',
                   'published_time', 'n_like', 'n_dislike', 'is_spam', 'children']
+        read_only_fields = ('n_like', 'n_dislike', 'is_spam', 'published_time')
 
     def get_children(self, parent):
         queryset = parent.get_children()
@@ -49,3 +38,9 @@ class CommentTreeSerializer(WritableNestedModelSerializer):
         #发送信号
         post_comment.send(sender=Comment, comment_obj = comment, content_type = validated_data['content_type'], object_id = validated_data['object_id'], request=self.context['request'])
         return comment
+
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentType
+        fields = ('id', )

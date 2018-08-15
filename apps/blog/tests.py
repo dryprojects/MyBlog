@@ -13,3 +13,34 @@ print(dmp.diff_prettyHtml(diff))
 # -1 表示删除， 1 表示插入, 0表示相等
 # 从 Hello World 变成Goodbye World需要删除 Hello 插入Goodbye
 #
+
+import sys
+import os
+
+
+project_base = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(project_base)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'MyBlog.settings'
+
+import django
+
+django.setup()
+
+
+from django.contrib.auth import get_user_model
+
+from guardian.shortcuts import assign_perm
+
+from blog.models import Post
+
+
+User = get_user_model()
+
+p = User.objects.get(username__icontains="scrapy")
+b = Post.objects.get(title__icontains='在Linux上如何得到一个段错误的核心转储')
+
+assign_perm('blog.delete_post', p)
+
+print(p.has_perm('blog.change_post'))
