@@ -15,8 +15,12 @@ from rest_framework import serializers
 from django.contrib.auth import password_validation
 
 from djoser import serializers as dj_serializers
+from generic_relations.relations import GenericRelatedField
 
 from bloguser.models import UserProfile, MessageAuthCode
+from blog.models import Post
+from blog.api.serializers import PostListSerializer
+from oper.models import UserFavorite
 
 
 class UserDetailSerializer(dj_serializers.UserSerializer):
@@ -115,3 +119,13 @@ class UserCreateSerializer(dj_serializers.UserCreateSerializer):
         del attrs['message_code']
 
         return super().validate(attrs)
+
+
+class UserFavoriteSerializer(serializers.ModelSerializer):
+    content_object = GenericRelatedField({
+        Post: PostListSerializer()
+    })
+
+    class Meta:
+        model = UserFavorite
+        fields = ('content_object', 'add_time')
