@@ -25,3 +25,8 @@ class UserFilter(filters.FilterSet):
             'username': ['icontains'],
             'email': ['iexact']
         }
+
+
+class UserFavoriteFilterBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(user=request.user)
