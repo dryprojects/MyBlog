@@ -40,6 +40,7 @@ if not API_MODE:
 else:
     router = DefaultRouter()
     router.register('messagecode', api_views.MessageAuthCodeViewset)
+    router.register('favorites', api_views.UserFavoriteViewSet)
 
     urlpatterns = [
         path('', include(router.urls)),

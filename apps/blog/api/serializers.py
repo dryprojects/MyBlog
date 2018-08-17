@@ -112,6 +112,9 @@ class BasePostSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PostListSerializer(BasePostSerializer):
+    add_to_shoppingcart = serializers.HyperlinkedIdentityField(view_name='blog:post-add-to-shoppingcart', read_only=True)
+    remove_from_shoppingcart = serializers.HyperlinkedIdentityField(view_name='blog:post-del-from-shoppingcart', read_only=True)
+
     class Meta(BasePostSerializer.Meta):
         fields = (
             'url',
@@ -122,6 +125,9 @@ class PostListSerializer(BasePostSerializer):
             'n_praise',
             'n_comments',
             'n_browsers',
+            'is_free',
+            'add_to_shoppingcart',
+            'remove_from_shoppingcart',
             'published_time'
         )
 
