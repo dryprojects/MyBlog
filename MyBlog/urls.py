@@ -46,6 +46,7 @@ else:
         path('auth/', include('djoser.urls.authtoken')),
         path('auth/', include('djoser.urls.jwt')),
         path('account/', include('bloguser.urls', namespace='bloguser')),
+        path('trade/', include('trade.urls'))
     ]
 
 urlpatterns.extend([

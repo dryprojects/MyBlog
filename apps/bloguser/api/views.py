@@ -19,7 +19,7 @@ from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handl
 
 from bloguser import models
 from bloguser.api import serializers, throttling, filters as user_filters
-from oper.models import UserFavorite
+from oper import models as oper_models
 
 
 class MessageAuthCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -39,7 +39,7 @@ class UserFavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
     retrieve:
     某具体类型的收藏详细
     """
-    queryset = UserFavorite.objects.all()
+    queryset = oper_models.UserFavorite.objects.all()
     serializer_class = serializers.UserFavoriteSerializer
     permission_classes = (permissions.IsAuthenticated, DRYPermissions)
     filter_backends = (user_filters.UserFavoriteFilterBackend, )

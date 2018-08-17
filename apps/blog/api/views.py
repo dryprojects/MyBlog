@@ -25,6 +25,7 @@ from drf_haystack import mixins as haystack_mixins
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
 from oper.models import FriendshipLinks
+from trade.models import ShoppingCart
 
 
 class PostViewset(viewsets.ModelViewSet):
@@ -177,6 +178,29 @@ class PostViewset(viewsets.ModelViewSet):
         res = {'status': 'success', "detail": "取消收藏成功"} if checked else {'status': 'failed', "detail": '你还没有收藏此博文'}
         serializer = serializers.PostFavoriteSerializer(res)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get', 'delete'], permission_classes=[rest_permissions.IsAuthenticated])
+    def add_to_shoppingcart(self, request, pk):
+        """将博文添加到购物车,或者对购物车中的博文数量减一"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        incr = False if request.method in ['DELETE'] else True
+        res = ShoppingCart.add_item(content_type, pk, request.user, incr)
+
+        if not res.success:
+            return Response({'detail': res.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': res.detail}, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
+    def del_from_shoppingcart(self, request, pk):
+        """将博文移出购物车"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        res = ShoppingCart.del_item(content_type, pk, request.user)
+
+        if not res.success:
+            return Response({'detail': res.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': res.detail}, status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
     def get_content_type(self, request):
