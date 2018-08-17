@@ -106,8 +106,11 @@ class ShoppingCart(models.Model):
         :param user:
         :return:
         """
+        Result = collections.namedtuple('Result', ['success', 'detail'])
 
         cls.objects.filter(user=user).delete()
+
+        return Result(True, '已清空购物车')
 
 
 class GoodsOrder(models.Model):
