@@ -123,6 +123,7 @@ class Post(MPTTModel):
     post_type = models.CharField(verbose_name="博文类型", choices=TYPES, max_length=13, default=enums.POST_TYPE_POST)
     is_banner = models.BooleanField(verbose_name='是否轮播', default=False)
     is_free = models.BooleanField(verbose_name='是否免费', default=True)
+    price = models.FloatField(verbose_name='博文价格', default=0)
     hasbe_indexed = models.BooleanField(verbose_name="已被索引", default=False)
     origin_post_url = models.URLField(verbose_name='原博文URL链接', default="", null=True, blank=True)
     origin_post_from = models.CharField(verbose_name="原博文出处名称", max_length=255, default="", null=True, blank=True)
@@ -142,7 +143,7 @@ class Post(MPTTModel):
         order_insertion_by = ['title']
 
     def __str__(self):
-        return self.title
+        return str(self.title)
 
     def was_published_recently(self):
         now = datetime.datetime.now()
