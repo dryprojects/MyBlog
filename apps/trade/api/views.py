@@ -9,7 +9,7 @@
 
 from rest_framework import viewsets, mixins, filters, permissions, status, response
 from rest_framework.decorators import action
-from dry_rest_permissions.generics import DRYGlobalPermissions
+from dry_rest_permissions.generics import DRYPermissions, DRYGlobalPermissions
 
 from trade import models
 from trade.api import serializers, filters
@@ -34,3 +34,20 @@ class ShoppingCartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return response.Response({'detail': res.detail}, status=status.HTTP_400_BAD_REQUEST)
 
         return response.Response({"detail": res.detail}, status=status.HTTP_204_NO_CONTENT)
+
+
+class GoodsOrderViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """
+    list:
+    当前用户的订单列表
+
+    create:
+    为当前用户创建一份订单
+
+    destroy:
+    取消当前用户的某一个订单
+    """
+    queryset = models.GoodsOrder.objects.all()
+    serializer_class = serializers.GoodsOrderListSerializer
+    permission_classes = [permissions.IsAuthenticated, DRYPermissions]
+    filter_backends = [filters.GoodsOrderFilterBackend]

@@ -126,6 +126,7 @@ class PostListSerializer(BasePostSerializer):
             'n_comments',
             'n_browsers',
             'is_free',
+            'price',
             'add_to_shoppingcart',
             'remove_from_shoppingcart',
             'published_time'

@@ -2,19 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # Register your models here.
-from trade.models import PaymentLogs, GoodsOrderReleation, GoodsOrder, Signer, ShoppingCart
-
-
-@admin.register(Signer)
-class SignerModelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'phone_num', 'sign_time']
-    fieldsets = (
-        ("基本信息", {
-            "fields": [('name', "phone_num"), "sign_time"],
-            'classes': ('extrapretty',)
-        }),
-    )
-    search_fields = ['phone_num']
+from trade.models import PaymentLogs, GoodsOrderReleation, GoodsOrder, ShoppingCart
 
 
 @admin.register(ShoppingCart)
@@ -35,17 +23,24 @@ class ShoppingCartModelAdmin(admin.ModelAdmin):
     content_object.short_description = '付费商品'
 
 
+class GoodsOrderReleationInline(admin.TabularInline):
+    model = GoodsOrderReleation
+    extra = 1
+
+
 @admin.register(GoodsOrder)
 class GoodsOrderModelAdmin(admin.ModelAdmin):
-    autocomplete_fields = ['user', "signer"]
+    autocomplete_fields = ['user']
     search_fields = ["order_sn"]
-    list_display = ['order_sn', 'trade_sn', 'user', 'order_amount', 'payment_type', 'status']
+    list_display = ['order_sn', 'trade_sn', 'user', 'order_amount', 'payment_type', 'status', 'signer_name', 'signer_phone_num', 'sign_time', 'created_time']
     fieldsets = (
         ("基本信息", {
-            "fields": [('order_sn', "trade_sn", 'user'), ("order_amount", 'payment_type', 'status'), ("message", "signer", "address"), 'created_time'],
+            "fields": [('order_sn', "trade_sn", 'user'), ("order_amount", 'payment_type', 'status'), ("message", 'signer_name', 'signer_phone_num', 'sign_time', "address"), 'created_time'],
             'classes': ('extrapretty',)
         }),
     )
+
+    inlines = [GoodsOrderReleationInline]
 
 
 @admin.register(GoodsOrderReleation)

@@ -16,6 +16,7 @@ from trade.api import views as api_views
 
 router = DefaultRouter()
 router.register('shoppingcart', api_views.ShoppingCartViewSet)
+router.register('orders', api_views.GoodsOrderViewset)
 
 app_name = 'trade'
 
