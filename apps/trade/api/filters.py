@@ -13,3 +13,13 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 class ShoppingCartFilterBackend(DRYPermissionFiltersBase):
     def filter_list_queryset(self, request, queryset, view):
         return queryset.filter(user=request.user)
+
+
+class GoodsOrderFilterBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(user=request.user)
+
+
+class GoodsOrderRelationFilterBackend(DRYPermissionFiltersBase):
+    def filter_list_queryset(self, request, queryset, view):
+        return queryset.filter(user=request.user)

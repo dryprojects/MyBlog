@@ -103,6 +103,9 @@ class MyField(Field):
 
     def get_tags_m2m_ids(self, value):
         # 博文标签
+        if not value:
+            return None
+
         tag_names = value
         tag_list = []
         if tag_names != "":
@@ -140,6 +143,7 @@ class PostResource(resources.ModelResource):
             'is_free': '是否免费',
             'origin_post_url': '原博文地址',
             'origin_post_from': '原博文出处',
+            'price': '博文价格',
             'url_object_id': '博文唯一标识',
             'post_sn': "博文序列号"
         }
@@ -279,8 +283,9 @@ class PostResourceModelAdmin(admin.ModelAdmin):
         ('基本信息', {"fields": [('name', 'resource'), ('post', 'add_time')], 'classes': ('wide', 'extrapretty')}),
     ]
     list_filter = ('name', 'post')
+
     def post_link(self, instance):
-        url = "/admin/%s/%s/%s"%(instance.post._meta.app_label, instance.post._meta.model_name, instance.post.pk)
+        url = "/admin/%s/%s/%s" % (instance.post._meta.app_label, instance.post._meta.model_name, instance.post.pk)
         return format_html("<a href='{}'>{}<a>", url, instance.post.title)
 
     post_link.short_description = '所属博文'
@@ -298,15 +303,17 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
          {"fields": [('title', 'category', 'author'), ('url_object_id', 'origin_post_url', 'origin_post_from'),
                      'excerpt', 'content'], 'classes': ('wide', 'extrapretty')}),
         ('博文附加信息', {"fields": [('cover', 'cover_url', 'published_time', 'is_banner'),
-                               ('status', 'post_type', 'parent', 'is_free', "allow_comment", 'hasbe_indexed'),
+                               ('status', 'post_type', 'parent', 'is_free', 'price', "allow_comment", 'hasbe_indexed'),
                                ('n_praise', 'n_comments', 'n_comment_users', 'n_browsers', 'post_sn')],
                     "classes": ('wide', 'extrapretty')}),
     ]
     inlines = [PostTagRelationShipInline, ResourcesInline]
     exclude = ['tags']
-    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url']
-    list_display = ['tree_actions', 'get_posts', 'category', 'author', 'get_cover', 'post_type', 'allow_comment', 'published_time',
-                    'status', 'is_banner', 'is_free', 'was_published_recently']
+    readonly_fields = ['n_praise', 'n_comments', 'n_browsers', 'n_comment_users', 'post_sn', 'cover_url',
+                       'hasbe_indexed']
+    list_display = ['tree_actions', 'get_posts', 'category', 'author', 'get_cover', 'post_type', 'allow_comment',
+                    'published_time',
+                    'status', 'is_banner', 'is_free', 'was_published_recently', 'hasbe_indexed']
     list_editable = ['status', 'post_type', 'is_banner', 'is_free', 'allow_comment']
     list_filter = ('published_time',
                    ('parent', TreeRelatedFieldListFilter),
@@ -317,7 +324,7 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
     autocomplete_fields = ['author', 'category', 'parent']  # django 2.0新增
     search_fields = ['title']
     date_hierarchy = 'published_time'
-    #ordering = ('-published_time',) 启用排序，会扰乱mptt在admin的显示
+    # ordering = ('-published_time',) 启用排序，会扰乱mptt在admin的显示
 
     # formfield_overrides = {
     #     models.TextField:{
@@ -345,6 +352,14 @@ class PostModalAdmin(GuardedModelAdminMixin, ImportExportActionModelAdmin, Dragg
             instance.title,  # Or whatever you want to put here
         )
 
+    def n_comments(self, obj):
+        return obj.n_comments
+
+    def n_comment_users(self, obj):
+        return obj.n_comment_users
+
+    n_comment_users.short_description = '评论人数'
+    n_comments.short_description = '评论数量'
     get_posts.short_description = '博文'
 
     # def export_selected_post(self, request, queryset):

@@ -15,22 +15,6 @@ from trade import enums
 User = get_user_model()
 
 
-class Signer(models.Model):
-    """
-    商品签收人信息
-    """
-    name = models.CharField(verbose_name='签收人称呼', max_length=30)
-    phone_num = models.CharField(verbose_name='联系电话', max_length=14)
-    sign_time = models.DateTimeField(verbose_name='签收时间', default=datetime.datetime.now)
-
-    def __str__(self):
-        return "%s/%s/%s" % (self.name, self.phone_num, self.sign_time)
-
-    class Meta:
-        verbose_name = '商品签收人信息'
-        verbose_name_plural = verbose_name
-
-
 class ShoppingCart(models.Model):
     """
     购物车
@@ -127,15 +111,18 @@ class GoodsOrder(models.Model):
         (enums.PAYMENT_TYPES_WEICHAT, '微信')
     )
     user = models.ForeignKey(User, verbose_name='付费用户', on_delete=models.CASCADE)
-    order_sn = models.CharField(verbose_name='订单编号', max_length=50, unique=True)
+    order_sn = models.CharField(verbose_name='订单编号', max_length=50, unique=True, null=True, blank=True)
     trade_sn = models.CharField(verbose_name='第三方交易编号', max_length=255, unique=True, null=True, blank=True)
     status = models.CharField(verbose_name='支付状态', choices=STATUS, max_length=20,
                               default=enums.ORDER_PAY_STATUS_UN_COMPLETE)
     order_amount = models.FloatField(verbose_name='订单金额', default=0)
     payment_type = models.CharField(verbose_name="支付方式", choices=TYPES, max_length=20,
                                     default=enums.PAYMENT_TYPES_ALIPAY)
+    pay_time = models.DateTimeField(verbose_name='支付时间', null=True, blank=True)
     message = models.CharField(verbose_name='订单留言', max_length=255, blank=True, null=True)
-    signer = models.ForeignKey(Signer, verbose_name='签收人', on_delete=models.CASCADE)
+    signer_name = models.CharField(verbose_name='签收人称呼', max_length=30)
+    signer_phone_num = models.CharField(verbose_name='联系电话', max_length=14)
+    sign_time = models.DateTimeField(verbose_name='签收时间', null=True, blank=True)
     address = models.CharField(verbose_name='寄送地址', max_length=300)
     created_time = models.DateTimeField(verbose_name='订单创建时间', default=datetime.datetime.now)
 
@@ -150,12 +137,26 @@ class GoodsOrder(models.Model):
         verbose_name = '商品订单信息'
         verbose_name_plural = verbose_name
 
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    def has_object_write_permission(self, request):
+        return request.user == self.user
+
 
 class GoodsOrderReleation(models.Model):
     """
     订单商品关系
     """
-    order = models.ForeignKey(GoodsOrder, verbose_name='关联订单', on_delete=models.CASCADE)
+    order = models.ForeignKey(GoodsOrder, verbose_name='关联订单', on_delete=models.CASCADE, related_name='goods_list')
     content_type = models.ForeignKey(ContentType, verbose_name='关联商品内容类型', on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(verbose_name='关联商品id')
     content_object = GenericForeignKey('content_type', 'object_id')  # 关联商品
@@ -171,6 +172,21 @@ class GoodsOrderReleation(models.Model):
     class Meta:
         verbose_name = '订单商品关系'
         verbose_name_plural = verbose_name
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    def has_object_read_permission(self, request):
+        return True
+
+    def has_object_write_permission(self, request):
+        return request.user == self.order.user
+
 
 
 class PaymentLogs(models.Model):
