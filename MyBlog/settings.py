@@ -46,7 +46,7 @@ ELASTICSEARCH_DEPLOY_HOST = 'http://elasticsearch:9200/'
 ELASTICSEARCH_DEBUG_HOST = 'http://127.0.0.1:9200/'
 
 if DEBUG:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ["*"]
 
@@ -383,66 +383,77 @@ if API_MODE:
 
     import datetime
 
-    #see http://getblimp.github.io/django-rest-framework-jwt/
+    # see http://getblimp.github.io/django-rest-framework-jwt/
     JWT_AUTH = {
-        'JWT_REFRESH_EXPIRATION_DELTA' : datetime.timedelta(days=3)
+        'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3)
     }
 
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
-            'standard': {
-                'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
-            }
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
-            },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
-        'handlers': {
-            'console': {
-                'level': 'INFO',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple'
-            },
-            'task': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'filters': ['require_debug_true'],
-                'formatter': 'standard'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler',
-                'include_html': True,
-            }
-        },
-        'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'propagate': True,
-            },
-            'django.request': {
-                'handlers': ['console', 'mail_admins'],
-                'level': 'ERROR',
-                'propagate': False,
-            },
-            'oper.tasks': {
-                'handlers': ['console', 'task'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
+        'standard': {
+            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
         }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'task': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'standard'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'oper.tasks': {
+            'handlers': ['console', 'task'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
+}
 
 # 站点管理员， 当站点发生异常错误时，会自动发送错误邮件到以下管理员
 ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]
+
+TRADE = {  # 自定义设置
+    'alipay': {
+        'appid': '2016091700535510',
+        'alipay_public_key_path': os.path.join(BASE_DIR, 'apps/trade/alipay/secerts/alipay_public_key.pem'),
+        'app_private_key_path': os.path.join(BASE_DIR, 'apps/trade/alipay/secerts/app_private_key.pem'),
+        'notify_url': 'http://59.110.222.209:8000/trade/alipay/return/',
+        'return_url': 'http://59.110.222.209:8000/trade/alipay/return/',
+        'debug': DEBUG
+    }
+}
