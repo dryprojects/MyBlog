@@ -13,6 +13,7 @@ from generic_relations.relations import GenericRelatedField, GenericSerializerMi
 from drf_writable_nested.mixins import NestedCreateMixin
 
 from trade import models
+from trade.alipay import client as alipay_client, settings as alipay_settings
 from blog import models as blog_models
 from blog.api import serializers as blog_serializers
 
@@ -45,6 +46,21 @@ class GoodsOrderDetailSerializer(serializers.ModelSerializer):
 class GoodsOrderListSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     goods_list = GoodsOrderDetailSerializer(many=True, read_only=True)
+    purchase_link = serializers.SerializerMethodField()
+
+    def get_purchase_link(self, obj):
+        query_string = alipay_client.api_alipay_trade_page_pay(
+            subject=obj.order_sn,
+            out_trade_no=obj.order_sn,
+            total_amount=obj.order_amount,
+            return_url=alipay_settings['return_url']
+        )
+        if alipay_settings['debug']:
+            url = 'https://openapi.alipaydev.com/gateway.do?{query_string}'.format(query_string=query_string)
+        else:
+            url = "https://openapi.alipay.com/gateway.do?{query_string}".format(query_string=query_string)
+
+        return url
 
     class Meta:
         model = models.GoodsOrder
@@ -63,7 +79,8 @@ class GoodsOrderListSerializer(serializers.ModelSerializer):
             'signer_phone_num',
             'sign_time',
             'created_time',
-            'goods_list'
+            'goods_list',
+            'purchase_link'
         )
 
         read_only_fields = (

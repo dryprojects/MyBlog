@@ -104,7 +104,12 @@ class GoodsOrder(models.Model):
     STATUS = (
         (enums.ORDER_PAY_STATUS_COMPLETE, "已支付订单"),
         (enums.ORDER_PAY_STATUS_UN_COMPLETE, "未支付订单"),
-        (enums.ORDER_PAY_STATUS_CANCEL, '订单取消')
+        (enums.ORDER_PAY_STATUS_CANCEL, '订单取消'),
+        # alipay
+        ('WAIT_BUYER_PAY', '交易创建，等待买家付款'),
+        ('TRADE_CLOSED', '未付款交易超时关闭，或支付完成后全额退款'),
+        ('TRADE_SUCCESS', '交易支付成功'),
+        ('TRADE_FINISHED', '交易结束，不可退款')
     )
     TYPES = (
         (enums.PAYMENT_TYPES_ALIPAY, '支付宝'),
@@ -114,7 +119,7 @@ class GoodsOrder(models.Model):
     order_sn = models.CharField(verbose_name='订单编号', max_length=50, unique=True, null=True, blank=True)
     trade_sn = models.CharField(verbose_name='第三方交易编号', max_length=255, unique=True, null=True, blank=True)
     status = models.CharField(verbose_name='支付状态', choices=STATUS, max_length=20,
-                              default=enums.ORDER_PAY_STATUS_UN_COMPLETE)
+                              default='WAIT_BUYER_PAY')
     order_amount = models.FloatField(verbose_name='订单金额', default=0)
     payment_type = models.CharField(verbose_name="支付方式", choices=TYPES, max_length=20,
                                     default=enums.PAYMENT_TYPES_ALIPAY)
@@ -129,6 +134,13 @@ class GoodsOrder(models.Model):
     @classmethod
     def remove_cancelled_order(cls):
         cls.objects.filter(status=enums.ORDER_PAY_STATUS_CANCEL).delete()
+
+    @classmethod
+    def checkout_order(cls):
+        """
+        结算订单
+        :return:
+        """
 
     def __str__(self):
         return "%s/%s" % (self.user, self.order_sn)
