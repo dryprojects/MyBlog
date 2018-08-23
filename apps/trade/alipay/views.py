@@ -14,6 +14,7 @@ from alipay import AliPay
 
 from trade.alipay import client
 from trade import models
+from trade import signals
 
 
 class AlipayAPIView(views.APIView):
@@ -76,8 +77,11 @@ class AlipayAPIView(views.APIView):
                     trade_status = res_dict.get('trade_status', None)
                     models.GoodsOrder.objects.filter(order_sn=order_sn).update(status=trade_status, trade_sn=trade_sn,
                                                                                pay_time=datetime.datetime.now())
-
-                    return response.Response("success")
+                    if trade_status in ["TRADE_SUCCESS", "TRADE_FINISHED"]:
+                        #发送交易成功信号
+                        obj = models.GoodsOrder.objects.filter(order_sn=order_sn).first()
+                        signals.trade_completed.send(sender=models.GoodsOrder, instance=obj, request=self.request)
+                        return response.Response("success")
                 else:
                     #return_url检测订单状态
                     order = models.GoodsOrder.objects.get(order_sn=order_sn)

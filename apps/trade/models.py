@@ -207,7 +207,7 @@ class PaymentLogs(models.Model):
     """
     user = models.ForeignKey(User, verbose_name='付费用户', on_delete=models.CASCADE)
     goods_sn = models.CharField(verbose_name='商品序列号', max_length=50, unique=True)
-    goods_order = models.ForeignKey(GoodsOrderReleation, verbose_name='关联订单', on_delete=models.CASCADE)
+    goods_order = models.ForeignKey(GoodsOrder, verbose_name='关联订单', on_delete=models.CASCADE)
     created_time = models.DateTimeField(verbose_name='创建时间', default=datetime.datetime.now)
 
     def __str__(self):
