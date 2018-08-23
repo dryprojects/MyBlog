@@ -29,7 +29,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         fields = ('user', 'content_object', 'n_goods', 'created_time')
 
 
-class GoodsOrderDetailSerializer(serializers.ModelSerializer):
+class GoodsOrderRelationSerializer(serializers.ModelSerializer):
     content_object = GenericRelatedField({
         blog_models.Post: blog_serializers.PostListSerializer()
     })
@@ -43,9 +43,9 @@ class GoodsOrderDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class GoodsOrderListSerializer(serializers.ModelSerializer):
+class GoodsOrderDetailSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    goods_list = GoodsOrderDetailSerializer(many=True, read_only=True)
+    goods_list = GoodsOrderRelationSerializer(many=True, read_only=True)
     purchase_link = serializers.SerializerMethodField()
 
     def get_purchase_link(self, obj):
@@ -111,3 +111,38 @@ class GoodsOrderListSerializer(serializers.ModelSerializer):
         models.ShoppingCart.clear_shoppingcart(self.context['request'].user)
 
         return goods_order
+
+
+class GoodsOrderListSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    purchase_link = serializers.SerializerMethodField()
+
+    def get_purchase_link(self, obj):
+        query_string = alipay_client.api_alipay_trade_page_pay(
+            subject=obj.order_sn,
+            out_trade_no=obj.order_sn,
+            total_amount=obj.order_amount,
+            return_url=alipay_settings['return_url']
+        )
+        if alipay_settings['debug']:
+            url = 'https://openapi.alipaydev.com/gateway.do?{query_string}'.format(query_string=query_string)
+        else:
+            url = "https://openapi.alipay.com/gateway.do?{query_string}".format(query_string=query_string)
+
+        return url
+
+    class Meta:
+        model = models.GoodsOrder
+        fields = (
+            'url',
+            'user',
+            'order_sn',
+            'status',
+            'message',
+            'created_time',
+            'purchase_link'
+        )
+
+        extra_kwargs = {
+            'url': {'view_name': "trade:goodsorder-detail"},
+        }
