@@ -17,6 +17,8 @@ from django.dispatch import receiver, Signal
 from trade import models
 
 
+trade_completed = Signal(providing_args=['instance', 'request'])
+
 def gen_order_sn(goods_order):
     """生成订单号"""
     def random_order_sn():
@@ -33,3 +35,14 @@ def on_goods_order_prev_save(sender, **kwargs):
     goods_order = kwargs['instance']
 
     gen_order_sn(goods_order)
+
+@receiver(trade_completed, sender=models.GoodsOrder)
+def on_trade_complete(sender, **kwargs):
+    goods_order = kwargs.get('instance', None)
+
+    for item in goods_order.goods_list.all():
+        models.PaymentLogs.objects.create(
+            user=goods_order.user,
+            goods_sn=item.content_object.goods_sn,
+            goods_order=goods_order,
+        )

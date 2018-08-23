@@ -36,13 +36,16 @@ class ShoppingCartViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return response.Response({"detail": res.detail}, status=status.HTTP_204_NO_CONTENT)
 
 
-class GoodsOrderViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class GoodsOrderViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """
     list:
     当前用户的订单列表
 
     create:
     为当前用户创建一份订单
+
+    retrieve:
+    查看订单详情
 
     destroy:
     取消当前用户的某一个订单
@@ -51,3 +54,9 @@ class GoodsOrderViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.D
     serializer_class = serializers.GoodsOrderListSerializer
     permission_classes = [permissions.IsAuthenticated, DRYPermissions]
     filter_backends = [filters.GoodsOrderFilterBackend]
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.GoodsOrderListSerializer
+        else:
+            return serializers.GoodsOrderDetailSerializer

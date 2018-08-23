@@ -157,6 +157,14 @@ class Post(MPTTModel):
         return reverse('blog:post-detail', kwargs={'pk': self.pk})
 
     @property
+    def goods_sn(self):
+        """
+        交易里需要根据此属性判断是否已经付费
+        :return:
+        """
+        return self.post_sn
+
+    @property
     def n_comments(self):
         """
         获取该博文的所有评论个数
