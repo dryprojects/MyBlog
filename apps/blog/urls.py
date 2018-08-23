@@ -5,7 +5,7 @@ __date__ = '2018/3/26 22:28'
 from django.urls import path, re_path, include
 from django.conf import settings
 
-from rest_framework.routers import DefaultRouter
+from rest_framework_extensions.routers import ExtendedDefaultRouter as DefaultRouter
 
 from blog import views
 from blog.api import views as api_views
@@ -33,7 +33,8 @@ if not API_MODE:
     ]
 else:
     router = DefaultRouter()
-    router.register('posts', api_views.PostViewset, base_name='post')
+    router.register('posts', api_views.PostViewset, base_name='post')\
+        .register('comments', api_views.PostCommentViewSet, base_name='post-comment', parents_query_lookups=['object_id'])
     router.register('categories', api_views.CategoryViewset, base_name='category')
     router.register('tags', api_views.TagViewset, base_name='tag')
     router.register('resources', api_views.ResourceViewset, base_name='resource')
