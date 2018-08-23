@@ -9,7 +9,7 @@
 
 import datetime
 
-from rest_framework import serializers, reverse
+from rest_framework import serializers, reverse, exceptions
 
 from drf_writable_nested import NestedCreateMixin, NestedUpdateMixin
 from drf_haystack.serializers import HaystackSerializer, HaystackFacetSerializer, HaystackSerializerMixin
@@ -20,6 +20,7 @@ from blog.models import Category, Post, Tag, Resources
 from blog import enums
 from blog.api import fields
 from blog.search_indexes import PostIndex
+from comment import serializers as comment_serializers
 
 
 class CategoryTreeSerializer(NestedCreateMixin, NestedUpdateMixin, serializers.ModelSerializer):
@@ -254,6 +255,29 @@ class PostFacetSerializer(HaystackFacetSerializer):
             'author': {},
             'category': {}
         }
+
+
+class PostCommentSerializer(comment_serializers.CommentTreeSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta(comment_serializers.CommentTreeSerializer.Meta):
+        fields = ['id', 'content', 'author', 'published_time', 'n_like', 'n_dislike', 'is_spam', 'children']
+
+    def create(self, validated_data):
+        object_id = self.context['view'].kwargs['parent_lookup_object_id']
+        obj = Post.objects.get(pk=object_id)
+
+        if not self.check_allow_post_comment(obj):
+            raise exceptions.PermissionDenied(detail='你不能在这篇博文上发表评论。')
+
+        validated_data.update(
+            content_type=ContentType.objects.get_for_model(Post),
+            object_id = object_id,
+        )
+        return super().create(validated_data)
+
+    def check_allow_post_comment(self, obj):
+        return getattr(obj, "allow_post_comment", False)
 
 
 class PostPraiseSerializer(serializers.Serializer):
