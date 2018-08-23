@@ -34,6 +34,7 @@ django-versatileimagefield==1.9
 djangorestframework==3.8.2
 djangorestframework-jwt==1.11.0
 djoser==1.2.0
+drf-extensions==0.4.0
 drf-haystack==1.8.3
 drf-writable-nested==0.4.2
 dry-rest-permissions==0.1.10
