@@ -17,7 +17,7 @@ from comment import filters as cmt_filters
 from comment.throttling import CommentThrotting
 
 
-class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+class CommentViewset(NestedViewSetMixin, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                      mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """
     list:
@@ -128,7 +128,7 @@ class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retr
         return Response(serializer.data)
 
 
-class ReplyViewSet(NestedViewSetMixin, CommentViewset):
+class ReplyViewSet(CommentViewset):
     serializer_class = ReplySerializer
 
     def get_queryset(self):
