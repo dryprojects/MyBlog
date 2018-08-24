@@ -247,7 +247,7 @@ class PostAutocompleteSearchViewSet(HaystackViewSet):
     filter_backends = [haystack_filters.HaystackAutocompleteFilter]
 
 
-class PostCommentViewSet(NestedViewSetMixin, CommentViewset):
+class PostCommentViewSet(CommentViewset):
     """
     list:
     当前博文下的所有用户评论
