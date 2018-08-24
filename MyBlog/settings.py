@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 
+import raven
 from celery.schedules import crontab
 
 # 这里使用gettext_lazy代替gettext，是为了防止循环引入
@@ -33,6 +34,8 @@ SECRET_KEY = '!w5xi_5(*j!1blz^&(_jrsjui@x)q44lfmn3-zz&m7@ja7zsmo'
 DEBUG = True
 
 API_MODE = True
+
+SENTRY = True
 
 REDIS_DEPLOY_HOST = 'redis://redis:6379'
 REDIS_DEBUG_HOST = 'redis://127.0.0.1:6379'
@@ -71,6 +74,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
+    'raven.contrib.django.raven_compat',
     'djoser',
     'dry_rest_permissions',
     'corsheaders',
@@ -388,7 +392,8 @@ if API_MODE:
         'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3)
     }
 
-LOGGING = {
+if not SENTRY:
+    LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
@@ -443,6 +448,50 @@ LOGGING = {
         },
     }
 }
+else:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+        },
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s '
+                          '%(process)d %(thread)d %(message)s'
+            },
+        },
+        'handlers': {
+            'sentry': {
+                'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                'tags': {'custom-tag': 'x'},
+            },
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose'
+            }
+        },
+        'loggers': {
+            'django.db.backends': {
+                'level': 'ERROR',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+            'raven': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+        },
+    }
 
 # 站点管理员， 当站点发生异常错误时，会自动发送错误邮件到以下管理员
 ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]
@@ -456,4 +505,11 @@ TRADE = {  # 自定义设置
         'return_url': 'http://59.110.222.209:8000/trade/alipay/return/',
         'debug': DEBUG
     }
+}
+
+RAVEN_CONFIG = { #集成sentry
+    'dsn': 'http://06a17576916a44fba2f16a7b90d419c3:e833a8bf46ce44bea933ceaf78d0e0a9@localhost:9000/2',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(BASE_DIR),
 }
