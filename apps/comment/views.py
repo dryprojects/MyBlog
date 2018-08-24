@@ -7,8 +7,9 @@ from django.db.models import F
 from django.contrib.contenttypes.models import ContentType
 
 from django_filters import rest_framework as filters
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from comment.serializers import CommentTreeSerializer, ContentTypeSerializer
+from comment.serializers import CommentTreeSerializer, ContentTypeSerializer, ReplySerializer
 from comment.models import Comment
 from comment.permissions import IsOwnerOrReadOnly
 from comment.signals import post_like
@@ -16,7 +17,7 @@ from comment import filters as cmt_filters
 from comment.throttling import CommentThrotting
 
 
-class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+class CommentViewset(NestedViewSetMixin, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                      mixins.DestroyModelMixin, viewsets.GenericViewSet):
     """
     list:
@@ -79,15 +80,20 @@ class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retr
         :return:
         """
         validated_data = serializer.validated_data
-        content_type = validated_data['content_type']
-        object_id = validated_data['object_id']
-        parent = validated_data['parent']
-        object = content_type.get_object_for_this_type(id=object_id)
+        content_type = validated_data.get('content_type', None)
+        object_id = validated_data.get('object_id', None)
 
-        checked = getattr(object, "allow_post_comment", False) and self.check_allow_reply(content_type, object_id, parent)
+        if content_type and object_id:
+            parent = validated_data.get('parent', None)
+            object = content_type.get_object_for_this_type(id=object_id)
 
-        if not checked:
-            self.permission_denied(self.request, "你没有权限发表评论")
+            checked = getattr(object, "allow_post_comment", False) and self.check_allow_reply(content_type, object_id,
+                                                                                              parent)
+
+            if not checked:
+                self.permission_denied(self.request, "你没有权限发表评论")
+
+        # 有可能内容类型已经知道， 这时需要自己实现对应类型的评论权限检测
         serializer.save()
 
     @action(detail=True, methods=['post'])
@@ -120,3 +126,12 @@ class CommentViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retr
         content_type = ContentType.objects.get_for_model(Comment)
         serializer = ContentTypeSerializer(content_type)
         return Response(serializer.data)
+
+
+class ReplyViewSet(CommentViewset):
+    serializer_class = ReplySerializer
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            content_type=ContentType.objects.get_for_model(Comment)
+        )

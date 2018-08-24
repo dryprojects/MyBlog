@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 
+import raven
 from celery.schedules import crontab
 
 # 这里使用gettext_lazy代替gettext，是为了防止循环引入
@@ -34,6 +35,8 @@ DEBUG = True
 
 API_MODE = True
 
+SENTRY = True
+
 REDIS_DEPLOY_HOST = 'redis://redis:6379'
 REDIS_DEBUG_HOST = 'redis://127.0.0.1:6379'
 
@@ -46,7 +49,7 @@ ELASTICSEARCH_DEPLOY_HOST = 'http://elasticsearch:9200/'
 ELASTICSEARCH_DEBUG_HOST = 'http://127.0.0.1:9200/'
 
 if DEBUG:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ["*"]
 
@@ -71,6 +74,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'rest_framework.authtoken',
+    'raven.contrib.django.raven_compat',
     'djoser',
     'dry_rest_permissions',
     'corsheaders',
@@ -383,66 +387,129 @@ if API_MODE:
 
     import datetime
 
-    #see http://getblimp.github.io/django-rest-framework-jwt/
+    # see http://getblimp.github.io/django-rest-framework-jwt/
     JWT_AUTH = {
-        'JWT_REFRESH_EXPIRATION_DELTA' : datetime.timedelta(days=3)
+        'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3)
     }
 
-LOGGING = {
+if not SENTRY:
+    LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'standard': {
+            'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'task': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'standard'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'oper.tasks': {
+            'handlers': ['console', 'task'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+else:
+    LOGGING = {
         'version': 1,
-        'disable_existing_loggers': False,
+        'disable_existing_loggers': True,
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+        },
         'formatters': {
             'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
-            'standard': {
-                'format': '%(asctime)s %(levelname)s [%(name)s: %(lineno)s] -- %(message)s'
-            }
-        },
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
+                'format': '%(levelname)s %(asctime)s %(module)s '
+                          '%(process)d %(thread)d %(message)s'
             },
         },
         'handlers': {
-            'console': {
-                'level': 'INFO',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple'
+            'sentry': {
+                'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                'tags': {'custom-tag': 'x'},
             },
-            'task': {
+            'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
-                'filters': ['require_debug_true'],
-                'formatter': 'standard'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler',
-                'include_html': True,
+                'formatter': 'verbose'
             }
         },
         'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'propagate': True,
-            },
-            'django.request': {
-                'handlers': ['console', 'mail_admins'],
+            'django.db.backends': {
                 'level': 'ERROR',
+                'handlers': ['console'],
                 'propagate': False,
             },
-            'oper.tasks': {
-                'handlers': ['console', 'task'],
+            'raven': {
                 'level': 'DEBUG',
-                'propagate': True,
+                'handlers': ['console'],
+                'propagate': False,
             },
-        }
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+        },
     }
 
 # 站点管理员， 当站点发生异常错误时，会自动发送错误邮件到以下管理员
 ADMINS = [('Jennei', 'jennei@hotmail.com'), ('RenKang', 'rk19931211@hotmail.com'), ('Nico', '303288346@qq.com')]
+
+TRADE = {  # 自定义设置
+    'alipay': {
+        'appid': '2016091700535510',
+        'alipay_public_key_path': os.path.join(BASE_DIR, 'apps/trade/alipay/secerts/alipay_public_key.pem'),
+        'app_private_key_path': os.path.join(BASE_DIR, 'apps/trade/alipay/secerts/app_private_key.pem'),
+        'notify_url': 'http://59.110.222.209:8000/trade/alipay/return/',
+        'return_url': 'http://59.110.222.209:8000/trade/alipay/return/',
+        'debug': DEBUG
+    }
+}
+
+RAVEN_CONFIG = { #集成sentry
+    'dsn': 'http://06a17576916a44fba2f16a7b90d419c3:e833a8bf46ce44bea933ceaf78d0e0a9@localhost:9000/2',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(BASE_DIR),
+}

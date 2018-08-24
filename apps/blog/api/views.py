@@ -8,7 +8,7 @@
 """
 
 from rest_framework import viewsets, filters as rest_filters, throttling as rest_throttling, \
-    permissions as rest_permissions
+    permissions as rest_permissions, mixins
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -22,12 +22,16 @@ from drf_haystack.viewsets import HaystackViewSet
 from drf_haystack import filters as haystack_filters
 from drf_haystack import mixins as haystack_mixins
 
+from rest_framework_extensions.mixins import NestedViewSetMixin
+
 from blog import models, enums
 from blog.api import serializers, paginators, permissions, throttling, filters as blog_filters
 from oper.models import FriendshipLinks
+from trade.models import ShoppingCart
+from comment.views import CommentViewset
 
 
-class PostViewset(viewsets.ModelViewSet):
+class PostViewset(NestedViewSetMixin, viewsets.ModelViewSet):
     """
     list:
     返回用户所有公开发表的博文，当前用户返回所有的博文
@@ -178,6 +182,29 @@ class PostViewset(viewsets.ModelViewSet):
         serializer = serializers.PostFavoriteSerializer(res)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get', 'delete'], permission_classes=[rest_permissions.IsAuthenticated])
+    def add_to_shoppingcart(self, request, pk):
+        """将博文添加到购物车,或者对购物车中的博文数量减一"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        incr = False if request.method in ['DELETE'] else True
+        res = ShoppingCart.add_item(content_type, pk, request.user, incr)
+
+        if not res.success:
+            return Response({'detail': res.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': res.detail}, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
+    def del_from_shoppingcart(self, request, pk):
+        """将博文移出购物车"""
+        content_type = ContentType.objects.get_for_model(models.Post)
+        res = ShoppingCart.del_item(content_type, pk, request.user)
+
+        if not res.success:
+            return Response({'detail': res.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': res.detail}, status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=False, methods=['get'], permission_classes=[rest_permissions.IsAuthenticated])
     def get_content_type(self, request):
         """list: 返回博文的内容类型id"""
@@ -218,6 +245,21 @@ class PostAutocompleteSearchViewSet(HaystackViewSet):
     index_models = [models.Post]
     serializer_class = serializers.PostAutocompleteSerializer
     filter_backends = [haystack_filters.HaystackAutocompleteFilter]
+
+
+class PostCommentViewSet(CommentViewset):
+    """
+    list:
+    当前博文下的所有用户评论
+    create:
+    为当前博文创建一条评论
+    """
+    serializer_class = serializers.PostCommentSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            content_type=ContentType.objects.get_for_model(models.Post)
+        )
 
 
 class CategoryViewset(viewsets.ModelViewSet):
