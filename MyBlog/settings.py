@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'oper',
     'agent',
     'trade',
+    'ebooks',
     'import_export',
     'versatileimagefield'
 ]
