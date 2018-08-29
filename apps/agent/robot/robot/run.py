@@ -52,5 +52,6 @@ class CrawlerScript:
 
 if __name__ == "__main__":
     from robot.spiders.jobbole import JobboleSpider
+    from robot.spiders.allitebooks import AllitebooksSpider
 
-    CrawlerScript([JobboleSpider]).start()
+    CrawlerScript([JobboleSpider, AllitebooksSpider]).start()
