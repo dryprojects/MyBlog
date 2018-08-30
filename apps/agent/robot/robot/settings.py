@@ -12,6 +12,8 @@
 import os
 
 BASE_DIR = os.path.dirname(__file__)
+PROJECT_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
 
 BOT_NAME = 'robot'
 
@@ -56,11 +58,12 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-        'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-        'robot.middlewares.RandomProxy': 100,
-        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-        'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-        'robot.middlewares.RandomUserAgentMiddleware': 200,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'robot.middlewares.RandomProxy': 100,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'robot.middlewares.RandomUserAgentMiddleware': 200,
+    #'robot.middlewares.SeleniumMiddleware': 999,
 }
 
 # Retry many times since proxies often fail
@@ -123,3 +126,7 @@ DUPEFILTER_DEBUG = True
 FAKEUSERAGENT_FALLBACK = None
 RANDOM_UA_PER_PROXY = True
 RANDOM_UA_TYPE = 'random'
+
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = os.path.join(PROJECT_DIR, 'tools/browser_driver/firefox/linux64/geckodriver')
+SELENIUM_DRIVER_ARGUMENTS = ['-headless'] # 去掉firefox浏览器界面
