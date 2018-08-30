@@ -5,7 +5,15 @@
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import collections
+import logging
+
 from scrapy import signals
+
+from fake_useragent import UserAgent
+
+
+logger = logging.getLogger(__name__)
 
 
 class RobotSpiderMiddleware(object):
@@ -101,3 +109,47 @@ class RobotDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class RandomUserAgentMiddleware(object):
+    """
+    随即更换User-Agent
+    """
+    def __init__(self, crawler):
+        super(RandomUserAgentMiddleware, self).__init__()
+
+        fallback = crawler.settings.get('FAKEUSERAGENT_FALLBACK', None)
+        self.ua = UserAgent(fallback=fallback)
+        self.per_proxy = crawler.settings.get('RANDOM_UA_PER_PROXY', False)
+        self.ua_type = crawler.settings.get('RANDOM_UA_TYPE', 'random')
+        self.proxy2ua = {}
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_request(self, request, spider):
+        # Called for each request that goes through the downloader
+        # middleware.
+
+        # Must either:
+        # - return None: continue processing this request
+        # - or return a Response object
+        # - or return a Request object
+        # - or raise IgnoreRequest: process_exception() methods of
+        #   installed downloader middleware will be called
+
+        def get_ua():
+            return getattr(self.ua, self.ua_type)
+
+        if self.per_proxy:
+            proxy = request.meta.get('proxy')
+            if proxy not in self.proxy2ua:
+                self.proxy2ua[proxy] = get_ua()
+                logger.debug('Assign User-Agent %s to Proxy %s'
+                             % (self.proxy2ua[proxy], proxy))
+            request.headers.setdefault('User-Agent', self.proxy2ua[proxy])
+        else:
+            request.headers.setdefault('User-Agent', get_ua())
+
+        return None
