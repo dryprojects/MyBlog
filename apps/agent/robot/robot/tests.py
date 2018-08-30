@@ -11,6 +11,8 @@ import os
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver.phantomjs.webdriver import WebDriver
+from selenium.webdriver.common.proxy import Proxy
+from selenium.webdriver.common.proxy import ProxyType
 
 
 project_base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))

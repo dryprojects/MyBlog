@@ -63,7 +63,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'robot.middlewares.RandomUserAgentMiddleware': 200,
-    #'robot.middlewares.SeleniumMiddleware': 999,
+    #'robot.middlewares.SeleniumMiddleware': 999, # 使用selenium中间件后代理会失效，如果需要代理参考selenium各个驱动设置代理的方法
 }
 
 # Retry many times since proxies often fail

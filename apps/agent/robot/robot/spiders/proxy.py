@@ -4,6 +4,7 @@ import json
 import scrapy
 
 from robot.items import ProxyItem, ProxyItemLoader
+from robot.processors import RemoveTags
 
 
 class ProxySpider(scrapy.Spider):
@@ -17,7 +18,7 @@ class ProxySpider(scrapy.Spider):
         :param response:
         :return:
         """
-        proxy_list = response.text.splitlines()
+        proxy_list = RemoveTags(response.text).splitlines()
 
         for proxy in proxy_list:
             item_loader = ProxyItemLoader(item=ProxyItem(), response=response)

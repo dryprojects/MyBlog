@@ -13,7 +13,7 @@ from importlib import import_module
 
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
-from scrapy.http import HtmlResponse
+from scrapy.http import HtmlResponse, TextResponse
 
 from fake_useragent import UserAgent
 
