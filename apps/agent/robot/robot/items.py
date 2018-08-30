@@ -14,6 +14,7 @@ import scrapy
 from scrapy import loader
 from scrapy.loader import processors
 from scrapy.loader.processors import MapCompose, TakeFirst, Join, Identity
+from scrapy.exceptions import DropItem
 
 from scrapy_djangoitem import DjangoItem
 
@@ -207,11 +208,29 @@ class AllitebooksItem(scrapy.Item):
                 ebook.save()
 
 
+class ProxyItem(scrapy.Item):
+    port = scrapy.Field()
+    anonymity = scrapy.Field()
+    high_anonymous = scrapy.Field()
+    proxy_from = scrapy.Field()
+    proxy_type = scrapy.Field()
+    response_time = scrapy.Field()
+    host = scrapy.Field()
+    country = scrapy.Field()
+    export_address = scrapy.Field(
+        output_processor=Join("\n")
+    )
+
+
 class PostItemLoader(loader.ItemLoader):
     default_output_processor = processors.TakeFirst()
 
 
 class AllitebooksItemLoader(loader.ItemLoader):
+    default_output_processor = processors.TakeFirst()
+
+
+class ProxyItemLoader(loader.ItemLoader):
     default_output_processor = processors.TakeFirst()
 
 
