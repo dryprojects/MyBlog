@@ -26,10 +26,12 @@ class ProxyWriterPipeline(object):
             os.mkdir(self.proxy_dir_name)
 
     def open_spider(self, spider):
-        self.file = open(os.path.join(self.base_dir, self.proxy_dir_name, self.file_name), 'w')
+        if spider.name == 'proxy':
+            self.file = open(os.path.join(self.base_dir, self.proxy_dir_name, self.file_name), 'w')
 
     def close_spider(self, spider):
-        self.file.close()
+        if spider.name == 'proxy':
+            self.file.close()
 
     @classmethod
     def from_crawler(cls, crawler):
