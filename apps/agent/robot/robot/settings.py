@@ -9,6 +9,10 @@
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import os
+
+BASE_DIR = os.path.dirname(__file__)
+
 BOT_NAME = 'robot'
 
 SPIDER_MODULES = ['robot.spiders']
@@ -52,9 +56,33 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'robot.middlewares.RandomUserAgentMiddleware': 543,
+        'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+        'robot.middlewares.RandomProxy': 100,
+        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+        'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+        'robot.middlewares.RandomUserAgentMiddleware': 200,
 }
+
+# Retry many times since proxies often fail
+RETRY_TIMES = 10
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
+# Proxy list containing entries like
+# http://host1:port
+# http://username:password@host2:port
+# http://host3:port
+# ...
+PROXY_LIST = os.path.join(BASE_DIR, 'proxy', 'proxy_list.txt')
+
+# Proxy mode
+# 0 = Every requests have different proxy
+# 1 = Take only one proxy from the list and assign it to every requests
+# 2 = Put a custom proxy to use in the settings
+PROXY_MODE = 0
+
+# If proxy mode is 2 uncomment this sentence :
+# CUSTOM_PROXY = "http://host1:port"
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -65,6 +93,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    'robot.pipelines.ProxyWriterPipeline': 299,
     'robot.pipelines.DjangoPipeline': 300,
 }
 
@@ -92,5 +121,5 @@ ITEM_PIPELINES = {
 DUPEFILTER_DEBUG = True
 
 FAKEUSERAGENT_FALLBACK = None
-RANDOM_UA_PER_PROXY = False
+RANDOM_UA_PER_PROXY = True
 RANDOM_UA_TYPE = 'random'
