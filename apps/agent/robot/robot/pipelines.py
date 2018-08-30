@@ -23,7 +23,7 @@ class ProxyWriterPipeline(object):
         self.file_name = crawler.settings.get("PROXY_FILE_NAME", 'proxy_list.txt')
 
         if not os.path.exists(self.proxy_dir_name):
-            os.mkdir(os.path.join(self.base_dir, self.proxy_dir_name))
+            os.mkdir(self.proxy_dir_name)
 
     def open_spider(self, spider):
         self.file = open(os.path.join(self.base_dir, self.proxy_dir_name, self.file_name), 'w')
