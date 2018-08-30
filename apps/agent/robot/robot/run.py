@@ -53,5 +53,6 @@ class CrawlerScript:
 if __name__ == "__main__":
     from robot.spiders.jobbole import JobboleSpider
     from robot.spiders.allitebooks import AllitebooksSpider
+    from robot.spiders.proxy import ProxySpider
 
-    CrawlerScript([JobboleSpider, AllitebooksSpider]).start()
+    CrawlerScript([ProxySpider]).start()
