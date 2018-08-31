@@ -13,10 +13,6 @@ import collections
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from scrapy.exceptions import NotConfigured
-from scrapy import signals
-
-from scrapy_redis import connection, defaults
-from redis import StrictRedis
 
 
 class CrawlerScript:
