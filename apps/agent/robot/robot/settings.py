@@ -59,11 +59,11 @@ COOKIES_ENABLED = False
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-    'robot.middlewares.RandomProxy': 100,
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+#    'robot.middlewares.RandomProxy': 100,
+#    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'robot.middlewares.RandomUserAgentMiddleware': 200,
-    #'robot.middlewares.SeleniumMiddleware': 999, # 使用selenium中间件后代理会失效，如果需要代理参考selenium各个驱动设置代理的方法
+    'robot.middlewares.SeleniumMiddleware': 999,  # 使用selenium中间件后代理会失效，如果需要代理参考selenium各个驱动设置代理的方法
 }
 
 # Retry many times since proxies often fail
@@ -96,7 +96,8 @@ PROXY_MODE = 0
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'robot.pipelines.ProxyWriterPipeline': 299,
+    'scrapy_redis.pipelines.RedisPipeline': 280,
+    'robot.pipelines.ProxyWriterPipeline': 290,
     'robot.pipelines.DjangoPipeline': 300,
 }
 
@@ -129,4 +130,10 @@ RANDOM_UA_TYPE = 'random'
 
 SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = os.path.join(PROJECT_DIR, 'tools/browser_driver/firefox/linux64/geckodriver')
-SELENIUM_DRIVER_ARGUMENTS = ['-headless'] # 去掉firefox浏览器界面
+SELENIUM_DRIVER_ARGUMENTS = ['-headless']  # 去掉firefox浏览器界面
+
+# Enables scheduling storing requests queue in redis.
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+# Ensure all spiders share same duplicates filter through redis.
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
