@@ -6,8 +6,10 @@ import scrapy
 from robot.items import ProxyItem, ProxyItemLoader
 from robot.processors import RemoveTags
 
+from scrapy_redis.spiders import RedisSpider
 
-class ProxySpider(scrapy.Spider):
+
+class ProxySpider(RedisSpider):
     name = 'proxy'
     allowed_domains = ['raw.githubusercontent.com']
     start_urls = ['https://raw.githubusercontent.com/fate0/proxylist/master/proxy.list']
