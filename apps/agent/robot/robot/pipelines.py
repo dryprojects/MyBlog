@@ -39,10 +39,12 @@ class ProxyWriterPipeline(object):
 
     def process_item(self, item, spider):
         if spider.name == 'proxy':
-            line = "{proxy_type}://{host}:{port}\n".format(
+            line = "{proxy_type}://{host}:{port}{linesep}".format(
                 proxy_type=item.get('proxy_type'),
                 host=item.get('host'),
-                port=item.get('port'))
+                port=item.get('port'),
+                linesep=os.linesep
+            )
 
             self.file.write(line)
 
