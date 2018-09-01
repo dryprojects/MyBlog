@@ -51,10 +51,10 @@ class BloomFilter:
 
     def add(self, item):
         item = str(item)
-        key = self.__get_block_route_key(item)
+        self.key = self.__get_block_route_key(item)
         for seed in range(self.k):
             offset = mmh3.hash(item, seed, signed=False)
-            self.server.setbit(key, offset % self.m, 1)
+            self.server.setbit(self.key, offset % self.m, 1)
 
     def __get_block_route_key(self, hashable):
         return self.key_prefix + str(sum(map(ord, hashable)) % self.block_num)
