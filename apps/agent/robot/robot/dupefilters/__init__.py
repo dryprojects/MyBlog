@@ -77,3 +77,52 @@ class BloomFilterRedis(BaseDupeFilter):
                    " (see DUPEFILTER_DEBUG to show all duplicates)")
             logger.debug(msg, {'request': request}, extra={'spider': spider})
         self.logdupes = False
+
+
+class BloomFilterMemory(BaseDupeFilter):
+    def __init__(self, n=100000000, f=0.0001, block_nums=1, *args, **kwargs):
+
+        self.bf = bloomfilter_memory.BloomFilter(n, f, block_nums)
+        self.debug = kwargs.get('debug', True)
+        self.logdupes = True
+
+    @classmethod
+    def from_settings(cls, settings):
+        capacity = settings.get("BLOOMFILTER_MEMORY_CAPACITY", 100000000)
+        error_rate = settings.get("BLOOMFILTER_MEMORY_FALSE_POSITIVE_PROBABILITY", 0.0001)
+        block_nums = settings.get("BLOOMFILTER_MEMORY_BLOCK_NUMS")
+        debug = settings.getbool('DUPEFILTER_DEBUG')
+        return cls(capacity, error_rate, block_nums, debug=debug)
+
+    @classmethod
+    def from_spider(cls, spider):
+        settings = spider.settings
+        capacity = settings.get("BLOOMFILTER_MEMORY_CAPACITY", 100000000)
+        error_rate = settings.get("BLOOMFILTER_MEMORY_FALSE_POSITIVE_PROBABILITY", 0.0001)
+        block_nums = settings.get("BLOOMFILTER_MEMORY_BLOCK_NUMS")
+        debug = settings.getbool('DUPEFILTER_DEBUG')
+        return cls(capacity, error_rate, block_nums, debug=debug)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls.from_settings(crawler.settings)
+
+    def request_seen(self, request):
+        fp = request_fingerprint(request)
+        if fp in self.bf:
+            return True
+        else:
+            self.bf.add(fp)
+
+        return False
+
+    def log(self, request, spider):
+        if self.debug:
+            msg = "Filtered duplicate request: %(request)s"
+            logger.debug(msg, {'request': request}, extra={'spider': spider})
+        elif self.logdupes:
+            msg = ("Filtered duplicate request %(request)s"
+                   " - no more duplicates will be shown"
+                   " (see DUPEFILTER_DEBUG to show all duplicates)")
+            logger.debug(msg, {'request': request}, extra={'spider': spider})
+        self.logdupes = False
