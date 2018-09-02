@@ -133,7 +133,7 @@ SELENIUM_DRIVER_EXECUTABLE_PATH = os.path.join(PROJECT_DIR, 'tools/browser_drive
 SELENIUM_DRIVER_ARGUMENTS = ['-headless']  # 去掉firefox浏览器界面
 
 # Enables scheduling storing requests queue in redis.
-SCHEDULER = "robot.schedulers.MemoryScheduler"
+#SCHEDULER = "robot.schedulers.RedisScheduler"
 
 # Ensure all spiders share same duplicates filter through redis.
-DUPEFILTER_CLASS = "robot.dupefilters.BloomFilterMemory"
+DUPEFILTER_CLASS = "robot.dupefilters.BloomFilterMemory"    #robot.dupefilters.BloomFilterRedis
