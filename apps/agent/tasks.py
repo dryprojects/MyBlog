@@ -64,7 +64,7 @@ def post_crawler(self):
     :param self:
     :return:
     """
-    from agent.robot.robot.spiders.jobbole import JobboleSpider
+    from agent.robot.robot.spiders import spider_list
     from agent.robot.robot.run import CrawlerScript
 
     os.environ['SCRAPY_SETTINGS_MODULE'] = 'agent.robot.robot.settings'
@@ -72,6 +72,6 @@ def post_crawler(self):
     lock_key = __name__ + ".mutex_lock"
     with task_lock(lock_key, self.app.oid) as aquired:
         if aquired:
-            CrawlerScript([JobboleSpider]).start()
+            CrawlerScript(spider_list).start()
         else:
             logger.info("另一个crawler正在运行。")

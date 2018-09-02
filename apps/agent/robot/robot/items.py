@@ -13,12 +13,14 @@ import uuid
 import scrapy
 from scrapy import loader
 from scrapy.loader import processors
-from scrapy.loader.processors import MapCompose, TakeFirst, Join
+from scrapy.loader.processors import MapCompose, TakeFirst, Join, Identity
+from scrapy.exceptions import DropItem
 
 from scrapy_djangoitem import DjangoItem
 
 from blog.models import Post, Category, Tag
 from bloguser.models import UserProfile
+from ebooks.models import Ebook
 
 from django.db.transaction import atomic
 from django.db.utils import IntegrityError
@@ -157,7 +159,78 @@ class JobboleItem(scrapy.Item):
                 post.tags.set(tag_list)
 
 
+class AllitebooksItem(scrapy.Item):
+    title = scrapy.Field()
+    sub_title = scrapy.Field()
+    cover_url = scrapy.Field()
+    author_name = scrapy.Field()
+    isbn = scrapy.Field()
+    published_year = scrapy.Field()
+    pages = scrapy.Field()
+    language = scrapy.Field()
+    file_size = scrapy.Field()
+    file_format = scrapy.Field()
+    category = scrapy.Field()
+    description = scrapy.Field(
+        input_processor=MapCompose(proc.RemoveSpace, proc.ConvertToMarkDown),
+        output_processor=Join("\n")
+    )
+    download_links = scrapy.Field(
+        output_processor=Join('|')
+    )
+    url_object_id = scrapy.Field(
+        input_processor=MapCompose(proc.RemoveSpace, proc.ConvertToMd5)
+    )
+
+    def save(self, commit=True):
+        with atomic():
+            ebook, created = Ebook.objects.get_or_create(
+                url_object_id=self.get("url_object_id", ""),
+                defaults={
+                    "title": self.get("title", ""),
+                    "sub_title": self.get("sub_title", ""),
+                    "cover_url": self.get("cover_url", ""),
+                    "author_name": self.get("author_name", ""),
+                    "isbn": self.get("isbn", ""),
+                    "published_year": self.get("published_year", ""),
+                    "pages": self.get("pages", ""),
+                    "language": self.get("language", ""),
+                    "file_size": self.get("file_size", ''),
+                    "file_format": self.get("file_format", ''),
+                    "category": self.get("category", ""),
+                    "description":self.get("description", ""),
+                    "download_links":self.get("download_links", ""),
+                }
+            )
+
+            if created:
+                ebook.description = self.get("description", "")
+                ebook.save()
+
+
+class ProxyItem(scrapy.Item):
+    port = scrapy.Field()
+    anonymity = scrapy.Field()
+    high_anonymous = scrapy.Field()
+    proxy_from = scrapy.Field()
+    proxy_type = scrapy.Field()
+    response_time = scrapy.Field()
+    host = scrapy.Field()
+    country = scrapy.Field()
+    export_address = scrapy.Field(
+        output_processor=Join("\n")
+    )
+
+
 class PostItemLoader(loader.ItemLoader):
+    default_output_processor = processors.TakeFirst()
+
+
+class AllitebooksItemLoader(loader.ItemLoader):
+    default_output_processor = processors.TakeFirst()
+
+
+class ProxyItemLoader(loader.ItemLoader):
     default_output_processor = processors.TakeFirst()
 
 
