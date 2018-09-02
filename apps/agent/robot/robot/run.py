@@ -82,4 +82,4 @@ if __name__ == "__main__":
     from robot.spiders.allitebooks import AllitebooksSpider
     from robot.spiders.proxy import ProxySpider
 
-    CrawlerScript([ProxySpider]).start(using_scrapy_redis=False)
+    CrawlerScript([ProxySpider]).start(using_scrapy_redis=True)

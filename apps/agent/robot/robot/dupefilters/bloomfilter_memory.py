@@ -24,7 +24,6 @@ class BloomFilter:
         :param f: expected false positive probability
         :param block_num: number of bitarray obj, one block maxsize 16Gb on 32 bit systems
         """
-
         if not (0 < f < 1):
             raise ValueError("f must be between 0 and 1.")
 
