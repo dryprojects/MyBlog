@@ -59,8 +59,8 @@ COOKIES_ENABLED = False
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-#    'robot.middlewares.RandomProxy': 100,
-#    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    #    'robot.middlewares.RandomProxy': 100,
+    #    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'robot.middlewares.RandomUserAgentMiddleware': 200,
     'robot.middlewares.SeleniumMiddleware': 999,  # 使用selenium中间件后代理会失效，如果需要代理参考selenium各个驱动设置代理的方法
@@ -89,9 +89,10 @@ PROXY_MODE = 0
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
-# EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-# }
+EXTENSIONS = {
+    'scrapy.extensions.telnet.TelnetConsole': None,
+    "scrapy_sentry.extensions.Errors": 10,
+}
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
@@ -133,7 +134,9 @@ SELENIUM_DRIVER_EXECUTABLE_PATH = os.path.join(PROJECT_DIR, 'tools/browser_drive
 SELENIUM_DRIVER_ARGUMENTS = ['-headless']  # 去掉firefox浏览器界面
 
 # Enables scheduling storing requests queue in redis.
-#SCHEDULER = "robot.schedulers.RedisScheduler"
+# SCHEDULER = "robot.schedulers.RedisScheduler"
 
 # Ensure all spiders share same duplicates filter through redis.
-DUPEFILTER_CLASS = "robot.dupefilters.BloomFilterMemory"    #robot.dupefilters.BloomFilterRedis
+DUPEFILTER_CLASS = "robot.dupefilters.BloomFilterMemory"  # robot.dupefilters.BloomFilterRedis
+
+SENTRY_DSN = 'http://bed50ab7ae24415aa5b2d7c1de928704:592614ae918f4851a7fc58458110d498@localhost:9000/3'
