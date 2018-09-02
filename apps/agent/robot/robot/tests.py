@@ -26,6 +26,14 @@ driver = WebDriver(
 )
 
 if __name__ == '__main__':
-    print(project_base)
-    driver.get('http://www.baidu.com')
-    print(driver.page_source)
+    # print(project_base)
+    # driver.get('http://www.baidu.com')
+    # print(driver.page_source)
+    from raven import Client
+
+    client = Client('http://bed50ab7ae24415aa5b2d7c1de928704:592614ae918f4851a7fc58458110d498@localhost:9000/3')
+
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        client.captureException()
