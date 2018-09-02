@@ -88,6 +88,7 @@ Scrapy==1.5.0
 scrapy-djangoitem==1.1.1
 scrapy-redis==0.6.8
 scrapy-sentry==0.9.0
+scrapyd==1.2.0
 selenium==3.14.0
 service-identity==17.0.0
 simplejson==3.16.0
